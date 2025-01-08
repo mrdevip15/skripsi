@@ -8,10 +8,11 @@ from datetime import datetime, timedelta
 import os
 import logging
 from config import CONFIG
-from sklearn.neural_network import MLPRegressor
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from itertools import product
-import random
+import tensorflow as tf
+from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+import pickle
 
 # Set up logging
 logging.basicConfig(
@@ -34,28 +35,23 @@ class WeatherPredictor:
         os.makedirs('models', exist_ok=True)
         os.makedirs('plots', exist_ok=True)
 
-    def engineer_features(self, df):
-        """Add engineered features to the dataset"""
-        df = df.copy()
+    def build_model(self, input_shape):
+        """Build and compile the LSTM model"""
+        model = Sequential([
+            LSTM(128, input_shape=input_shape, return_sequences=True),
+            Dropout(0.2),
+            LSTM(64, return_sequences=False),
+            Dropout(0.2),
+            Dense(32, activation='relu'),
+            Dense(1)  # Single output for rainfall prediction
+        ])
         
-        if not self.config['USE_FEATURE_ENGINEERING']:
-            return df
-            
-        # Add time-based features
-        df['day_of_year'] = df['Tanggal'].dt.dayofyear
-        df['month'] = df['Tanggal'].dt.month
-        df['day_of_week'] = df['Tanggal'].dt.dayofweek
-        
-        # Add rolling statistics
-        for window in self.config['ROLLING_WINDOW_SIZES']:
-            for feature in self.config['INPUT_FEATURES']:
-                df[f'{feature}_rolling_mean_{window}d'] = df[feature].rolling(window=window).mean()
-                df[f'{feature}_rolling_std_{window}d'] = df[feature].rolling(window=window).std()
-        
-        # Drop rows with NaN values from rolling calculations
-        df = df.dropna()
-        
-        return df
+        model.compile(
+            optimizer='adam',
+            loss='mse',
+            metrics=['mae']
+        )
+        return model
 
     def prepare_sequences(self, df):
         """Prepare sequences for RR prediction only"""
@@ -64,104 +60,97 @@ class WeatherPredictor:
         
         X, y = [], []
         for i in range(len(df) - lookback):
-            # Store the input shape for later use
-            sequence = df[features].values[i:i+lookback]
-            X.append(sequence.flatten())  # Flatten for MLPRegressor
+            X.append(df[features].values[i:i+lookback])
             y.append(df['RR'].values[i+lookback])
         
-        # Store the sequence shape for prediction
-        self.sequence_shape = (lookback, len(features))
         return np.array(X), np.array(y)
 
-    def build_model(self, input_shape):
-        """Build model for single target (RR) prediction"""
-        model = MLPRegressor(
-            hidden_layer_sizes=self.config['HIDDEN_LAYERS'],
-            learning_rate_init=self.config['LEARNING_RATE'],
-            max_iter=self.config['EPOCHS'],
-            early_stopping=True,
-            validation_fraction=self.config['VALIDATION_SPLIT'],
-            n_iter_no_change=self.config['EARLY_STOPPING_PATIENCE'],
-            random_state=42
-        )
-        return model
-
-    def evaluate_predictions(self, y_true, y_pred):
-        """Calculate various accuracy metrics with context"""
-        mse = mean_squared_error(y_true, y_pred)
-        rmse = np.sqrt(mse)
-        mae = mean_absolute_error(y_true, y_pred)
-        r2 = r2_score(y_true, y_pred)
-        
-        # Calculate MAPE
-        mape = np.mean(np.abs((y_true - y_pred) / (y_true + 1e-8))) * 100
-        
-        # Add context metrics
-        mean_rainfall = np.mean(y_true)
-        max_rainfall = np.max(y_true)
-        mae_percentage = (mae / mean_rainfall) * 100  # MAE as percentage of mean rainfall
-        
-        return {
-            'MSE': mse,
-            'RMSE': rmse,
-            'MAE': mae,
-            'R2': r2,
-            'MAPE': mape,
-            'MAE_as_percentage_of_mean': mae_percentage,
-            'Context': {
-                'Mean_Rainfall': mean_rainfall,
-                'Max_Rainfall': max_rainfall
-            }
-        }
-
     def train(self, X, y):
-        """Train the model with detailed evaluation"""
-        # Split data (X is already in the correct shape)
+        """Train the model with early stopping and validation"""
+        # Split data
         X_train, X_test, y_train, y_test = train_test_split(
-            X, y,
+            X, y, 
             test_size=self.config['TEST_SPLIT'],
             random_state=42
         )
         
-        # Train model
-        self.model = self.build_model(X.shape[1:])
-        self.model.fit(X_train, y_train)
+        # Build model
+        self.model = self.build_model(input_shape=(X.shape[1], X.shape[2]))
         
-        # Make predictions
-        y_train_pred = self.model.predict(X_train)
-        y_test_pred = self.model.predict(X_test)
+        # Callbacks
+        early_stopping = EarlyStopping(
+            monitor='val_loss',
+            patience=self.config['EARLY_STOPPING_PATIENCE'],
+            restore_best_weights=True
+        )
+        
+        checkpoint = ModelCheckpoint(
+            self.config['MODEL_SAVE_PATH'],
+            monitor='val_loss',
+            save_best_only=True
+        )
+        
+        # Train
+        self.history = self.model.fit(
+            X_train, y_train,
+            validation_split=self.config['VALIDATION_SPLIT'],
+            epochs=self.config['EPOCHS'],
+            batch_size=self.config['BATCH_SIZE'],
+            callbacks=[early_stopping, checkpoint],
+            verbose=1
+        )
+        
+        # Evaluate
+        test_loss, test_mae = self.model.evaluate(X_test, y_test, verbose=0)
         
         # Calculate metrics
-        train_metrics = self.evaluate_predictions(y_train, y_train_pred)
-        test_metrics = self.evaluate_predictions(y_test, y_test_pred)
+        y_pred = self.model.predict(X_test)
+        metrics = self.evaluate_predictions(y_test, y_pred.flatten())
         
-        return test_metrics
+        return metrics
 
     def predict_next_days(self, last_sequence):
-        """Predict rainfall for the next few days"""
+        """Predict rainfall for next few days"""
         predictions = []
-        # Ensure the input sequence has the correct shape
-        current_sequence = last_sequence.reshape(self.sequence_shape).flatten()
+        current_sequence = last_sequence.copy()
         
         for _ in range(self.config['PREDICTION_DAYS']):
-            # Reshape sequence for prediction
-            reshaped_sequence = current_sequence.reshape(1, -1)
-            pred = self.model.predict(reshaped_sequence)
-            predictions.append(pred[0])
+            pred = self.model.predict(current_sequence.reshape(1, *current_sequence.shape))
+            predictions.append(pred[0, 0])
             
-            # Update sequence for next prediction
-            current_sequence = np.roll(current_sequence, -len(self.config['INPUT_FEATURES']))
-            # Update only the RR value in the appropriate position
-            rr_idx = self.config['INPUT_FEATURES'].index('RR')
-            current_sequence[-len(self.config['INPUT_FEATURES']) + rr_idx] = pred[0]
+            # Update sequence
+            current_sequence = np.roll(current_sequence, -1, axis=0)
+            current_sequence[-1, self.config['INPUT_FEATURES'].index('RR')] = pred[0, 0]
         
         return np.array(predictions)
 
+    def plot_training_history(self):
+        """Plot training history"""
+        plt.figure(figsize=(12, 4))
+        
+        plt.subplot(1, 2, 1)
+        plt.plot(self.history.history['loss'], label='Training Loss')
+        plt.plot(self.history.history['val_loss'], label='Validation Loss')
+        plt.title('Model Loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.legend()
+        
+        plt.subplot(1, 2, 2)
+        plt.plot(self.history.history['mae'], label='Training MAE')
+        plt.plot(self.history.history['val_mae'], label='Validation MAE')
+        plt.title('Model MAE')
+        plt.xlabel('Epoch')
+        plt.ylabel('MAE')
+        plt.legend()
+        
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.config['PLOT_SAVE_PATH'], 'training_history.png'))
+        plt.close()
+
     def save_model(self):
         """Save model and scaler"""
-        import pickle
-        with open(self.config['MODEL_SAVE_PATH'], 'wb') as f:
-            pickle.dump(self.model, f)
+        self.model.save(self.config['MODEL_SAVE_PATH'])
         with open('models/scaler.pkl', 'wb') as f:
             pickle.dump(self.scaler, f)
         logging.info(f"Model saved to {self.config['MODEL_SAVE_PATH']}")
@@ -169,9 +158,7 @@ class WeatherPredictor:
     def load_model(self):
         """Load saved model and scaler"""
         try:
-            import pickle
-            with open(self.config['MODEL_SAVE_PATH'], 'rb') as f:
-                self.model = pickle.load(f)
+            self.model = load_model(self.config['MODEL_SAVE_PATH'])
             with open('models/scaler.pkl', 'rb') as f:
                 self.scaler = pickle.load(f)
             logging.info("Model loaded successfully")
