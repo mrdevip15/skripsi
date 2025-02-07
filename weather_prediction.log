@@ -982,3 +982,620 @@ Best Metrics:
 Context Information:
 2025-01-09 00:08:00,006 - INFO - Mean_Rainfall: 0.2271 mm
 2025-01-09 00:08:00,007 - INFO - Max_Rainfall: 1.0000 mm
+2025-02-07 14:24:15,722 - INFO - 
+Trial 1/20
+2025-02-07 14:24:15,722 - INFO - Configuration: {'HIDDEN_LAYERS': [64, 32], 'LEARNING_RATE': 0.001, 'LOOKBACK_DAYS': 5}
+2025-02-07 14:24:17,603 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:24:17,603 - INFO - 
+New best model found!
+2025-02-07 14:24:17,603 - INFO - MAE percentage: 107.22%
+2025-02-07 14:24:17,603 - INFO - 
+Trial 2/20
+2025-02-07 14:24:17,603 - INFO - Configuration: {'HIDDEN_LAYERS': [128, 64, 32], 'LEARNING_RATE': 0.05, 'LOOKBACK_DAYS': 5}
+2025-02-07 14:24:19,556 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:24:19,556 - INFO - 
+New best model found!
+2025-02-07 14:24:19,557 - INFO - MAE percentage: 106.53%
+2025-02-07 14:24:19,557 - INFO - 
+Trial 3/20
+2025-02-07 14:24:19,557 - INFO - Configuration: {'HIDDEN_LAYERS': [512, 256, 128], 'LEARNING_RATE': 0.05, 'LOOKBACK_DAYS': 7}
+2025-02-07 14:24:29,218 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:24:29,218 - INFO - 
+New best model found!
+2025-02-07 14:24:29,218 - INFO - MAE percentage: 100.92%
+2025-02-07 14:24:29,219 - INFO - 
+Trial 4/20
+2025-02-07 14:24:29,219 - INFO - Configuration: {'HIDDEN_LAYERS': [64, 32], 'LEARNING_RATE': 0.005, 'LOOKBACK_DAYS': 21}
+2025-02-07 14:24:31,402 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:24:31,402 - INFO - 
+New best model found!
+2025-02-07 14:24:31,402 - INFO - MAE percentage: 97.71%
+2025-02-07 14:24:31,402 - INFO - 
+Trial 5/20
+2025-02-07 14:24:31,403 - INFO - Configuration: {'HIDDEN_LAYERS': [64, 64, 64, 64], 'LEARNING_RATE': 0.01, 'LOOKBACK_DAYS': 5}
+2025-02-07 14:24:33,186 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:24:33,187 - INFO - 
+New best model found!
+2025-02-07 14:24:33,187 - INFO - MAE percentage: 97.37%
+2025-02-07 14:24:33,187 - INFO - 
+Trial 6/20
+2025-02-07 14:24:33,187 - INFO - Configuration: {'HIDDEN_LAYERS': [64, 64, 64, 64], 'LEARNING_RATE': 0.001, 'LOOKBACK_DAYS': 30}
+2025-02-07 14:24:34,859 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:24:34,859 - INFO - 
+New best model found!
+2025-02-07 14:24:34,859 - INFO - MAE percentage: 88.81%
+2025-02-07 14:24:34,859 - INFO - 
+Trial 7/20
+2025-02-07 14:24:34,860 - INFO - Configuration: {'HIDDEN_LAYERS': [128, 64], 'LEARNING_RATE': 0.0001, 'LOOKBACK_DAYS': 45}
+2025-02-07 14:24:37,998 - INFO - 
+Trial 8/20
+2025-02-07 14:24:37,998 - INFO - Configuration: {'HIDDEN_LAYERS': [64, 32, 16], 'LEARNING_RATE': 0.005, 'LOOKBACK_DAYS': 14}
+2025-02-07 14:24:39,967 - INFO - 
+Trial 9/20
+2025-02-07 14:24:39,968 - INFO - Configuration: {'HIDDEN_LAYERS': [64, 32], 'LEARNING_RATE': 0.05, 'LOOKBACK_DAYS': 21}
+2025-02-07 14:24:42,458 - INFO - 
+Trial 10/20
+2025-02-07 14:24:42,459 - INFO - Configuration: {'HIDDEN_LAYERS': [512, 256, 128], 'LEARNING_RATE': 0.001, 'LOOKBACK_DAYS': 14}
+2025-02-07 14:24:47,849 - INFO - 
+Trial 11/20
+2025-02-07 14:24:47,849 - INFO - Configuration: {'HIDDEN_LAYERS': [256, 256, 128, 64], 'LEARNING_RATE': 0.01, 'LOOKBACK_DAYS': 5}
+2025-02-07 14:24:51,477 - INFO - 
+Trial 12/20
+2025-02-07 14:24:51,477 - INFO - Configuration: {'HIDDEN_LAYERS': [256, 256, 128, 64], 'LEARNING_RATE': 0.0005, 'LOOKBACK_DAYS': 3}
+2025-02-07 14:24:54,983 - INFO - 
+Trial 13/20
+2025-02-07 14:24:54,984 - INFO - Configuration: {'HIDDEN_LAYERS': [128, 64], 'LEARNING_RATE': 0.0001, 'LOOKBACK_DAYS': 14}
+2025-02-07 14:24:57,418 - INFO - 
+Trial 14/20
+2025-02-07 14:24:57,419 - INFO - Configuration: {'HIDDEN_LAYERS': [64, 32], 'LEARNING_RATE': 0.01, 'LOOKBACK_DAYS': 5}
+2025-02-07 14:24:59,079 - INFO - 
+Trial 15/20
+2025-02-07 14:24:59,079 - INFO - Configuration: {'HIDDEN_LAYERS': [64, 32, 16], 'LEARNING_RATE': 0.1, 'LOOKBACK_DAYS': 5}
+2025-02-07 14:25:00,547 - INFO - 
+Trial 16/20
+2025-02-07 14:25:00,547 - INFO - Configuration: {'HIDDEN_LAYERS': [128, 128, 128, 64], 'LEARNING_RATE': 0.005, 'LOOKBACK_DAYS': 7}
+2025-02-07 14:25:02,686 - INFO - 
+Trial 17/20
+2025-02-07 14:25:02,687 - INFO - Configuration: {'HIDDEN_LAYERS': [128, 64], 'LEARNING_RATE': 0.01, 'LOOKBACK_DAYS': 5}
+2025-02-07 14:25:04,370 - INFO - 
+Trial 18/20
+2025-02-07 14:25:04,370 - INFO - Configuration: {'HIDDEN_LAYERS': [256, 256, 128, 64], 'LEARNING_RATE': 0.05, 'LOOKBACK_DAYS': 7}
+2025-02-07 14:25:08,728 - INFO - 
+Trial 19/20
+2025-02-07 14:25:08,729 - INFO - Configuration: {'HIDDEN_LAYERS': [128, 64], 'LEARNING_RATE': 0.0001, 'LOOKBACK_DAYS': 14}
+2025-02-07 14:25:11,131 - INFO - 
+Trial 20/20
+2025-02-07 14:25:11,131 - INFO - Configuration: {'HIDDEN_LAYERS': [128, 64], 'LEARNING_RATE': 0.1, 'LOOKBACK_DAYS': 21}
+2025-02-07 14:25:15,145 - INFO - 
+Optimization completed without reaching target.
+2025-02-07 14:25:15,145 - INFO - Using best found configuration:
+2025-02-07 14:25:15,145 - INFO - 
+Best Configuration:
+2025-02-07 14:25:15,145 - INFO - HIDDEN_LAYERS: [64, 64, 64, 64]
+2025-02-07 14:25:15,145 - INFO - LEARNING_RATE: 0.001
+2025-02-07 14:25:15,146 - INFO - LOOKBACK_DAYS: 30
+2025-02-07 14:25:15,146 - INFO - 
+Best Metrics:
+2025-02-07 14:25:15,146 - INFO - MSE: 0.1212
+2025-02-07 14:25:15,146 - INFO - RMSE: 0.3481
+2025-02-07 14:25:15,146 - INFO - MAE: 0.2242
+2025-02-07 14:25:15,146 - INFO - R2: 0.3536
+2025-02-07 14:25:15,146 - INFO - MAPE: 232902268.8578
+2025-02-07 14:25:15,146 - INFO - MAE_as_percentage_of_mean: 88.8138
+2025-02-07 14:25:15,146 - INFO - 
+Context Information:
+2025-02-07 14:25:15,146 - INFO - Mean_Rainfall: 0.2524 mm
+2025-02-07 14:25:15,146 - INFO - Max_Rainfall: 1.0000 mm
+2025-02-07 14:43:40,256 - INFO - 
+Trial 1/20
+2025-02-07 14:43:40,257 - INFO - Configuration: {'HIDDEN_LAYERS': [64, 32], 'LEARNING_RATE': 0.001, 'LOOKBACK_DAYS': 5}
+2025-02-07 14:43:45,886 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:43:45,887 - INFO - 
+New best model found!
+2025-02-07 14:43:45,887 - INFO - MAE percentage: 206.07%
+2025-02-07 14:43:45,887 - INFO - 
+Trial 2/20
+2025-02-07 14:43:45,887 - INFO - Configuration: {'HIDDEN_LAYERS': [128, 64], 'LEARNING_RATE': 0.001, 'LOOKBACK_DAYS': 45}
+2025-02-07 14:43:52,338 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:43:52,338 - INFO - 
+New best model found!
+2025-02-07 14:43:52,338 - INFO - MAE percentage: 203.40%
+2025-02-07 14:43:52,339 - INFO - 
+Trial 3/20
+2025-02-07 14:43:52,339 - INFO - Configuration: {'HIDDEN_LAYERS': [1024, 512, 256], 'LEARNING_RATE': 0.01, 'LOOKBACK_DAYS': 7}
+2025-02-07 14:44:32,509 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:44:32,509 - INFO - 
+New best model found!
+2025-02-07 14:44:32,510 - INFO - MAE percentage: 186.24%
+2025-02-07 14:44:32,510 - INFO - 
+Trial 4/20
+2025-02-07 14:44:32,510 - INFO - Configuration: {'HIDDEN_LAYERS': [512, 256, 128], 'LEARNING_RATE': 0.0001, 'LOOKBACK_DAYS': 30}
+2025-02-07 14:44:44,310 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:44:44,310 - INFO - 
+New best model found!
+2025-02-07 14:44:44,310 - INFO - MAE percentage: 174.95%
+2025-02-07 14:44:44,310 - INFO - 
+Trial 5/20
+2025-02-07 14:44:44,310 - INFO - Configuration: {'HIDDEN_LAYERS': [1024, 512, 256], 'LEARNING_RATE': 0.05, 'LOOKBACK_DAYS': 7}
+2025-02-07 14:45:24,599 - INFO - Loading and preprocessing data...
+2025-02-07 14:45:24,656 - INFO - Engineering features...
+2025-02-07 14:45:24,686 - INFO - Preparing sequences...
+2025-02-07 14:45:29,894 - INFO - Training model...
+2025-02-07 14:45:29,898 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:45:29,898 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:45:29,898 - INFO - Fitting model...
+2025-02-07 14:45:30,401 - INFO - Making predictions...
+2025-02-07 14:45:30,411 - INFO - 
+Training Metrics:
+2025-02-07 14:45:30,411 - INFO - Train MAE: 0.1210
+2025-02-07 14:45:30,411 - INFO - Train R2: 0.0098
+2025-02-07 14:45:30,411 - INFO - 
+Test Metrics:
+2025-02-07 14:45:30,411 - INFO - Test MAE: 0.1229
+2025-02-07 14:45:30,411 - INFO - Test R2: 0.0069
+2025-02-07 14:45:30,412 - INFO - 
+Training Results:
+2025-02-07 14:45:30,412 - INFO - MSE: 0.0593
+2025-02-07 14:45:30,412 - INFO - RMSE: 0.2435
+2025-02-07 14:45:30,412 - INFO - MAE: 0.1229
+2025-02-07 14:45:30,412 - INFO - R2: 0.0069
+2025-02-07 14:45:30,412 - INFO - MAPE: 359330080.0806
+2025-02-07 14:45:30,412 - INFO - MAE_as_percentage_of_mean: 190.5383
+2025-02-07 14:45:30,412 - INFO - 
+Context Information:
+2025-02-07 14:45:30,413 - INFO - Mean_Rainfall: 0.0645 mm
+2025-02-07 14:45:30,413 - INFO - Max_Rainfall: 1.0000 mm
+2025-02-07 14:45:30,414 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:45:30,415 - INFO - 
+Rainfall (RR) Predictions:
+2025-02-07 14:45:30,415 - INFO - 2024-07-03: 407.26 mm
+2025-02-07 14:45:30,416 - INFO - 2024-07-04: 607.37 mm
+2025-02-07 14:45:30,416 - INFO - 2024-07-05: 521.34 mm
+2025-02-07 14:46:31,125 - INFO - Loading and preprocessing data...
+2025-02-07 14:46:31,172 - INFO - Engineering features...
+2025-02-07 14:46:31,200 - INFO - Preparing sequences...
+2025-02-07 14:46:36,153 - INFO - 
+Trying configuration 1/5:
+2025-02-07 14:46:36,154 - INFO - Hidden layers: (64, 32, 16)
+2025-02-07 14:46:36,154 - INFO - Learning rate: 0.001
+2025-02-07 14:46:36,154 - INFO - Max iterations: 1000
+2025-02-07 14:46:36,154 - INFO - Alpha (L2): 0.01
+2025-02-07 14:46:36,156 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:46:36,156 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:46:36,157 - INFO - Fitting model...
+2025-02-07 14:46:36,587 - INFO - Making predictions...
+2025-02-07 14:46:36,597 - INFO - 
+Training Metrics:
+2025-02-07 14:46:36,597 - INFO - Train MAE: 0.1210
+2025-02-07 14:46:36,597 - INFO - Train R2: 0.0098
+2025-02-07 14:46:36,597 - INFO - 
+Test Metrics:
+2025-02-07 14:46:36,598 - INFO - Test MAE: 0.1229
+2025-02-07 14:46:36,598 - INFO - Test R2: 0.0069
+2025-02-07 14:46:36,599 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:46:36,599 - INFO - 
+New best model found! (Configuration 1)
+2025-02-07 14:46:36,599 - INFO - MAE: 0.1229
+2025-02-07 14:46:36,599 - INFO - 
+Trying configuration 2/5:
+2025-02-07 14:46:36,600 - INFO - Hidden layers: (128, 64, 32)
+2025-02-07 14:46:36,600 - INFO - Learning rate: 0.01
+2025-02-07 14:46:36,600 - INFO - Max iterations: 500
+2025-02-07 14:46:36,600 - INFO - Alpha (L2): 0.1
+2025-02-07 14:46:36,602 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:46:36,603 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:46:36,603 - INFO - Fitting model...
+2025-02-07 14:46:37,024 - INFO - Making predictions...
+2025-02-07 14:46:37,033 - INFO - 
+Training Metrics:
+2025-02-07 14:46:37,033 - INFO - Train MAE: 0.1210
+2025-02-07 14:46:37,033 - INFO - Train R2: 0.0098
+2025-02-07 14:46:37,033 - INFO - 
+Test Metrics:
+2025-02-07 14:46:37,033 - INFO - Test MAE: 0.1229
+2025-02-07 14:46:37,035 - INFO - Test R2: 0.0069
+2025-02-07 14:46:37,035 - INFO - 
+Trying configuration 3/5:
+2025-02-07 14:46:37,035 - INFO - Hidden layers: (256, 128, 64)
+2025-02-07 14:46:37,036 - INFO - Learning rate: 0.0001
+2025-02-07 14:46:37,036 - INFO - Max iterations: 2000
+2025-02-07 14:46:37,036 - INFO - Alpha (L2): 0.001
+2025-02-07 14:46:37,038 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:46:37,038 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:46:37,038 - INFO - Fitting model...
+2025-02-07 14:46:37,460 - INFO - Making predictions...
+2025-02-07 14:46:37,470 - INFO - 
+Training Metrics:
+2025-02-07 14:46:37,471 - INFO - Train MAE: 0.1210
+2025-02-07 14:46:37,471 - INFO - Train R2: 0.0098
+2025-02-07 14:46:37,471 - INFO - 
+Test Metrics:
+2025-02-07 14:46:37,471 - INFO - Test MAE: 0.1229
+2025-02-07 14:46:37,471 - INFO - Test R2: 0.0069
+2025-02-07 14:46:37,472 - INFO - 
+Trying configuration 4/5:
+2025-02-07 14:46:37,472 - INFO - Hidden layers: (32, 32, 32)
+2025-02-07 14:46:37,472 - INFO - Learning rate: 0.005
+2025-02-07 14:46:37,472 - INFO - Max iterations: 1500
+2025-02-07 14:46:37,472 - INFO - Alpha (L2): 0.05
+2025-02-07 14:46:37,475 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:46:37,475 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:46:37,475 - INFO - Fitting model...
+2025-02-07 14:46:37,948 - INFO - Making predictions...
+2025-02-07 14:46:37,958 - INFO - 
+Training Metrics:
+2025-02-07 14:46:37,958 - INFO - Train MAE: 0.1210
+2025-02-07 14:46:37,958 - INFO - Train R2: 0.0098
+2025-02-07 14:46:37,958 - INFO - 
+Test Metrics:
+2025-02-07 14:46:37,959 - INFO - Test MAE: 0.1229
+2025-02-07 14:46:37,959 - INFO - Test R2: 0.0069
+2025-02-07 14:46:37,959 - INFO - 
+Trying configuration 5/5:
+2025-02-07 14:46:37,959 - INFO - Hidden layers: (128, 64)
+2025-02-07 14:46:37,959 - INFO - Learning rate: 0.001
+2025-02-07 14:46:37,959 - INFO - Max iterations: 1000
+2025-02-07 14:46:37,959 - INFO - Alpha (L2): 0.01
+2025-02-07 14:46:37,962 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:46:37,962 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:46:37,962 - INFO - Fitting model...
+2025-02-07 14:46:38,387 - INFO - Making predictions...
+2025-02-07 14:46:38,396 - INFO - 
+Training Metrics:
+2025-02-07 14:46:38,396 - INFO - Train MAE: 0.1210
+2025-02-07 14:46:38,396 - INFO - Train R2: 0.0098
+2025-02-07 14:46:38,396 - INFO - 
+Test Metrics:
+2025-02-07 14:46:38,398 - INFO - Test MAE: 0.1229
+2025-02-07 14:46:38,398 - INFO - Test R2: 0.0069
+2025-02-07 14:46:38,398 - INFO - 
+Best Configuration Found:
+2025-02-07 14:46:38,398 - INFO - hidden_layers: (64, 32, 16)
+2025-02-07 14:46:38,398 - INFO - learning_rate: 0.001
+2025-02-07 14:46:38,398 - INFO - max_iter: 1000
+2025-02-07 14:46:38,398 - INFO - alpha: 0.01
+2025-02-07 14:46:38,399 - INFO - 
+Best Model Metrics:
+2025-02-07 14:46:38,399 - INFO - MSE: 0.0593
+2025-02-07 14:46:38,399 - INFO - RMSE: 0.2435
+2025-02-07 14:46:38,399 - INFO - MAE: 0.1229
+2025-02-07 14:46:38,399 - INFO - R2: 0.0069
+2025-02-07 14:46:38,399 - INFO - MAPE: 359330080.0806
+2025-02-07 14:46:38,399 - INFO - MAE_as_percentage_of_mean: 190.5383
+2025-02-07 14:46:38,399 - INFO - 
+Context Information:
+2025-02-07 14:46:38,399 - INFO - Mean_Rainfall: 0.0645 mm
+2025-02-07 14:46:38,399 - INFO - Max_Rainfall: 1.0000 mm
+2025-02-07 14:46:38,400 - INFO - 
+Rainfall (RR) Predictions using best model:
+2025-02-07 14:46:38,400 - INFO - 2024-07-03: 407.26 mm
+2025-02-07 14:46:38,400 - INFO - 2024-07-04: 607.37 mm
+2025-02-07 14:46:38,400 - INFO - 2024-07-05: 521.34 mm
+2025-02-07 14:51:10,947 - INFO - Loading and preprocessing data...
+2025-02-07 14:51:10,993 - INFO - Engineering features...
+2025-02-07 14:51:11,021 - INFO - Preparing sequences...
+2025-02-07 14:51:15,558 - INFO - 
+Trying configuration 1/5:
+2025-02-07 14:51:15,558 - INFO - Hidden layers: (64, 32, 16)
+2025-02-07 14:51:15,558 - INFO - Learning rate: 0.001
+2025-02-07 14:51:15,559 - INFO - Max iterations: 1000
+2025-02-07 14:51:15,559 - INFO - Alpha (L2): 0.01
+2025-02-07 14:51:15,561 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:51:15,561 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:51:15,561 - INFO - Fitting model...
+2025-02-07 14:51:16,041 - INFO - Making predictions...
+2025-02-07 14:51:16,050 - INFO - 
+Training Metrics:
+2025-02-07 14:51:16,050 - INFO - Train MAE: 0.1210
+2025-02-07 14:51:16,050 - INFO - Train R2: 0.0098
+2025-02-07 14:51:16,050 - INFO - 
+Test Metrics:
+2025-02-07 14:51:16,050 - INFO - Test MAE: 0.1229
+2025-02-07 14:51:16,050 - INFO - Test R2: 0.0069
+2025-02-07 14:51:16,052 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:51:16,052 - INFO - 
+New best model found! (Configuration 1)
+2025-02-07 14:51:16,052 - INFO - MAE: 0.1229
+2025-02-07 14:51:16,052 - INFO - 
+Trying configuration 2/5:
+2025-02-07 14:51:16,052 - INFO - Hidden layers: (128, 64, 32)
+2025-02-07 14:51:16,052 - INFO - Learning rate: 0.01
+2025-02-07 14:51:16,052 - INFO - Max iterations: 500
+2025-02-07 14:51:16,052 - INFO - Alpha (L2): 0.1
+2025-02-07 14:51:16,055 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:51:16,055 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:51:16,055 - INFO - Fitting model...
+2025-02-07 14:51:16,505 - INFO - Making predictions...
+2025-02-07 14:51:16,515 - INFO - 
+Training Metrics:
+2025-02-07 14:51:16,516 - INFO - Train MAE: 0.1210
+2025-02-07 14:51:16,516 - INFO - Train R2: 0.0098
+2025-02-07 14:51:16,516 - INFO - 
+Test Metrics:
+2025-02-07 14:51:16,516 - INFO - Test MAE: 0.1229
+2025-02-07 14:51:16,516 - INFO - Test R2: 0.0069
+2025-02-07 14:51:16,516 - INFO - 
+Trying configuration 3/5:
+2025-02-07 14:51:16,517 - INFO - Hidden layers: (256, 128, 64)
+2025-02-07 14:51:16,517 - INFO - Learning rate: 0.0001
+2025-02-07 14:51:16,517 - INFO - Max iterations: 2000
+2025-02-07 14:51:16,517 - INFO - Alpha (L2): 0.001
+2025-02-07 14:51:16,519 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:51:16,519 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:51:16,519 - INFO - Fitting model...
+2025-02-07 14:51:16,946 - INFO - Making predictions...
+2025-02-07 14:51:16,956 - INFO - 
+Training Metrics:
+2025-02-07 14:51:16,967 - INFO - Train MAE: 0.1210
+2025-02-07 14:51:16,968 - INFO - Train R2: 0.0098
+2025-02-07 14:51:16,968 - INFO - 
+Test Metrics:
+2025-02-07 14:51:16,968 - INFO - Test MAE: 0.1229
+2025-02-07 14:51:16,968 - INFO - Test R2: 0.0069
+2025-02-07 14:51:16,969 - INFO - 
+Trying configuration 4/5:
+2025-02-07 14:51:16,969 - INFO - Hidden layers: (32, 32, 32)
+2025-02-07 14:51:16,969 - INFO - Learning rate: 0.005
+2025-02-07 14:51:16,969 - INFO - Max iterations: 1500
+2025-02-07 14:51:16,969 - INFO - Alpha (L2): 0.05
+2025-02-07 14:51:16,972 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:51:16,972 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:51:16,972 - INFO - Fitting model...
+2025-02-07 14:51:17,445 - INFO - Making predictions...
+2025-02-07 14:51:17,453 - INFO - 
+Training Metrics:
+2025-02-07 14:51:17,453 - INFO - Train MAE: 0.1210
+2025-02-07 14:51:17,453 - INFO - Train R2: 0.0098
+2025-02-07 14:51:17,453 - INFO - 
+Test Metrics:
+2025-02-07 14:51:17,453 - INFO - Test MAE: 0.1229
+2025-02-07 14:51:17,453 - INFO - Test R2: 0.0069
+2025-02-07 14:51:17,454 - INFO - 
+Trying configuration 5/5:
+2025-02-07 14:51:17,454 - INFO - Hidden layers: (128, 64)
+2025-02-07 14:51:17,454 - INFO - Learning rate: 0.001
+2025-02-07 14:51:17,454 - INFO - Max iterations: 1000
+2025-02-07 14:51:17,454 - INFO - Alpha (L2): 0.01
+2025-02-07 14:51:17,456 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:51:17,457 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:51:17,457 - INFO - Fitting model...
+2025-02-07 14:51:17,902 - INFO - Making predictions...
+2025-02-07 14:51:17,912 - INFO - 
+Training Metrics:
+2025-02-07 14:51:17,912 - INFO - Train MAE: 0.1210
+2025-02-07 14:51:17,912 - INFO - Train R2: 0.0098
+2025-02-07 14:51:17,912 - INFO - 
+Test Metrics:
+2025-02-07 14:51:17,912 - INFO - Test MAE: 0.1229
+2025-02-07 14:51:17,912 - INFO - Test R2: 0.0069
+2025-02-07 14:51:17,914 - INFO - 
+Best Configuration Found:
+2025-02-07 14:51:17,914 - INFO - hidden_layers: (64, 32, 16)
+2025-02-07 14:51:17,914 - INFO - learning_rate: 0.001
+2025-02-07 14:51:17,914 - INFO - max_iter: 1000
+2025-02-07 14:51:17,914 - INFO - alpha: 0.01
+2025-02-07 14:51:17,914 - INFO - 
+Best Model Metrics:
+2025-02-07 14:51:17,914 - INFO - MSE: 0.0593
+2025-02-07 14:51:17,914 - INFO - RMSE: 0.2435
+2025-02-07 14:51:17,914 - INFO - MAE: 0.1229
+2025-02-07 14:51:17,914 - INFO - R2: 0.0069
+2025-02-07 14:51:17,914 - INFO - MAPE: 359330080.0806
+2025-02-07 14:51:17,914 - INFO - MAE_as_percentage_of_mean: 190.5383
+2025-02-07 14:51:17,914 - INFO - 
+Context Information:
+2025-02-07 14:51:17,915 - INFO - Mean_Rainfall: 0.0645 mm
+2025-02-07 14:51:17,915 - INFO - Max_Rainfall: 1.0000 mm
+2025-02-07 14:51:17,915 - INFO - 
+Rainfall (RR) Predictions using best model:
+2025-02-07 14:51:17,916 - INFO - 2024-07-03: 407.26 mm
+2025-02-07 14:51:17,916 - INFO - 2024-07-04: 607.37 mm
+2025-02-07 14:51:17,916 - INFO - 2024-07-05: 521.34 mm
+2025-02-07 14:52:23,261 - INFO - Loading and preprocessing data...
+2025-02-07 14:52:23,307 - INFO - Engineering features...
+2025-02-07 14:52:23,329 - INFO - Preparing sequences...
+2025-02-07 14:52:26,870 - ERROR - An error occurred: name 'configurations' is not defined
+2025-02-07 14:54:38,171 - INFO - Loading and preprocessing data...
+2025-02-07 14:54:38,215 - INFO - Engineering features...
+2025-02-07 14:54:38,237 - INFO - Preparing sequences...
+2025-02-07 14:54:41,873 - INFO - 
+Trying configuration 1/4: Random Forest
+2025-02-07 14:54:41,875 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:54:41,876 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:54:41,876 - INFO - Fitting model...
+2025-02-07 14:54:42,925 - INFO - Making predictions...
+2025-02-07 14:54:42,935 - INFO - 
+Training Metrics:
+2025-02-07 14:54:42,936 - INFO - Train MAE: 997.8680
+2025-02-07 14:54:42,936 - INFO - Train R2: 0.0109
+2025-02-07 14:54:42,936 - INFO - 
+Test Metrics:
+2025-02-07 14:54:42,936 - INFO - Test MAE: 1027.1137
+2025-02-07 14:54:42,936 - INFO - Test R2: -0.0019
+2025-02-07 14:54:42,937 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:54:42,937 - INFO - 
+New best model found! (Configuration 1)
+2025-02-07 14:54:42,937 - INFO - MAE: 1027.1137
+2025-02-07 14:54:42,938 - INFO - 
+Trying configuration 2/4: XGBoost
+2025-02-07 14:54:42,939 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:54:42,939 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:54:42,940 - INFO - Fitting model...
+2025-02-07 14:54:43,918 - INFO - Making predictions...
+2025-02-07 14:54:43,927 - INFO - 
+Training Metrics:
+2025-02-07 14:54:43,928 - INFO - Train MAE: 997.8680
+2025-02-07 14:54:43,928 - INFO - Train R2: 0.0109
+2025-02-07 14:54:43,928 - INFO - 
+Test Metrics:
+2025-02-07 14:54:43,928 - INFO - Test MAE: 1027.1137
+2025-02-07 14:54:43,928 - INFO - Test R2: -0.0019
+2025-02-07 14:54:43,930 - INFO - 
+Trying configuration 3/4: LightGBM
+2025-02-07 14:54:43,932 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:54:43,932 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:54:43,932 - INFO - Fitting model...
+2025-02-07 14:54:44,930 - INFO - Making predictions...
+2025-02-07 14:54:44,939 - INFO - 
+Training Metrics:
+2025-02-07 14:54:44,940 - INFO - Train MAE: 997.8680
+2025-02-07 14:54:44,940 - INFO - Train R2: 0.0109
+2025-02-07 14:54:44,940 - INFO - 
+Test Metrics:
+2025-02-07 14:54:44,940 - INFO - Test MAE: 1027.1137
+2025-02-07 14:54:44,940 - INFO - Test R2: -0.0019
+2025-02-07 14:54:44,941 - INFO - 
+Trying configuration 4/4: Support Vector Regression
+2025-02-07 14:54:44,943 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:54:44,943 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:54:44,943 - INFO - Fitting model...
+2025-02-07 14:54:45,867 - INFO - Making predictions...
+2025-02-07 14:54:45,877 - INFO - 
+Training Metrics:
+2025-02-07 14:54:45,878 - INFO - Train MAE: 997.8680
+2025-02-07 14:54:45,878 - INFO - Train R2: 0.0109
+2025-02-07 14:54:45,878 - INFO - 
+Test Metrics:
+2025-02-07 14:54:45,878 - INFO - Test MAE: 1027.1137
+2025-02-07 14:54:45,878 - INFO - Test R2: -0.0019
+2025-02-07 14:54:45,879 - INFO - 
+Rainfall (RR) Predictions using best model:
+2025-02-07 14:54:45,879 - INFO - 2024-07-03: 458.82 mm
+2025-02-07 14:54:45,879 - INFO - 2024-07-04: 357.79 mm
+2025-02-07 14:54:45,879 - INFO - 2024-07-05: 284.78 mm
+2025-02-07 14:54:58,539 - INFO - Loading and preprocessing data...
+2025-02-07 14:54:58,586 - INFO - Engineering features...
+2025-02-07 14:54:58,610 - INFO - Preparing sequences...
+2025-02-07 14:55:02,089 - INFO - 
+Trying configuration 1/4: Random Forest
+2025-02-07 14:55:02,092 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:55:02,092 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:55:02,092 - INFO - Fitting model...
+2025-02-07 14:55:03,053 - INFO - Making predictions...
+2025-02-07 14:55:03,063 - INFO - 
+Training Metrics:
+2025-02-07 14:55:03,063 - INFO - Train MAE: 997.8680
+2025-02-07 14:55:03,063 - INFO - Train R2: 0.0109
+2025-02-07 14:55:03,063 - INFO - 
+Test Metrics:
+2025-02-07 14:55:03,063 - INFO - Test MAE: 1027.1137
+2025-02-07 14:55:03,063 - INFO - Test R2: -0.0019
+2025-02-07 14:55:03,064 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:55:03,064 - INFO - 
+New best model found! (Configuration 1)
+2025-02-07 14:55:03,064 - INFO - MAE: 1027.1137
+2025-02-07 14:55:03,064 - INFO - 
+Trying configuration 2/4: XGBoost
+2025-02-07 14:55:03,067 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:55:03,068 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:55:03,068 - INFO - Fitting model...
+2025-02-07 14:55:04,057 - INFO - Making predictions...
+2025-02-07 14:55:04,067 - INFO - 
+Training Metrics:
+2025-02-07 14:55:04,067 - INFO - Train MAE: 997.8680
+2025-02-07 14:55:04,067 - INFO - Train R2: 0.0109
+2025-02-07 14:55:04,068 - INFO - 
+Test Metrics:
+2025-02-07 14:55:04,068 - INFO - Test MAE: 1027.1137
+2025-02-07 14:55:04,068 - INFO - Test R2: -0.0019
+2025-02-07 14:55:04,068 - INFO - 
+Trying configuration 3/4: LightGBM
+2025-02-07 14:55:04,071 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:55:04,071 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:55:04,071 - INFO - Fitting model...
+2025-02-07 14:55:05,104 - INFO - Making predictions...
+2025-02-07 14:55:05,115 - INFO - 
+Training Metrics:
+2025-02-07 14:55:05,116 - INFO - Train MAE: 997.8680
+2025-02-07 14:55:05,116 - INFO - Train R2: 0.0109
+2025-02-07 14:55:05,116 - INFO - 
+Test Metrics:
+2025-02-07 14:55:05,116 - INFO - Test MAE: 1027.1137
+2025-02-07 14:55:05,116 - INFO - Test R2: -0.0019
+2025-02-07 14:55:05,117 - INFO - 
+Trying configuration 4/4: Support Vector Regression
+2025-02-07 14:55:05,119 - INFO - Training data shape: (8953, 50)
+2025-02-07 14:55:05,119 - INFO - Test data shape: (2239, 50)
+2025-02-07 14:55:05,119 - INFO - Fitting model...
+2025-02-07 14:55:06,052 - INFO - Making predictions...
+2025-02-07 14:55:06,061 - INFO - 
+Training Metrics:
+2025-02-07 14:55:06,062 - INFO - Train MAE: 997.8680
+2025-02-07 14:55:06,062 - INFO - Train R2: 0.0109
+2025-02-07 14:55:06,062 - INFO - 
+Test Metrics:
+2025-02-07 14:55:06,062 - INFO - Test MAE: 1027.1137
+2025-02-07 14:55:06,062 - INFO - Test R2: -0.0019
+2025-02-07 14:55:06,063 - INFO - 
+Rainfall (RR) Predictions using best model:
+2025-02-07 14:55:06,064 - INFO - 2024-07-03: 458.82 mm
+2025-02-07 14:55:06,064 - INFO - 2024-07-04: 357.79 mm
+2025-02-07 14:55:06,064 - INFO - 2024-07-05: 284.78 mm
+2025-02-07 14:56:40,442 - INFO - Loading and preprocessing data...
+2025-02-07 14:56:40,490 - INFO - Engineering features...
+2025-02-07 14:56:40,512 - INFO - Preparing sequences...
+2025-02-07 14:56:43,778 - INFO - 
+Trying configuration 1/4: Random Forest
+2025-02-07 14:56:43,781 - INFO - Training data shape: (8394, 50)
+2025-02-07 14:56:43,781 - INFO - Test data shape: (2099, 50)
+2025-02-07 14:56:43,781 - INFO - Fitting model...
+2025-02-07 14:56:44,352 - INFO - Making predictions...
+2025-02-07 14:56:44,361 - INFO - 
+Training Metrics:
+2025-02-07 14:56:44,362 - INFO - Train MAE: 8.2212
+2025-02-07 14:56:44,362 - INFO - Train R2: 0.1184
+2025-02-07 14:56:44,362 - INFO - 
+Test Metrics:
+2025-02-07 14:56:44,362 - INFO - Test MAE: 8.2288
+2025-02-07 14:56:44,362 - INFO - Test R2: 0.0603
+2025-02-07 14:56:44,363 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 14:56:44,363 - INFO - 
+New best model found! (Configuration 1)
+2025-02-07 14:56:44,363 - INFO - MAE: 8.2288
+2025-02-07 14:56:44,363 - INFO - 
+Trying configuration 2/4: XGBoost
+2025-02-07 14:56:44,366 - INFO - Training data shape: (8394, 50)
+2025-02-07 14:56:44,366 - INFO - Test data shape: (2099, 50)
+2025-02-07 14:56:44,366 - INFO - Fitting model...
+2025-02-07 14:56:44,970 - INFO - Making predictions...
+2025-02-07 14:56:44,979 - INFO - 
+Training Metrics:
+2025-02-07 14:56:44,979 - INFO - Train MAE: 8.2212
+2025-02-07 14:56:44,979 - INFO - Train R2: 0.1184
+2025-02-07 14:56:44,979 - INFO - 
+Test Metrics:
+2025-02-07 14:56:44,980 - INFO - Test MAE: 8.2288
+2025-02-07 14:56:44,980 - INFO - Test R2: 0.0603
+2025-02-07 14:56:44,980 - INFO - 
+Trying configuration 3/4: LightGBM
+2025-02-07 14:56:44,982 - INFO - Training data shape: (8394, 50)
+2025-02-07 14:56:44,982 - INFO - Test data shape: (2099, 50)
+2025-02-07 14:56:44,982 - INFO - Fitting model...
+2025-02-07 14:56:45,656 - INFO - Making predictions...
+2025-02-07 14:56:45,666 - INFO - 
+Training Metrics:
+2025-02-07 14:56:45,667 - INFO - Train MAE: 8.2212
+2025-02-07 14:56:45,667 - INFO - Train R2: 0.1184
+2025-02-07 14:56:45,667 - INFO - 
+Test Metrics:
+2025-02-07 14:56:45,667 - INFO - Test MAE: 8.2288
+2025-02-07 14:56:45,667 - INFO - Test R2: 0.0603
+2025-02-07 14:56:45,667 - INFO - 
+Trying configuration 4/4: Support Vector Regression
+2025-02-07 14:56:45,669 - INFO - Training data shape: (8394, 50)
+2025-02-07 14:56:45,670 - INFO - Test data shape: (2099, 50)
+2025-02-07 14:56:45,670 - INFO - Fitting model...
+2025-02-07 14:56:46,291 - INFO - Making predictions...
+2025-02-07 14:56:46,301 - INFO - 
+Training Metrics:
+2025-02-07 14:56:46,301 - INFO - Train MAE: 8.2212
+2025-02-07 14:56:46,301 - INFO - Train R2: 0.1184
+2025-02-07 14:56:46,301 - INFO - 
+Test Metrics:
+2025-02-07 14:56:46,301 - INFO - Test MAE: 8.2288
+2025-02-07 14:56:46,301 - INFO - Test R2: 0.0603
+2025-02-07 14:56:46,302 - INFO - 
+Rainfall (RR) Predictions using best model:
+2025-02-07 14:56:46,302 - INFO - 2024-07-03: 7.08 mm
+2025-02-07 14:56:46,302 - INFO - 2024-07-04: 7.21 mm
+2025-02-07 14:56:46,302 - INFO - 2024-07-05: 8.40 mm

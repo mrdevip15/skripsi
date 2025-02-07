@@ -12,6 +12,10 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from itertools import product
 import random
+from sklearn.ensemble import RandomForestRegressor
+from xgboost import XGBRegressor
+from lightgbm import LGBMRegressor
+from sklearn.svm import SVR
 
 # Set up logging
 logging.basicConfig(
@@ -26,7 +30,6 @@ logging.basicConfig(
 class WeatherPredictor:
     def __init__(self):
         self.model = None
-        self.scaler = MinMaxScaler()
         self.history = None
         self.config = CONFIG
         
@@ -66,7 +69,7 @@ class WeatherPredictor:
         for i in range(len(df) - lookback):
             # Store the input shape for later use
             sequence = df[features].values[i:i+lookback]
-            X.append(sequence.flatten())  # Flatten for MLPRegressor
+            X.append(sequence.flatten())  # Flatten for model input
             y.append(df['RR'].values[i+lookback])
         
         # Store the sequence shape for prediction
@@ -76,13 +79,14 @@ class WeatherPredictor:
     def build_model(self, input_shape):
         """Build model for single target (RR) prediction"""
         model = MLPRegressor(
-            hidden_layer_sizes=self.config['HIDDEN_LAYERS'],
-            learning_rate_init=self.config['LEARNING_RATE'],
-            max_iter=self.config['EPOCHS'],
+            hidden_layer_sizes=(64, 32, 16),
+            learning_rate_init=0.001,
+            max_iter=1000,
             early_stopping=True,
-            validation_fraction=self.config['VALIDATION_SPLIT'],
-            n_iter_no_change=self.config['EARLY_STOPPING_PATIENCE'],
-            random_state=42
+            validation_fraction=0.2,
+            n_iter_no_change=10,
+            random_state=42,
+            alpha=0.01  # L2 regularization
         )
         return model
 
@@ -116,26 +120,45 @@ class WeatherPredictor:
 
     def train(self, X, y):
         """Train the model with detailed evaluation"""
-        # Split data (X is already in the correct shape)
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y,
-            test_size=self.config['TEST_SPLIT'],
-            random_state=42
-        )
-        
-        # Train model
-        self.model = self.build_model(X.shape[1:])
-        self.model.fit(X_train, y_train)
-        
-        # Make predictions
-        y_train_pred = self.model.predict(X_train)
-        y_test_pred = self.model.predict(X_test)
-        
-        # Calculate metrics
-        train_metrics = self.evaluate_predictions(y_train, y_train_pred)
-        test_metrics = self.evaluate_predictions(y_test, y_test_pred)
-        
-        return test_metrics
+        try:
+            # Split data
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y,
+                test_size=0.2,
+                random_state=42
+            )
+            
+            logging.info(f"Training data shape: {X_train.shape}")
+            logging.info(f"Test data shape: {X_test.shape}")
+            
+            # Build and train model
+            self.model = self.build_model(X.shape[1:])
+            
+            # Fit the model
+            logging.info("Fitting model...")
+            self.model.fit(X_train, y_train)
+            
+            # Make predictions
+            logging.info("Making predictions...")
+            y_train_pred = self.model.predict(X_train)
+            y_test_pred = self.model.predict(X_test)
+            
+            # Calculate metrics
+            train_metrics = self.evaluate_predictions(y_train, y_train_pred)
+            test_metrics = self.evaluate_predictions(y_test, y_test_pred)
+            
+            logging.info("\nTraining Metrics:")
+            logging.info(f"Train MAE: {train_metrics['MAE']:.4f}")
+            logging.info(f"Train R2: {train_metrics['R2']:.4f}")
+            logging.info("\nTest Metrics:")
+            logging.info(f"Test MAE: {test_metrics['MAE']:.4f}")
+            logging.info(f"Test R2: {test_metrics['R2']:.4f}")
+            
+            return test_metrics
+            
+        except Exception as e:
+            logging.error(f"Error in training: {str(e)}")
+            raise
 
     def predict_next_days(self, last_sequence):
         """Predict rainfall for the next few days"""
@@ -162,8 +185,6 @@ class WeatherPredictor:
         import pickle
         with open(self.config['MODEL_SAVE_PATH'], 'wb') as f:
             pickle.dump(self.model, f)
-        with open('models/scaler.pkl', 'wb') as f:
-            pickle.dump(self.scaler, f)
         logging.info(f"Model saved to {self.config['MODEL_SAVE_PATH']}")
 
     def load_model(self):
@@ -172,8 +193,6 @@ class WeatherPredictor:
             import pickle
             with open(self.config['MODEL_SAVE_PATH'], 'rb') as f:
                 self.model = pickle.load(f)
-            with open('models/scaler.pkl', 'rb') as f:
-                self.scaler = pickle.load(f)
             logging.info("Model loaded successfully")
             return True
         except Exception as e:
@@ -238,10 +257,6 @@ class ModelOptimizer:
                 # Engineer features
                 df_engineered = predictor.engineer_features(df_cleaned)
                 
-                # Scale features
-                features = predictor.config['INPUT_FEATURES']
-                df_engineered[features] = predictor.scaler.fit_transform(df_engineered[features])
-                
                 # Prepare sequences
                 X, y = predictor.prepare_sequences(df_engineered)
                 
@@ -302,6 +317,7 @@ def preprocess_data(df):
     2. Converting wind directions to numerical values
     3. Converting all columns to numeric type
     4. Handling outliers
+    5. Removing specific outlier values (e.g., RR = 8888 or 9999)
     """
     # Make a copy to avoid modifying original data
     df = df.copy()
@@ -329,6 +345,9 @@ def preprocess_data(df):
     # Remove rows with any missing values
     df_cleaned = df.dropna()
     
+    # Remove rows where RR equals 8888 or 9999
+    df_cleaned = df_cleaned[(df_cleaned['RR'] != 8888) & (df_cleaned['RR'] != 9999)]
+    
     # Print information about removed data
     total_rows = len(df)
     removed_rows = total_rows - len(df_cleaned)
@@ -341,60 +360,91 @@ def preprocess_data(df):
 def main():
     try:
         predictor = WeatherPredictor()
-        optimizer = ModelOptimizer(max_trials=20)
         
         # Load and preprocess data
-        df = pd.read_csv('weather_data.csv')
+        logging.info("Loading and preprocessing data...")
+        df = pd.read_csv('data_jakarta.csv')
         df_cleaned = preprocess_data(df)
         
-        # Run optimization
-        success = optimizer.optimize(predictor, df_cleaned)
+        # Define model configurations
+        configurations = [
+            {
+                'model': RandomForestRegressor(n_estimators=100, max_depth=None, random_state=42),
+                'name': 'Random Forest'
+            },
+            {
+                'model': XGBRegressor(n_estimators=100, learning_rate=0.1, random_state=42),
+                'name': 'XGBoost'
+            },
+            {
+                'model': LGBMRegressor(n_estimators=100, learning_rate=0.1, random_state=42),
+                'name': 'LightGBM'
+            },
+            {
+                'model': SVR(kernel='rbf', C=1.0, epsilon=0.1),
+                'name': 'Support Vector Regression'
+            }
+        ]
         
-        if success:
-            logging.info("\nOptimization successful!")
-        else:
-            logging.info("\nOptimization completed without reaching target.")
-            logging.info("Using best found configuration:")
-        
-        logging.info("\nBest Configuration:")
-        for key, value in optimizer.best_config.items():
-            logging.info(f"{key}: {value}")
-        
-        logging.info("\nBest Metrics:")
-        for metric, value in optimizer.best_metrics.items():
-            if metric == 'Context':
-                logging.info("\nContext Information:")
-                for context_metric, context_value in value.items():
-                    logging.info(f"{context_metric}: {context_value:.4f} mm")
-            else:
-                logging.info(f"{metric}: {value:.4f}")
-        
-        # Update predictor with best configuration before making predictions
-        predictor.config.update(optimizer.best_config)
-        predictor.model = optimizer.best_model
-        
-        # Engineer features and scale data again using best configuration
+        # Engineer features (without scaling)
+        logging.info("Engineering features...")
         df_engineered = predictor.engineer_features(df_cleaned)
-        features = predictor.config['INPUT_FEATURES']
-        df_engineered[features] = predictor.scaler.fit_transform(df_engineered[features])
         
-        # Get the last sequence with correct shape using best configuration
-        X, _ = predictor.prepare_sequences(df_engineered)
-        last_sequence = X[-1].reshape(predictor.sequence_shape)
-        predictions = predictor.predict_next_days(last_sequence)
+        # Prepare sequences
+        logging.info("Preparing sequences...")
+        X, y = predictor.prepare_sequences(df_engineered)
         
-        # Inverse transform predictions
-        rr_idx = predictor.config['INPUT_FEATURES'].index('RR')
-        rr_min = predictor.scaler.data_min_[rr_idx]
-        rr_max = predictor.scaler.data_max_[rr_idx]
-        predictions_original = predictions * (rr_max - rr_min) + rr_min
+        if len(X) == 0:
+            logging.error("No valid sequences could be created from the data")
+            return
+            
+        best_model = None
+        best_metrics = None
+        best_mae = float('inf')
         
-        # Print predictions
-        last_date = df_engineered['Tanggal'].iloc[-1]
-        print("\nRainfall (RR) Predictions using best model:")
-        for i, pred in enumerate(predictions_original, 1):
-            future_date = last_date + timedelta(days=i)
-            print(f"{future_date.date()}: {pred:.2f} mm")
+        # Try each configuration
+        for i, config in enumerate(configurations, 1):
+            logging.info(f"\nTrying configuration {i}/{len(configurations)}: {config['name']}")
+            
+            # Update model configuration
+            predictor.model = config['model']
+            
+            # Train and evaluate
+            try:
+                metrics = predictor.train(X, y)
+                current_mae = metrics['MAE']
+                
+                # Check if this is the best model so far
+                if current_mae < best_mae:
+                    best_mae = current_mae
+                    best_metrics = metrics
+                    best_model = predictor.model
+                    
+                    # Save the best model
+                    predictor.save_model()
+                    logging.info(f"\nNew best model found! (Configuration {i})")
+                    logging.info(f"MAE: {current_mae:.4f}")
+                
+            except Exception as e:
+                logging.error(f"Error training configuration {i}: {str(e)}")
+                continue
+        
+        # Use the best model for predictions
+        if best_model is not None:
+            predictor.model = best_model
+            
+            # Make predictions with best model
+            last_sequence = X[-1].reshape(predictor.sequence_shape)
+            predictions = predictor.predict_next_days(last_sequence)
+            
+            # Print predictions directly (no inverse transform needed)
+            last_date = df_engineered['Tanggal'].iloc[-1]
+            logging.info("\nRainfall (RR) Predictions using best model:")
+            for i, pred in enumerate(predictions, 1):
+                future_date = last_date + timedelta(days=i)
+                logging.info(f"{future_date.date()}: {pred:.2f} mm")
+        else:
+            logging.error("No successful model training found")
                 
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
