@@ -1942,3 +1942,733 @@ Backpropagation (MLP) 7.9065 14.7436  0.0551 28458408931.4118
 2025-02-07 15:15:38,965 - INFO - 2024-07-03: 0.41 mm
 2025-02-07 15:15:38,965 - INFO - 2024-07-04: 0.39 mm
 2025-02-07 15:15:38,965 - INFO - 2024-07-05: 0.49 mm
+2025-02-07 15:16:14,038 - INFO - Loading and preprocessing data...
+2025-02-07 15:16:14,086 - INFO - Engineering features...
+2025-02-07 15:16:14,106 - INFO - Preparing sequences...
+2025-02-07 15:16:14,106 - ERROR - No valid sequences could be created from the data
+2025-02-07 15:20:06,061 - INFO - Loading and preprocessing data...
+2025-02-07 15:20:06,072 - INFO - Initial data shape: (11994, 11)
+2025-02-07 15:20:06,113 - INFO - 
+Preprocessing Results:
+2025-02-07 15:20:06,113 - INFO - Initial rows: 11994
+2025-02-07 15:20:06,115 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 15:20:06,115 - INFO - Rows after removing NaN: 10472
+2025-02-07 15:20:06,115 - INFO - Final rows: 10472
+2025-02-07 15:20:06,115 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 15:20:06,115 - INFO - Mean: 5.92
+2025-02-07 15:20:06,116 - INFO - Std: 15.60
+2025-02-07 15:20:06,116 - INFO - Min: 0.00
+2025-02-07 15:20:06,116 - INFO - Max: 277.50
+2025-02-07 15:20:06,116 - INFO - Engineering features...
+2025-02-07 15:20:06,116 - INFO - Initial data shape: (10472, 11)
+2025-02-07 15:20:06,137 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 15:20:06,137 - INFO - Final data shape: (10468, 54)
+2025-02-07 15:20:06,138 - INFO - Preparing sequences...
+2025-02-07 15:20:06,138 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 15:20:08,256 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 15:20:08,261 - INFO - 
+Trying configuration 1/6: Random Forest
+2025-02-07 15:20:08,264 - INFO - Training data shape: (8370, 50)
+2025-02-07 15:20:08,265 - INFO - Test data shape: (2093, 50)
+2025-02-07 15:20:20,317 - INFO - 
+Model: Random Forest
+2025-02-07 15:20:20,318 - INFO - 
+Training Metrics:
+2025-02-07 15:20:20,318 - INFO - Train MAE: 6.2638
+2025-02-07 15:20:20,318 - INFO - Train R2: 0.4701
+2025-02-07 15:20:20,318 - INFO - 
+Test Metrics:
+2025-02-07 15:20:20,318 - INFO - Test MAE: 7.3875
+2025-02-07 15:20:20,318 - INFO - Test R2: 0.0535
+2025-02-07 15:20:20,325 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:20:20,326 - INFO - 
+New best model found! (Random Forest)
+2025-02-07 15:20:20,326 - INFO - MAE: 7.3875
+2025-02-07 15:20:20,326 - INFO - 
+Trying configuration 2/6: LSTM
+2025-02-07 15:20:20,328 - INFO - Training data shape: (8370, 50)
+2025-02-07 15:20:20,328 - INFO - Test data shape: (2093, 50)
+2025-02-07 15:20:39,057 - INFO - 
+Model: LSTM
+2025-02-07 15:20:39,057 - INFO - 
+Training Metrics:
+2025-02-07 15:20:39,057 - INFO - Train MAE: 7.6741
+2025-02-07 15:20:39,057 - INFO - Train R2: 0.1192
+2025-02-07 15:20:39,057 - INFO - 
+Test Metrics:
+2025-02-07 15:20:39,057 - INFO - Test MAE: 7.5137
+2025-02-07 15:20:39,058 - INFO - Test R2: 0.0696
+2025-02-07 15:20:39,058 - INFO - 
+Trying configuration 3/6: SVM
+2025-02-07 15:20:39,059 - INFO - Training data shape: (8370, 50)
+2025-02-07 15:20:39,059 - INFO - Test data shape: (2093, 50)
+2025-02-07 15:20:46,777 - INFO - 
+Model: SVM
+2025-02-07 15:20:46,777 - INFO - 
+Training Metrics:
+2025-02-07 15:20:46,777 - INFO - Train MAE: 5.5524
+2025-02-07 15:20:46,777 - INFO - Train R2: 0.0037
+2025-02-07 15:20:46,778 - INFO - 
+Test Metrics:
+2025-02-07 15:20:46,778 - INFO - Test MAE: 5.5246
+2025-02-07 15:20:46,778 - INFO - Test R2: -0.0471
+2025-02-07 15:20:46,780 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:20:46,780 - INFO - 
+New best model found! (SVM)
+2025-02-07 15:20:46,780 - INFO - MAE: 5.5246
+2025-02-07 15:20:46,781 - INFO - 
+Trying configuration 4/6: GBM
+2025-02-07 15:20:46,782 - INFO - Training data shape: (8370, 50)
+2025-02-07 15:20:46,782 - INFO - Test data shape: (2093, 50)
+2025-02-07 15:20:54,294 - INFO - 
+Model: GBM
+2025-02-07 15:20:54,295 - INFO - 
+Training Metrics:
+2025-02-07 15:20:54,295 - INFO - Train MAE: 5.9046
+2025-02-07 15:20:54,295 - INFO - Train R2: 0.5602
+2025-02-07 15:20:54,295 - INFO - 
+Test Metrics:
+2025-02-07 15:20:54,295 - INFO - Test MAE: 7.4056
+2025-02-07 15:20:54,296 - INFO - Test R2: 0.0149
+2025-02-07 15:20:54,296 - INFO - 
+Trying configuration 5/6: CNN
+2025-02-07 15:20:54,297 - INFO - Training data shape: (8370, 50)
+2025-02-07 15:20:54,297 - INFO - Test data shape: (2093, 50)
+2025-02-07 15:21:05,077 - INFO - 
+Model: CNN
+2025-02-07 15:21:05,077 - INFO - 
+Training Metrics:
+2025-02-07 15:21:05,077 - INFO - Train MAE: 7.5192
+2025-02-07 15:21:05,078 - INFO - Train R2: 0.1364
+2025-02-07 15:21:05,078 - INFO - 
+Test Metrics:
+2025-02-07 15:21:05,078 - INFO - Test MAE: 7.3850
+2025-02-07 15:21:05,078 - INFO - Test R2: 0.0655
+2025-02-07 15:21:05,078 - INFO - 
+Trying configuration 6/6: Backpropagation (MLP)
+2025-02-07 15:21:05,081 - INFO - Training data shape: (8370, 50)
+2025-02-07 15:21:05,081 - INFO - Test data shape: (2093, 50)
+2025-02-07 15:21:07,539 - INFO - 
+Model: Backpropagation (MLP)
+2025-02-07 15:21:07,539 - INFO - 
+Training Metrics:
+2025-02-07 15:21:07,539 - INFO - Train MAE: 7.3947
+2025-02-07 15:21:07,539 - INFO - Train R2: 0.1182
+2025-02-07 15:21:07,539 - INFO - 
+Test Metrics:
+2025-02-07 15:21:07,539 - INFO - Test MAE: 7.1923
+2025-02-07 15:21:07,539 - INFO - Test R2: 0.0725
+2025-02-07 15:21:07,540 - INFO - 
+==================================================
+2025-02-07 15:21:07,540 - INFO - MODEL COMPARISON RESULTS
+2025-02-07 15:21:07,540 - INFO - ==================================================
+2025-02-07 15:21:07,543 - INFO - 
+                Model    MAE    RMSE      R2             MAPE
+                  SVM 5.5246 15.0260 -0.0471  3766910499.4839
+Backpropagation (MLP) 7.1923 14.1417  0.0725 24745292211.0556
+                  CNN 7.3850 14.1954  0.0655 26316108859.1021
+        Random Forest 7.3875 14.2858  0.0535 26340399149.1949
+                  GBM 7.4056 14.5741  0.0149 25241357867.7963
+                 LSTM 7.5137 14.1640  0.0696 27629704866.2789
+2025-02-07 15:21:07,543 - INFO - 
+==================================================
+2025-02-07 15:21:07,543 - INFO - BEST MODEL: SVM
+2025-02-07 15:21:07,544 - INFO - ==================================================
+2025-02-07 15:21:07,544 - INFO - MAE: 5.5246
+2025-02-07 15:21:07,544 - INFO - RMSE: 15.0260
+2025-02-07 15:21:07,544 - INFO - R2 Score: -0.0471
+2025-02-07 15:21:07,544 - INFO - MAPE: 3766910499.4839
+2025-02-07 15:21:07,549 - INFO - 
+==================================================
+2025-02-07 15:21:07,549 - INFO - PREDICTIONS USING BEST MODEL (SVM)
+2025-02-07 15:21:07,549 - INFO - ==================================================
+2025-02-07 15:21:07,550 - INFO - 2024-07-03: 0.35 mm
+2025-02-07 15:21:07,550 - INFO - 2024-07-04: 0.97 mm
+2025-02-07 15:21:07,550 - INFO - 2024-07-05: 1.76 mm
+2025-02-07 15:21:07,550 - INFO - 2024-07-06: 0.25 mm
+2025-02-07 15:21:07,550 - INFO - 2024-07-07: 0.30 mm
+2025-02-07 15:34:58,678 - INFO - Loading and preprocessing data...
+2025-02-07 15:34:58,690 - INFO - Initial data shape: (11994, 11)
+2025-02-07 15:34:58,722 - INFO - 
+Preprocessing Results:
+2025-02-07 15:34:58,722 - INFO - Initial rows: 11994
+2025-02-07 15:34:58,722 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 15:34:58,722 - INFO - Rows after removing NaN: 10472
+2025-02-07 15:34:58,722 - INFO - Final rows: 10472
+2025-02-07 15:34:58,722 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 15:34:58,724 - INFO - Mean: 5.92
+2025-02-07 15:34:58,724 - INFO - Std: 15.60
+2025-02-07 15:34:58,724 - INFO - Min: 0.00
+2025-02-07 15:34:58,724 - INFO - Max: 277.50
+2025-02-07 15:34:58,725 - INFO - Initial data shape: (10472, 11)
+2025-02-07 15:34:58,745 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 15:34:58,745 - INFO - Final data shape: (10468, 54)
+2025-02-07 15:34:58,745 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 15:35:00,790 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 15:35:00,794 - INFO - 
+Training Random Forest...
+2025-02-07 15:35:15,048 - ERROR - Error training Random Forest: All arrays must be of the same length
+2025-02-07 15:35:15,048 - INFO - 
+Training LSTM...
+2025-02-07 15:35:35,020 - INFO - 
+Training SVM...
+2025-02-07 15:35:38,457 - INFO - 
+Training GBM...
+2025-02-07 15:35:46,262 - ERROR - Error training GBM: All arrays must be of the same length
+2025-02-07 15:35:46,263 - INFO - 
+Training CNN...
+2025-02-07 15:35:52,324 - INFO - 
+Training Backpropagation (MLP)...
+2025-02-07 15:35:59,408 - INFO - 
+==================================================
+2025-02-07 15:35:59,409 - INFO - MODEL COMPARISON RESULTS
+2025-02-07 15:35:59,409 - INFO - ==================================================
+2025-02-07 15:35:59,411 - INFO - 
+                Model      MAE      RMSE        R2         MAPE
+                 LSTM 7.108437 14.172080  0.068546 2.361329e+10
+                  SVM 5.524644 15.025973 -0.047079 3.766910e+09
+                  CNN 6.972658 14.305750  0.050892 2.135593e+10
+Backpropagation (MLP) 7.162656 14.193548  0.065722 2.444538e+10
+2025-02-07 15:35:59,411 - INFO - 
+==================================================
+2025-02-07 15:35:59,411 - INFO - BEST MODEL: SVM
+2025-02-07 15:35:59,411 - INFO - ==================================================
+2025-02-07 15:35:59,411 - INFO - MAE: 5.5246
+2025-02-07 15:35:59,411 - INFO - RMSE: 15.0260
+2025-02-07 15:35:59,411 - INFO - R2: -0.0471
+2025-02-07 15:35:59,411 - INFO - MAPE: 3766910499.4839
+2025-02-07 15:49:02,086 - INFO - Loading and preprocessing data...
+2025-02-07 15:49:02,099 - INFO - Initial data shape: (11994, 11)
+2025-02-07 15:49:02,133 - INFO - 
+Preprocessing Results:
+2025-02-07 15:49:02,134 - INFO - Initial rows: 11994
+2025-02-07 15:49:02,134 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 15:49:02,134 - INFO - Rows after removing NaN: 10472
+2025-02-07 15:49:02,134 - INFO - Final rows: 10472
+2025-02-07 15:49:02,135 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 15:49:02,135 - INFO - Mean: 5.92
+2025-02-07 15:49:02,135 - INFO - Std: 15.60
+2025-02-07 15:49:02,135 - INFO - Min: 0.00
+2025-02-07 15:49:02,136 - INFO - Max: 277.50
+2025-02-07 15:49:02,136 - INFO - Initial data shape: (10472, 11)
+2025-02-07 15:49:02,158 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 15:49:02,159 - INFO - Final data shape: (10468, 54)
+2025-02-07 15:49:02,159 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 15:49:04,075 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 15:49:04,080 - INFO - 
+Training Random Forest...
+2025-02-07 15:49:18,095 - ERROR - Error training Random Forest: All arrays must be of the same length
+2025-02-07 15:49:18,096 - INFO - 
+Training LSTM...
+2025-02-07 15:49:38,606 - INFO - 
+Training SVM...
+2025-02-07 15:49:42,206 - INFO - 
+Training GBM...
+2025-02-07 15:49:50,162 - ERROR - Error training GBM: All arrays must be of the same length
+2025-02-07 15:49:50,162 - INFO - 
+Training CNN...
+2025-02-07 15:49:56,069 - INFO - 
+Training Backpropagation (MLP)...
+2025-02-07 15:50:00,928 - INFO - 
+==================================================
+2025-02-07 15:50:00,928 - INFO - MODEL COMPARISON RESULTS
+2025-02-07 15:50:00,929 - INFO - ==================================================
+2025-02-07 15:50:00,931 - INFO - 
+                Model      MAE      RMSE        R2         MAPE
+                 LSTM 6.976199 14.061304  0.083050 2.307101e+10
+                  SVM 5.524644 15.025973 -0.047079 3.766910e+09
+                  CNN 6.788482 14.226540  0.061373 2.081739e+10
+Backpropagation (MLP) 6.679279 14.186554  0.066642 1.962493e+10
+2025-02-07 15:50:00,932 - INFO - 
+==================================================
+2025-02-07 15:50:00,932 - INFO - BEST MODEL: SVM
+2025-02-07 15:50:00,932 - INFO - ==================================================
+2025-02-07 15:50:00,932 - INFO - MAE: 5.5246
+2025-02-07 15:50:00,932 - INFO - RMSE: 15.0260
+2025-02-07 15:50:00,932 - INFO - R2: -0.0471
+2025-02-07 15:50:00,933 - INFO - MAPE: 3766910499.4839
+2025-02-07 16:39:31,420 - INFO - Loading and preprocessing data...
+2025-02-07 16:39:31,444 - INFO - Initial data shape: (11994, 11)
+2025-02-07 16:39:31,479 - INFO - 
+Preprocessing Results:
+2025-02-07 16:39:31,479 - INFO - Initial rows: 11994
+2025-02-07 16:39:31,479 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 16:39:31,479 - INFO - Rows after removing NaN: 10472
+2025-02-07 16:39:31,480 - INFO - Final rows: 10472
+2025-02-07 16:39:31,480 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 16:39:31,480 - INFO - Mean: 5.92
+2025-02-07 16:39:31,480 - INFO - Std: 15.60
+2025-02-07 16:39:31,480 - INFO - Min: 0.00
+2025-02-07 16:39:31,481 - INFO - Max: 277.50
+2025-02-07 16:39:31,481 - INFO - Initial data shape: (10472, 11)
+2025-02-07 16:39:31,503 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 16:39:31,503 - INFO - Final data shape: (10468, 54)
+2025-02-07 16:39:31,503 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 16:39:33,470 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 16:39:33,477 - INFO - 
+Training Random Forest...
+2025-02-07 16:39:47,736 - ERROR - Error training Random Forest: All arrays must be of the same length
+2025-02-07 16:39:47,737 - INFO - 
+Training LSTM...
+2025-02-07 16:40:11,259 - INFO - 
+Training SVM...
+2025-02-07 16:40:14,956 - INFO - 
+Training GBM...
+2025-02-07 16:40:23,100 - ERROR - Error training GBM: All arrays must be of the same length
+2025-02-07 16:40:23,100 - INFO - 
+Training CNN...
+2025-02-07 16:40:28,767 - INFO - 
+Training Backpropagation (MLP)...
+2025-02-07 16:40:35,172 - INFO - 
+==================================================
+2025-02-07 16:40:35,172 - INFO - MODEL COMPARISON RESULTS
+2025-02-07 16:40:35,172 - INFO - ==================================================
+2025-02-07 16:40:35,180 - INFO - 
+                Model      MAE      RMSE        R2         MAPE
+                 LSTM 7.312223 14.249713  0.058313 2.530400e+10
+                  SVM 5.524644 15.025973 -0.047079 3.766910e+09
+                  CNN 6.635640 14.311119  0.050180 1.877738e+10
+Backpropagation (MLP) 7.127220 14.198934  0.065013 2.398593e+10
+2025-02-07 16:40:35,181 - INFO - 
+==================================================
+2025-02-07 16:40:35,181 - INFO - BEST MODEL: SVM
+2025-02-07 16:40:35,181 - INFO - ==================================================
+2025-02-07 16:40:35,181 - INFO - MAE: 5.5246
+2025-02-07 16:40:35,182 - INFO - RMSE: 15.0260
+2025-02-07 16:40:35,182 - INFO - R2: -0.0471
+2025-02-07 16:40:35,182 - INFO - MAPE: 3766910499.4839
+2025-02-07 16:46:49,513 - INFO - Loading and preprocessing data...
+2025-02-07 16:46:49,525 - INFO - Initial data shape: (11994, 11)
+2025-02-07 16:46:49,557 - INFO - 
+Preprocessing Results:
+2025-02-07 16:46:49,557 - INFO - Initial rows: 11994
+2025-02-07 16:46:49,558 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 16:46:49,558 - INFO - Rows after removing NaN: 10472
+2025-02-07 16:46:49,558 - INFO - Final rows: 10472
+2025-02-07 16:46:49,558 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 16:46:49,559 - INFO - Mean: 5.92
+2025-02-07 16:46:49,559 - INFO - Std: 15.60
+2025-02-07 16:46:49,559 - INFO - Min: 0.00
+2025-02-07 16:46:49,560 - INFO - Max: 277.50
+2025-02-07 16:46:49,655 - ERROR - An error occurred: 'category'
+2025-02-07 16:48:23,096 - INFO - Loading and preprocessing data...
+2025-02-07 16:48:23,108 - INFO - Initial data shape: (11994, 11)
+2025-02-07 16:48:23,142 - INFO - 
+Preprocessing Results:
+2025-02-07 16:48:23,142 - INFO - Initial rows: 11994
+2025-02-07 16:48:23,142 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 16:48:23,142 - INFO - Rows after removing NaN: 10472
+2025-02-07 16:48:23,142 - INFO - Final rows: 10472
+2025-02-07 16:48:23,142 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 16:48:23,142 - INFO - Mean: 5.92
+2025-02-07 16:48:23,142 - INFO - Std: 15.60
+2025-02-07 16:48:23,142 - INFO - Min: 0.00
+2025-02-07 16:48:23,144 - INFO - Max: 277.50
+2025-02-07 16:48:23,144 - INFO - Columns in df_cleaned: ['Tanggal', 'Tn', 'Tx', 'Tavg', 'RH_avg', 'RR', 'ss', 'ff_x', 'ddd_x', 'ff_avg', 'ddd_car']
+2025-02-07 16:48:23,144 - INFO - Columns in df_cleaned: ['Tanggal', 'Tn', 'Tx', 'Tavg', 'RH_avg', 'RR', 'ss', 'ff_x', 'ddd_x', 'ff_avg', 'ddd_car']
+2025-02-07 16:48:23,241 - ERROR - An error occurred: 'category'
+2025-02-07 16:50:27,434 - INFO - Loading and preprocessing data...
+2025-02-07 16:50:27,446 - INFO - Initial data shape: (11994, 11)
+2025-02-07 16:50:27,493 - INFO - 
+Preprocessing Results:
+2025-02-07 16:50:27,494 - INFO - Initial rows: 11994
+2025-02-07 16:50:27,494 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 16:50:27,494 - INFO - Rows after removing NaN: 10472
+2025-02-07 16:50:27,494 - INFO - Final rows: 10472
+2025-02-07 16:50:27,494 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 16:50:27,495 - INFO - Mean: 5.92
+2025-02-07 16:50:27,495 - INFO - Std: 15.60
+2025-02-07 16:50:27,495 - INFO - Min: 0.00
+2025-02-07 16:50:27,495 - INFO - Max: 277.50
+2025-02-07 16:50:27,495 - INFO - Columns in df_cleaned: ['Tanggal', 'Tn', 'Tx', 'Tavg', 'RH_avg', 'RR', 'ss', 'ff_x', 'ddd_x', 'ff_avg', 'ddd_car']
+2025-02-07 16:50:27,495 - INFO - Columns in df_cleaned: ['Tanggal', 'Tn', 'Tx', 'Tavg', 'RH_avg', 'RR', 'ss', 'ff_x', 'ddd_x', 'ff_avg', 'ddd_car']
+2025-02-07 16:50:27,600 - ERROR - An error occurred: 'category'
+2025-02-07 16:54:46,646 - INFO - Loading and preprocessing data...
+2025-02-07 16:54:46,659 - INFO - Initial data shape: (11994, 11)
+2025-02-07 16:54:46,691 - INFO - 
+Preprocessing Results:
+2025-02-07 16:54:46,691 - INFO - Initial rows: 11994
+2025-02-07 16:54:46,692 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 16:54:46,692 - INFO - Rows after removing NaN: 10472
+2025-02-07 16:54:46,692 - INFO - Final rows: 10472
+2025-02-07 16:54:46,692 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 16:54:46,692 - INFO - Mean: 5.92
+2025-02-07 16:54:46,693 - INFO - Std: 15.60
+2025-02-07 16:54:46,693 - INFO - Min: 0.00
+2025-02-07 16:54:46,694 - INFO - Max: 277.50
+2025-02-07 16:54:46,694 - INFO - Initial data shape: (10472, 11)
+2025-02-07 16:54:46,719 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 16:54:46,720 - INFO - Final data shape: (10468, 54)
+2025-02-07 16:54:46,720 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 16:54:48,819 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 16:54:48,826 - INFO - 
+Training Random Forest...
+2025-02-07 16:55:01,520 - ERROR - Error training Random Forest: All arrays must be of the same length
+2025-02-07 16:55:01,520 - INFO - 
+Training LSTM...
+2025-02-07 16:55:20,115 - INFO - 
+Training SVM...
+2025-02-07 16:55:23,885 - INFO - 
+Training GBM...
+2025-02-07 16:55:31,858 - ERROR - Error training GBM: All arrays must be of the same length
+2025-02-07 16:55:31,858 - INFO - 
+Training CNN...
+2025-02-07 16:55:37,589 - INFO - 
+Training Backpropagation (MLP)...
+2025-02-07 16:55:42,308 - INFO - 
+==================================================
+2025-02-07 16:55:42,308 - INFO - MODEL COMPARISON RESULTS
+2025-02-07 16:55:42,309 - INFO - ==================================================
+2025-02-07 16:55:42,310 - INFO - 
+                Model      MAE      RMSE        R2         MAPE
+                 LSTM 6.652445 14.111345  0.076512 1.903073e+10
+                  SVM 5.524644 15.025973 -0.047079 3.766910e+09
+                  CNN 6.999709 14.158280  0.070359 2.316866e+10
+Backpropagation (MLP) 6.676332 14.194047  0.065656 1.969395e+10
+2025-02-07 16:55:42,311 - INFO - 
+==================================================
+2025-02-07 16:55:42,311 - INFO - BEST MODEL: SVM
+2025-02-07 16:55:42,311 - INFO - ==================================================
+2025-02-07 16:55:42,311 - INFO - MAE: 5.5246
+2025-02-07 16:55:42,311 - INFO - RMSE: 15.0260
+2025-02-07 16:55:42,311 - INFO - R2: -0.0471
+2025-02-07 16:55:42,312 - INFO - MAPE: 3766910499.4839
+2025-02-07 17:02:24,842 - INFO - Loading and preprocessing data...
+2025-02-07 17:02:24,852 - INFO - Initial data shape: (11994, 11)
+2025-02-07 17:02:24,885 - INFO - 
+Preprocessing Results:
+2025-02-07 17:02:24,885 - INFO - Initial rows: 11994
+2025-02-07 17:02:24,885 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 17:02:24,886 - INFO - Rows after removing NaN: 10472
+2025-02-07 17:02:24,886 - INFO - Final rows: 10472
+2025-02-07 17:02:24,886 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 17:02:24,886 - INFO - Mean: 5.92
+2025-02-07 17:02:24,886 - INFO - Std: 15.60
+2025-02-07 17:02:24,887 - INFO - Min: 0.00
+2025-02-07 17:02:24,887 - INFO - Max: 277.50
+2025-02-07 17:02:24,887 - INFO - Initial data shape: (10472, 11)
+2025-02-07 17:02:24,909 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 17:02:24,909 - INFO - Final data shape: (10468, 54)
+2025-02-07 17:02:24,910 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 17:02:27,036 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 17:02:27,043 - INFO - 
+Training Random Forest...
+2025-02-07 17:02:36,175 - ERROR - Error training Random Forest: Classification metrics can't handle a mix of continuous and binary targets
+2025-02-07 17:02:36,175 - INFO - 
+Training LSTM...
+2025-02-07 17:02:36,964 - ERROR - Error training LSTM: in user code:
+
+    File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\engine\training.py", line 1284, in train_function  *
+        return step_function(self, iterator)
+    File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\engine\training.py", line 1268, in step_function  **
+        outputs = model.distribute_strategy.run(run_step, args=(data,))
+    File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\engine\training.py", line 1249, in run_step  **
+        outputs = model.train_step(data)
+    File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\engine\training.py", line 1051, in train_step
+        loss = self.compute_loss(x, y, y_pred, sample_weight)
+    File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\engine\training.py", line 1109, in compute_loss
+        return self.compiled_loss(
+    File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\engine\compile_utils.py", line 265, in __call__
+        loss_value = loss_obj(y_t, y_p, sample_weight=sw)
+    File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\losses.py", line 142, in __call__
+        losses = call_fn(y_true, y_pred)
+    File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\losses.py", line 268, in call  **
+        return ag_fn(y_true, y_pred, **self._fn_kwargs)
+    File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\losses.py", line 1984, in categorical_crossentropy
+        return backend.categorical_crossentropy(
+    File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\backend.py", line 5559, in categorical_crossentropy
+        target.shape.assert_is_compatible_with(output.shape)
+
+    ValueError: Shapes (None, 655) and (None, 3) are incompatible
+
+2025-02-07 17:02:36,969 - INFO - 
+Training SVM...
+2025-02-07 17:03:56,457 - INFO - Loading and preprocessing data...
+2025-02-07 17:03:56,468 - INFO - Initial data shape: (11994, 11)
+2025-02-07 17:03:56,502 - INFO - 
+Preprocessing Results:
+2025-02-07 17:03:56,503 - INFO - Initial rows: 11994
+2025-02-07 17:03:56,503 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 17:03:56,503 - INFO - Rows after removing NaN: 10472
+2025-02-07 17:03:56,503 - INFO - Final rows: 10472
+2025-02-07 17:03:56,503 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 17:03:56,503 - INFO - Mean: 5.92
+2025-02-07 17:03:56,504 - INFO - Std: 15.60
+2025-02-07 17:03:56,504 - INFO - Min: 0.00
+2025-02-07 17:03:56,504 - INFO - Max: 277.50
+2025-02-07 17:03:56,505 - INFO - Initial data shape: (10472, 11)
+2025-02-07 17:03:56,526 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 17:03:56,527 - INFO - Final data shape: (10468, 54)
+2025-02-07 17:03:56,527 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 17:03:58,503 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 17:03:58,510 - INFO - 
+Training Random Forest...
+2025-02-07 17:03:58,514 - ERROR - Error training Random Forest: cannot access local variable 'y_pred' where it is not associated with a value
+2025-02-07 17:03:58,514 - INFO - 
+Training LSTM...
+2025-02-07 17:03:58,518 - ERROR - Error training LSTM: index 72 is out of bounds for axis 1 with size 3
+2025-02-07 17:03:58,518 - INFO - 
+Training SVM...
+2025-02-07 17:03:58,522 - ERROR - Error training SVM: cannot access local variable 'y_pred' where it is not associated with a value
+2025-02-07 17:03:58,522 - INFO - 
+Training GBM...
+2025-02-07 17:03:58,525 - ERROR - Error training GBM: cannot access local variable 'y_pred' where it is not associated with a value
+2025-02-07 17:03:58,525 - INFO - 
+Training CNN...
+2025-02-07 17:03:58,528 - ERROR - Error training CNN: index 72 is out of bounds for axis 1 with size 3
+2025-02-07 17:03:58,626 - ERROR - An error occurred: Could not interpret value `Model` for `x`. An entry with this name does not appear in `data`.
+2025-02-07 17:07:05,631 - INFO - Loading and preprocessing data...
+2025-02-07 17:07:05,645 - INFO - Initial data shape: (11994, 11)
+2025-02-07 17:07:05,678 - INFO - 
+Preprocessing Results:
+2025-02-07 17:07:05,678 - INFO - Initial rows: 11994
+2025-02-07 17:07:05,678 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 17:07:05,679 - INFO - Rows after removing NaN: 10472
+2025-02-07 17:07:05,679 - INFO - Final rows: 10472
+2025-02-07 17:07:05,679 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 17:07:05,679 - INFO - Mean: 5.92
+2025-02-07 17:07:05,679 - INFO - Std: 15.60
+2025-02-07 17:07:05,679 - INFO - Min: 0.00
+2025-02-07 17:07:05,679 - INFO - Max: 277.50
+2025-02-07 17:07:05,680 - INFO - Initial data shape: (10472, 11)
+2025-02-07 17:07:05,700 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 17:07:05,700 - INFO - Final data shape: (10468, 54)
+2025-02-07 17:07:05,700 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 17:07:07,616 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 17:07:07,623 - INFO - 
+Training Random Forest...
+2025-02-07 17:07:07,628 - ERROR - Error training Random Forest: y should be a 1d array, got an array of shape () instead.
+2025-02-07 17:07:07,628 - INFO - 
+Training LSTM...
+2025-02-07 17:07:07,631 - ERROR - Error training LSTM: index 72 is out of bounds for axis 1 with size 3
+2025-02-07 17:07:07,632 - INFO - 
+Training SVM...
+2025-02-07 17:07:07,636 - ERROR - Error training SVM: y should be a 1d array, got an array of shape () instead.
+2025-02-07 17:07:07,636 - INFO - 
+Training GBM...
+2025-02-07 17:07:07,639 - ERROR - Error training GBM: y should be a 1d array, got an array of shape () instead.
+2025-02-07 17:07:07,639 - INFO - 
+Training CNN...
+2025-02-07 17:07:07,643 - ERROR - Error training CNN: index 72 is out of bounds for axis 1 with size 3
+2025-02-07 17:07:07,749 - ERROR - An error occurred: Could not interpret value `Model` for `x`. An entry with this name does not appear in `data`.
+2025-02-07 17:09:16,783 - INFO - Loading and preprocessing data...
+2025-02-07 17:09:16,794 - INFO - Initial data shape: (11994, 11)
+2025-02-07 17:09:16,828 - INFO - 
+Preprocessing Results:
+2025-02-07 17:09:16,828 - INFO - Initial rows: 11994
+2025-02-07 17:09:16,828 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 17:09:16,828 - INFO - Rows after removing NaN: 10472
+2025-02-07 17:09:16,828 - INFO - Final rows: 10472
+2025-02-07 17:09:16,829 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 17:09:16,829 - INFO - Mean: 5.92
+2025-02-07 17:09:16,829 - INFO - Std: 15.60
+2025-02-07 17:09:16,830 - INFO - Min: 0.00
+2025-02-07 17:09:16,830 - INFO - Max: 277.50
+2025-02-07 17:09:16,830 - INFO - Initial data shape: (10472, 11)
+2025-02-07 17:09:16,850 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 17:09:16,850 - INFO - Final data shape: (10468, 54)
+2025-02-07 17:09:16,851 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 17:09:18,806 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 17:09:18,814 - INFO - 
+Training Random Forest...
+2025-02-07 17:09:18,818 - ERROR - Error training Random Forest: y should be a 1d array, got an array of shape () instead.
+2025-02-07 17:09:18,818 - INFO - 
+Training LSTM...
+2025-02-07 17:09:18,821 - ERROR - Error training LSTM: index 72 is out of bounds for axis 1 with size 3
+2025-02-07 17:09:18,822 - INFO - 
+Training SVM...
+2025-02-07 17:09:18,825 - ERROR - Error training SVM: y should be a 1d array, got an array of shape () instead.
+2025-02-07 17:09:18,825 - INFO - 
+Training GBM...
+2025-02-07 17:09:18,827 - ERROR - Error training GBM: y should be a 1d array, got an array of shape () instead.
+2025-02-07 17:09:18,828 - INFO - 
+Training CNN...
+2025-02-07 17:09:18,830 - ERROR - Error training CNN: index 72 is out of bounds for axis 1 with size 3
+2025-02-07 17:09:18,930 - ERROR - An error occurred: Could not interpret value `Model` for `x`. An entry with this name does not appear in `data`.
+2025-02-07 17:10:27,325 - INFO - Loading and preprocessing data...
+2025-02-07 17:10:27,336 - INFO - Initial data shape: (11994, 11)
+2025-02-07 17:10:27,369 - INFO - 
+Preprocessing Results:
+2025-02-07 17:10:27,370 - INFO - Initial rows: 11994
+2025-02-07 17:10:27,370 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 17:10:27,370 - INFO - Rows after removing NaN: 10472
+2025-02-07 17:10:27,370 - INFO - Final rows: 10472
+2025-02-07 17:10:27,370 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 17:10:27,370 - INFO - Mean: 5.92
+2025-02-07 17:10:27,371 - INFO - Std: 15.60
+2025-02-07 17:10:27,371 - INFO - Min: 0.00
+2025-02-07 17:10:27,371 - INFO - Max: 277.50
+2025-02-07 17:10:27,372 - INFO - Initial data shape: (10472, 11)
+2025-02-07 17:10:27,391 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 17:10:27,391 - INFO - Final data shape: (10468, 54)
+2025-02-07 17:10:27,392 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 17:10:29,344 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 17:10:29,352 - INFO - 
+Training Random Forest...
+2025-02-07 17:10:29,356 - ERROR - Error training Random Forest: y should be a 1d array, got an array of shape () instead.
+2025-02-07 17:10:29,356 - INFO - 
+Training LSTM...
+2025-02-07 17:10:29,359 - ERROR - Error training LSTM: index 72 is out of bounds for axis 1 with size 3
+2025-02-07 17:10:29,360 - INFO - 
+Training SVM...
+2025-02-07 17:10:29,363 - ERROR - Error training SVM: y should be a 1d array, got an array of shape () instead.
+2025-02-07 17:10:29,364 - INFO - 
+Training GBM...
+2025-02-07 17:10:29,366 - ERROR - Error training GBM: y should be a 1d array, got an array of shape () instead.
+2025-02-07 17:10:29,367 - INFO - 
+Training CNN...
+2025-02-07 17:10:29,371 - ERROR - Error training CNN: index 72 is out of bounds for axis 1 with size 3
+2025-02-07 17:10:29,372 - INFO - Results DataFrame:
+Empty DataFrame
+Columns: []
+Index: []
+2025-02-07 17:10:29,470 - ERROR - An error occurred: Could not interpret value `Model` for `x`. An entry with this name does not appear in `data`.
+2025-02-07 17:16:00,780 - INFO - Loading and preprocessing data...
+2025-02-07 17:16:00,793 - INFO - Initial data shape: (11994, 12)
+2025-02-07 17:16:00,829 - INFO - 
+Preprocessing Results:
+2025-02-07 17:16:00,830 - INFO - Initial rows: 11994
+2025-02-07 17:16:00,830 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 17:16:00,830 - INFO - Rows after removing NaN: 0
+2025-02-07 17:16:00,830 - INFO - Final rows: 0
+2025-02-07 17:16:00,830 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 17:16:00,830 - INFO - Mean: nan
+2025-02-07 17:16:00,831 - INFO - Std: nan
+2025-02-07 17:16:00,831 - INFO - Min: nan
+2025-02-07 17:16:00,831 - INFO - Max: nan
+2025-02-07 17:16:00,831 - INFO - Initial data shape: (0, 12)
+2025-02-07 17:16:00,838 - INFO - Rows removed due to NaN after feature engineering: 0
+2025-02-07 17:16:00,838 - INFO - Final data shape: (0, 55)
+2025-02-07 17:18:54,065 - INFO - Loading and preprocessing data...
+2025-02-07 17:18:54,079 - INFO - Initial data shape: (11994, 12)
+2025-02-07 17:18:54,115 - INFO - 
+Preprocessing Results:
+2025-02-07 17:18:54,116 - INFO - Initial rows: 11994
+2025-02-07 17:18:54,116 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 17:18:54,116 - INFO - Rows after removing NaN: 0
+2025-02-07 17:18:54,116 - INFO - Final rows: 0
+2025-02-07 17:18:54,116 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 17:18:54,116 - INFO - Mean: nan
+2025-02-07 17:18:54,116 - INFO - Std: nan
+2025-02-07 17:18:54,116 - INFO - Min: nan
+2025-02-07 17:18:54,117 - INFO - Max: nan
+2025-02-07 17:18:54,117 - INFO - Initial data shape: (0, 12)
+2025-02-07 17:18:54,125 - INFO - Rows removed due to NaN after feature engineering: 0
+2025-02-07 17:18:54,125 - INFO - Final data shape: (0, 55)
+2025-02-07 17:22:15,091 - INFO - Loading and preprocessing data...
+2025-02-07 17:22:15,104 - INFO - Initial data shape: (11994, 11)
+2025-02-07 17:22:15,135 - INFO - 
+Preprocessing Results:
+2025-02-07 17:22:15,135 - INFO - Initial rows: 11994
+2025-02-07 17:22:15,135 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 17:22:15,135 - INFO - Rows after removing NaN: 10472
+2025-02-07 17:22:15,135 - INFO - Final rows: 10472
+2025-02-07 17:22:15,135 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 17:22:15,136 - INFO - Mean: 5.92
+2025-02-07 17:22:15,136 - INFO - Std: 15.60
+2025-02-07 17:22:15,136 - INFO - Min: 0.00
+2025-02-07 17:22:15,136 - INFO - Max: 277.50
+2025-02-07 17:22:15,137 - INFO - Initial data shape: (10472, 11)
+2025-02-07 17:22:15,161 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 17:22:15,161 - INFO - Final data shape: (10468, 54)
+2025-02-07 17:22:15,161 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 17:22:17,220 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 17:22:17,229 - INFO - 
+Training Random Forest...
+2025-02-07 17:22:30,987 - ERROR - Error training Random Forest: All arrays must be of the same length
+2025-02-07 17:22:30,988 - INFO - 
+Training LSTM...
+2025-02-07 17:22:56,448 - INFO - 
+Training SVM...
+2025-02-07 17:23:00,564 - INFO - 
+Training GBM...
+2025-02-07 17:23:09,408 - ERROR - Error training GBM: All arrays must be of the same length
+2025-02-07 17:23:09,409 - INFO - 
+Training CNN...
+2025-02-07 17:23:15,769 - INFO - 
+Training Backpropagation (MLP)...
+2025-02-07 17:23:21,006 - INFO - 
+==================================================
+2025-02-07 17:23:21,007 - INFO - MODEL COMPARISON RESULTS
+2025-02-07 17:23:21,007 - INFO - ==================================================
+2025-02-07 17:23:21,009 - INFO - 
+                Model      MAE      RMSE        R2         MAPE
+                 LSTM 7.171740 14.181004  0.067372 2.384129e+10
+                  SVM 5.524644 15.025973 -0.047079 3.766910e+09
+                  CNN 6.819166 14.322051  0.048728 1.975570e+10
+Backpropagation (MLP) 7.022625 14.180137  0.067486 2.342933e+10
+2025-02-07 17:23:21,009 - INFO - 
+==================================================
+2025-02-07 17:23:21,009 - INFO - BEST MODEL: SVM
+2025-02-07 17:23:21,009 - INFO - ==================================================
+2025-02-07 17:23:21,009 - INFO - MAE: 5.5246
+2025-02-07 17:23:21,009 - INFO - RMSE: 15.0260
+2025-02-07 17:23:21,009 - INFO - R2: -0.0471
+2025-02-07 17:23:21,010 - INFO - MAPE: 3766910499.4839
+2025-02-07 18:05:27,682 - INFO - Loading and preprocessing data...
+2025-02-07 18:05:27,702 - INFO - Initial data shape: (11994, 11)
+2025-02-07 18:05:27,738 - INFO - 
+Preprocessing Results:
+2025-02-07 18:05:27,738 - INFO - Initial rows: 11994
+2025-02-07 18:05:27,738 - INFO - Rows after removing invalid RR: 11277
+2025-02-07 18:05:27,738 - INFO - Rows after removing NaN: 10472
+2025-02-07 18:05:27,739 - INFO - Final rows: 10472
+2025-02-07 18:05:27,739 - INFO - 
+Rainfall (RR) Statistics:
+2025-02-07 18:05:27,739 - INFO - Mean: 5.92
+2025-02-07 18:05:27,739 - INFO - Std: 15.60
+2025-02-07 18:05:27,739 - INFO - Min: 0.00
+2025-02-07 18:05:27,739 - INFO - Max: 277.50
+2025-02-07 18:05:27,740 - INFO - Initial data shape: (10472, 11)
+2025-02-07 18:05:27,765 - INFO - Rows removed due to NaN after feature engineering: 4
+2025-02-07 18:05:27,765 - INFO - Final data shape: (10468, 54)
+2025-02-07 18:05:27,765 - INFO - Data shape before sequence creation: (10468, 54)
+2025-02-07 18:05:29,851 - INFO - Created 10463 sequences from 10468 data points
+2025-02-07 18:05:29,862 - INFO - 
+Training Random Forest...
+2025-02-07 18:05:42,623 - ERROR - Error training Random Forest: All arrays must be of the same length
+2025-02-07 18:05:42,623 - INFO - 
+Training LSTM...
+2025-02-07 18:06:03,669 - INFO - 
+Training SVM...
+2025-02-07 18:06:07,657 - INFO - 
+Training GBM...
+2025-02-07 18:06:16,156 - ERROR - Error training GBM: All arrays must be of the same length
+2025-02-07 18:06:16,157 - INFO - 
+Training CNN...
+2025-02-07 18:06:22,151 - INFO - 
+Training Backpropagation (MLP)...
+2025-02-07 18:06:29,173 - INFO - 
+==================================================
+2025-02-07 18:06:29,173 - INFO - MODEL COMPARISON RESULTS
+2025-02-07 18:06:29,173 - INFO - ==================================================
+2025-02-07 18:06:29,176 - INFO - 
+                Model      MAE      RMSE        R2         MAPE
+                 LSTM 7.143630 14.199144  0.064985 2.371082e+10
+                  SVM 5.524644 15.025973 -0.047079 3.766910e+09
+                  CNN 6.924960 14.266748  0.056060 2.181192e+10
+Backpropagation (MLP) 6.979948 14.179699  0.067544 2.284532e+10
+2025-02-07 18:06:29,176 - INFO - 
+==================================================
+2025-02-07 18:06:29,176 - INFO - BEST MODEL: SVM
+2025-02-07 18:06:29,177 - INFO - ==================================================
+2025-02-07 18:06:29,177 - INFO - MAE: 5.5246
+2025-02-07 18:06:29,177 - INFO - RMSE: 15.0260
+2025-02-07 18:06:29,177 - INFO - R2: -0.0471
+2025-02-07 18:06:29,177 - INFO - MAPE: 3766910499.4839

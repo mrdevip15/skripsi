@@ -18,8 +18,17 @@ from lightgbm import LGBMRegressor
 from sklearn.svm import SVR
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Conv1D, MaxPooling1D, Flatten
+from tensorflow.keras.layers import LSTM, Dense, Conv1D, MaxPooling1D, Flatten, Dropout
 from sklearn.ensemble import GradientBoostingRegressor  # for GBM
+from tensorflow.keras.optimizers import Adam
+from models import get_model_configurations
+from preprocessing import engineer_features
+from visualization import (
+    plot_model_comparison,
+    plot_predictions,
+    plot_feature_importance,
+    plot_error_distribution
+)
 
 # Set up logging
 logging.basicConfig(
@@ -32,13 +41,14 @@ logging.basicConfig(
 )
 
 class WeatherPredictor:
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.model = None
-        self.history = None
-        self.config = CONFIG
         self.model_type = None
         self.model_name = None
         self.model_builder = None
+        self.sequence_shape = None
+        self.dates = None
         
         # Create necessary directories
         os.makedirs('models', exist_ok=True)
@@ -47,6 +57,8 @@ class WeatherPredictor:
     def engineer_features(self, df):
         """Add engineered features to the dataset"""
         df = df.copy()
+        
+        logging.info(f"Initial data shape: {df.shape}")
         
         if not self.config['USE_FEATURE_ENGINEERING']:
             return df
@@ -63,25 +75,48 @@ class WeatherPredictor:
                 df[f'{feature}_rolling_std_{window}d'] = df[feature].rolling(window=window).std()
         
         # Drop rows with NaN values from rolling calculations
+        initial_rows = len(df)
         df = df.dropna()
+        removed_rows = initial_rows - len(df)
+        
+        logging.info(f"Rows removed due to NaN after feature engineering: {removed_rows}")
+        logging.info(f"Final data shape: {df.shape}")
         
         return df
 
     def prepare_sequences(self, df):
-        """Prepare sequences for RR prediction only"""
+        """Prepare sequences for prediction"""
         features = self.config['INPUT_FEATURES']
         lookback = self.config['LOOKBACK_DAYS']
         
-        X, y = [], []
-        for i in range(len(df) - lookback):
-            # Store the input shape for later use
-            sequence = df[features].values[i:i+lookback]
-            X.append(sequence.flatten())  # Flatten for model input
-            y.append(df['RR'].values[i+lookback])
+        # Check if all required features exist
+        missing_features = [f for f in features if f not in df.columns]
+        if missing_features:
+            logging.error(f"Missing features in data: {missing_features}")
+            return np.array([]), np.array([]), np.array([])  # Added empty dates array
         
-        # Store the sequence shape for prediction
+        logging.info(f"Data shape before sequence creation: {df.shape}")
+        
+        if len(df) <= lookback:
+            logging.error(f"Not enough data points. Need more than {lookback} rows")
+            return np.array([]), np.array([]), np.array([])  # Added empty dates array
+        
+        X, y, dates = [], [], []  # Added dates list
+        for i in range(len(df) - lookback):
+            sequence = df[features].values[i:i+lookback]
+            if not np.isnan(sequence).any():
+                X.append(sequence.flatten())
+                y.append(df['RR'].values[i+lookback])
+                dates.append(df['Tanggal'].values[i+lookback])  # Store corresponding date
+        
+        logging.info(f"Created {len(X)} sequences from {len(df)} data points")
+        
+        if len(X) == 0:
+            logging.error("No valid sequences could be created")
+            return np.array([]), np.array([]), np.array([])  # Added empty dates array
+        
         self.sequence_shape = (lookback, len(features))
-        return np.array(X), np.array(y)
+        return np.array(X), np.array(y), np.array(dates)  # Return dates array
 
     def build_model(self, input_shape):
         """Build model for single target (RR) prediction"""
@@ -125,30 +160,23 @@ class WeatherPredictor:
             }
         }
 
-    def train(self, X, y):
-        """Train the model with detailed evaluation"""
+    def train_and_evaluate(self, X, y, dates, config):
+        """Train and evaluate a model configuration"""
+        from sklearn.model_selection import train_test_split
+        
+        # Split the data and dates together
+        X_train, X_test, y_train, y_test, dates_train, dates_test = train_test_split(
+            X, y, dates, test_size=self.config['TEST_SPLIT'], random_state=42
+        )
+        
         try:
-            # Split data
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y, test_size=0.2, random_state=42
-            )
-            
-            logging.info(f"Training data shape: {X_train.shape}")
-            logging.info(f"Test data shape: {X_test.shape}")
-            
-            # Handle different model types
-            if self.model_type == 'keras':
-                # Reshape input for LSTM and CNN
-                if self.model_name == 'LSTM':
+            if config['type'] == 'keras':
+                # Handle Keras models
+                if config['name'] in ['LSTM', 'CNN']:
                     X_train = X_train.reshape(X_train.shape[0], self.sequence_shape[0], -1)
                     X_test = X_test.reshape(X_test.shape[0], self.sequence_shape[0], -1)
-                elif self.model_name == 'CNN':
-                    # Reshape for CNN (samples, timesteps, features)
-                    X_train = X_train.reshape(X_train.shape[0], -1, 1)
-                    X_test = X_test.reshape(X_test.shape[0], -1, 1)
                 
-                # Build and train model
-                self.model = self.model_builder((X_train.shape[1:]))
+                self.model = config['model'](X_train.shape[1:])
                 
                 # Add early stopping
                 early_stopping = tf.keras.callbacks.EarlyStopping(
@@ -159,39 +187,69 @@ class WeatherPredictor:
                 
                 history = self.model.fit(
                     X_train, y_train,
-                    epochs=self.config['epochs'],
-                    batch_size=self.config['batch_size'],
+                    epochs=config['epochs'],
+                    batch_size=config['batch_size'],
                     validation_split=0.2,
                     callbacks=[early_stopping],
                     verbose=1
                 )
                 
-                # Make predictions
-                y_train_pred = self.model.predict(X_train).flatten()
-                y_test_pred = self.model.predict(X_test).flatten()
+                y_pred = self.model.predict(X_test).flatten()
                 
-            else:  # sklearn models
+            else:
+                # Handle sklearn models
+                self.model = config['model']
                 self.model.fit(X_train, y_train)
-                y_train_pred = self.model.predict(X_train)
-                y_test_pred = self.model.predict(X_test)
+                y_pred = self.model.predict(X_test)
             
             # Calculate metrics
-            train_metrics = self.evaluate_predictions(y_train, y_train_pred)
-            test_metrics = self.evaluate_predictions(y_test, y_test_pred)
+            metrics = self.calculate_metrics(y_test, y_pred)
             
-            logging.info(f"\nModel: {self.model_name}")
-            logging.info("\nTraining Metrics:")
-            logging.info(f"Train MAE: {train_metrics['MAE']:.4f}")
-            logging.info(f"Train R2: {train_metrics['R2']:.4f}")
-            logging.info("\nTest Metrics:")
-            logging.info(f"Test MAE: {test_metrics['MAE']:.4f}")
-            logging.info(f"Test R2: {test_metrics['R2']:.4f}")
+            # Create visualizations with actual dates
+            plot_predictions(
+                dates=dates_test,
+                actual=y_test,
+                predicted=y_pred,
+                model_name=config['name'],
+                save_path='plots'
+            )
             
-            return test_metrics
+            plot_error_distribution(
+                actual=y_test,
+                predicted=y_pred,
+                model_name=config['name'],
+                save_path='plots'
+            )
+            
+            if config['type'] == 'sklearn' and hasattr(self.model, 'feature_importances_'):
+                plot_feature_importance(
+                    model=self.model,
+                    feature_names=self.config['INPUT_FEATURES'],
+                    save_path='plots'
+                )
+            
+            return metrics, self.model
             
         except Exception as e:
-            logging.error(f"Error in training: {str(e)}")
-            raise
+            logging.error(f"Error training {config['name']}: {str(e)}")
+            return None, None
+
+    def calculate_metrics(self, y_true, y_pred):
+        """Calculate various performance metrics"""
+        from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+        
+        mse = mean_squared_error(y_true, y_pred)
+        rmse = np.sqrt(mse)
+        mae = mean_absolute_error(y_true, y_pred)
+        r2 = r2_score(y_true, y_pred)
+        mape = np.mean(np.abs((y_true - y_pred) / (y_true + 1e-8))) * 100
+        
+        return {
+            'MAE': mae,
+            'RMSE': rmse,
+            'R2': r2,
+            'MAPE': mape
+        }
 
     def predict_next_days(self, last_sequence):
         """Predict rainfall for the next few days"""
@@ -291,10 +349,10 @@ class ModelOptimizer:
                 df_engineered = predictor.engineer_features(df_cleaned)
                 
                 # Prepare sequences
-                X, y = predictor.prepare_sequences(df_engineered)
+                X, y, dates = predictor.prepare_sequences(df_engineered)
                 
                 # Train and evaluate
-                metrics = predictor.train(X, y)
+                metrics, model = predictor.train_and_evaluate(X, y, dates, trial_config)
                 mae_percentage = metrics['MAE_as_percentage_of_mean']
                 
                 # Check if this is the best model so far
@@ -302,7 +360,7 @@ class ModelOptimizer:
                     best_mae_percentage = mae_percentage
                     self.best_metrics = metrics
                     self.best_config = trial_config.copy()
-                    self.best_model = predictor.model
+                    self.best_model = model
                     
                     # Save the best model
                     predictor.save_model()
@@ -335,234 +393,146 @@ def prepare_data(df, lookback=3):
 
 def convert_wind_direction(direction):
     """Convert wind direction text to degrees"""
+    if pd.isna(direction):
+        return None
+        
     direction_dict = {
         'N': 0, 'NNE': 22.5, 'NE': 45, 'ENE': 67.5,
         'E': 90, 'ESE': 112.5, 'SE': 135, 'SSE': 157.5,
         'S': 180, 'SSW': 202.5, 'SW': 225, 'WSW': 247.5,
         'W': 270, 'WNW': 292.5, 'NW': 315, 'NNW': 337.5
     }
-    return direction_dict.get(direction, 0)  # Returns 0 if direction not found
+    
+    # Clean the input string
+    direction = str(direction).strip().upper()
+    return direction_dict.get(direction, 0)
 
 def preprocess_data(df):
     """
     Preprocess the weather data by:
-    1. Removing rows with missing values
-    2. Converting wind directions to numerical values
-    3. Converting all columns to numeric type
-    4. Handling outliers
-    5. Removing specific outlier values (e.g., RR = 8888 or 9999)
+    1. Converting wind directions to numerical values
+    2. Converting all columns to numeric type
+    3. Removing invalid values (8888, 9999)
+    4. Normalizing features
     """
     # Make a copy to avoid modifying original data
     df = df.copy()
     
-    # Convert date column
-    df['Tanggal'] = pd.to_datetime(df['Tanggal'], format='%d-%m-%Y')
+    # Print initial data info
+    logging.info(f"Initial data shape: {df.shape}")
+    initial_rows = len(df)
     
-    # List of features we want to keep
-    features = ['Tanggal', 'Tn', 'Tx', 'Tavg', 'RH_avg', 'RR', 'ss', 'ff_x', 'ddd_x', 'ff_avg', 'ddd_car']
-    
-    # Keep only the columns we need
-    df = df[features]
-    
-    # Convert wind directions to numerical values
-    if 'ddd_x' in df.columns:
-        df['ddd_x'] = df['ddd_x'].apply(convert_wind_direction)
-    if 'ddd_car' in df.columns:
+    try:
+        # Convert date column
+        df['Tanggal'] = pd.to_datetime(df['Tanggal'], format='%d-%m-%Y')
+        
+        # Convert wind directions to numerical values
+        df['ddd_car'] = df['ddd_car'].str.strip()  # Remove any whitespace
         df['ddd_car'] = df['ddd_car'].apply(convert_wind_direction)
-    
-    # Convert all columns (except date) to numeric, replacing errors with NaN
-    for column in df.columns:
-        if column != 'Tanggal':
-            df[column] = pd.to_numeric(df[column], errors='coerce')
-    
-    # Remove rows with any missing values
-    df_cleaned = df.dropna()
-    
-    # Remove rows where RR equals 8888 or 9999
-    df_cleaned = df_cleaned[(df_cleaned['RR'] != 8888) & (df_cleaned['RR'] != 9999)]
-    
-    # Print information about removed data
-    total_rows = len(df)
-    removed_rows = total_rows - len(df_cleaned)
-    print(f"Total rows in original dataset: {total_rows}")
-    print(f"Rows removed due to missing values: {removed_rows}")
-    print(f"Remaining rows: {len(df_cleaned)}")
-    
-    return df_cleaned
+        
+        # Convert all columns (except date) to numeric
+        for column in df.columns:
+            if column != 'Tanggal':
+                df[column] = pd.to_numeric(df[column], errors='coerce')
+        
+        # Remove invalid rainfall values (8888, 9999)
+        df = df[~df['RR'].isin([8888, 9999])]
+        rows_after_invalid = len(df)
+        
+        # Remove rows with any missing values
+        df = df.dropna()
+        rows_after_nan = len(df)
+        
+        # Normalize numerical columns (except date and target)
+        numerical_cols = [col for col in df.columns if col not in ['Tanggal', 'RR']]
+        for col in numerical_cols:
+            mean = df[col].mean()
+            std = df[col].std()
+            if std != 0:  # Avoid division by zero
+                df[col] = (df[col] - mean) / std
+        
+        # Log preprocessing results
+        logging.info("\nPreprocessing Results:")
+        logging.info(f"Initial rows: {initial_rows}")
+        logging.info(f"Rows after removing invalid RR: {rows_after_invalid}")
+        logging.info(f"Rows after removing NaN: {rows_after_nan}")
+        logging.info(f"Final rows: {len(df)}")
+        
+        # Log RR statistics
+        logging.info("\nRainfall (RR) Statistics:")
+        logging.info(f"Mean: {df['RR'].mean():.2f}")
+        logging.info(f"Std: {df['RR'].std():.2f}")
+        logging.info(f"Min: {df['RR'].min():.2f}")
+        logging.info(f"Max: {df['RR'].max():.2f}")
+        
+        return df
+        
+    except Exception as e:
+        logging.error(f"Error in preprocessing: {str(e)}")
+        raise
 
 def main():
     try:
-        predictor = WeatherPredictor()
+        # Initialize
+        predictor = WeatherPredictor(CONFIG)
         
         # Load and preprocess data
         logging.info("Loading and preprocessing data...")
         df = pd.read_csv('data_jakarta.csv')
         df_cleaned = preprocess_data(df)
         
-        # Define model configurations
-        configurations = [
-            {
-                'model': RandomForestRegressor(
-                    n_estimators=100, 
-                    max_depth=None, 
-                    random_state=42
-                ),
-                'name': 'Random Forest',
-                'type': 'sklearn'
-            },
-            {
-                'model': build_lstm_model,
-                'name': 'LSTM',
-                'type': 'keras',
-                'epochs': 100,
-                'batch_size': 32
-            },
-            {
-                'model': SVR(
-                    kernel='rbf', 
-                    C=1.0, 
-                    epsilon=0.1
-                ),
-                'name': 'SVM',
-                'type': 'sklearn'
-            },
-            {
-                'model': GradientBoostingRegressor(
-                    n_estimators=100,
-                    learning_rate=0.1,
-                    random_state=42
-                ),
-                'name': 'GBM',
-                'type': 'sklearn'
-            },
-            {
-                'model': build_cnn_model,
-                'name': 'CNN',
-                'type': 'keras',
-                'epochs': 100,
-                'batch_size': 32
-            },
-            {
-                'model': build_mlp_model,
-                'name': 'Backpropagation (MLP)',
-                'type': 'keras',
-                'epochs': 100,
-                'batch_size': 32
-            }
-        ]
-        
-        # Engineer features (without scaling)
-        logging.info("Engineering features...")
+        # Engineer features
         df_engineered = predictor.engineer_features(df_cleaned)
         
         # Prepare sequences
-        logging.info("Preparing sequences...")
-        X, y = predictor.prepare_sequences(df_engineered)
+        X, y, dates = predictor.prepare_sequences(df_engineered)
         
         if len(X) == 0:
-            logging.error("No valid sequences could be created from the data")
             return
-            
+        
+        # Get model configurations
+        configurations = get_model_configurations()
+        
+        # Store results
+        results = []
         best_model = None
         best_metrics = None
         best_mae = float('inf')
         
-        # Create a list to store results for comparison
-        results = []
-        
-        # Try each configuration
-        for i, config in enumerate(configurations, 1):
-            logging.info(f"\nTrying configuration {i}/{len(configurations)}: {config['name']}")
+        # Train and evaluate each model
+        for config in configurations:
+            logging.info(f"\nTraining {config['name']}...")
             
-            # Update model configuration
-            predictor.model_type = config['type']
-            predictor.model_name = config['name']
+            metrics, model = predictor.train_and_evaluate(X, y, dates, config)
             
-            if config['type'] == 'keras':
-                predictor.model_builder = config['model']
-                predictor.config['epochs'] = config['epochs']
-                predictor.config['batch_size'] = config['batch_size']
-            else:
-                predictor.model = config['model']
-            
-            # Train and evaluate
-            try:
-                metrics = predictor.train(X, y)
-                current_mae = metrics['MAE']
-                
-                # Store results
+            if metrics is not None:
                 results.append({
                     'Model': config['name'],
-                    'MAE': metrics['MAE'],
-                    'RMSE': metrics['RMSE'],
-                    'R2': metrics['R2'],
-                    'MAPE': metrics['MAPE']
+                    **metrics
                 })
                 
-                # Check if this is the best model so far
-                if current_mae < best_mae:
-                    best_mae = current_mae
+                if metrics['MAE'] < best_mae:
+                    best_mae = metrics['MAE']
                     best_metrics = metrics
-                    best_model = predictor.model
-                    best_model_type = config['type']
+                    best_model = model
                     best_model_name = config['name']
-                    
-                    # Save the best model
-                    predictor.save_model()
-                    logging.info(f"\nNew best model found! ({config['name']})")
-                    logging.info(f"MAE: {current_mae:.4f}")
-                
-            except Exception as e:
-                logging.error(f"Error training {config['name']}: {str(e)}")
-                results.append({
-                    'Model': config['name'],
-                    'MAE': None,
-                    'RMSE': None,
-                    'R2': None,
-                    'MAPE': None
-                })
-                continue
         
-        # Create and display comparison table
+        # Create comparison plot
+        results_df = pd.DataFrame(results)
+        plot_model_comparison(results_df, save_path='plots')
+        
+        # Log results
         logging.info("\n" + "="*50)
         logging.info("MODEL COMPARISON RESULTS")
         logging.info("="*50)
-        
-        # Convert results to DataFrame for better formatting
-        results_df = pd.DataFrame(results)
-        results_df = results_df.sort_values('MAE')  # Sort by MAE
-        
-        # Format the table
-        formatted_table = results_df.to_string(index=False, float_format=lambda x: '{:.4f}'.format(x) if pd.notnull(x) else 'Failed')
-        logging.info("\n" + formatted_table)
+        logging.info("\n" + results_df.to_string(index=False))
         
         logging.info("\n" + "="*50)
         logging.info(f"BEST MODEL: {best_model_name}")
         logging.info("="*50)
-        logging.info(f"MAE: {best_metrics['MAE']:.4f}")
-        logging.info(f"RMSE: {best_metrics['RMSE']:.4f}")
-        logging.info(f"R2 Score: {best_metrics['R2']:.4f}")
-        logging.info(f"MAPE: {best_metrics['MAPE']:.4f}")
+        for metric, value in best_metrics.items():
+            logging.info(f"{metric}: {value:.4f}")
         
-        # Use the best model for predictions
-        if best_model is not None:
-            predictor.model = best_model
-            
-            # Make predictions with best model
-            last_sequence = X[-1].reshape(predictor.sequence_shape)
-            predictions = predictor.predict_next_days(last_sequence)
-            
-            # Print predictions
-            logging.info("\n" + "="*50)
-            logging.info(f"PREDICTIONS USING BEST MODEL ({best_model_name})")
-            logging.info("="*50)
-            last_date = df_engineered['Tanggal'].iloc[-1]
-            for i, pred in enumerate(predictions, 1):
-                future_date = last_date + timedelta(days=i)
-                logging.info(f"{future_date.date()}: {pred:.2f} mm")
-        else:
-            logging.error("No successful model training found")
-                
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         raise
@@ -570,11 +540,19 @@ def main():
 # Define model builders for neural network models
 def build_lstm_model(input_shape):
     model = Sequential([
-        LSTM(64, input_shape=input_shape),
+        LSTM(128, input_shape=input_shape, return_sequences=True),
+        Dropout(0.2),
+        LSTM(64),
+        Dropout(0.2),
         Dense(32, activation='relu'),
+        Dense(16, activation='relu'),
         Dense(1)
     ])
-    model.compile(optimizer='adam', loss='mse')
+    model.compile(
+        optimizer=Adam(learning_rate=0.001),
+        loss='mse',
+        metrics=['mae']
+    )
     return model
 
 def build_cnn_model(input_shape):
