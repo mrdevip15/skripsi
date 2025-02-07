@@ -16,6 +16,10 @@ from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 from sklearn.svm import SVR
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Conv1D, MaxPooling1D, Flatten
+from sklearn.ensemble import GradientBoostingRegressor  # for GBM
 
 # Set up logging
 logging.basicConfig(
@@ -32,6 +36,9 @@ class WeatherPredictor:
         self.model = None
         self.history = None
         self.config = CONFIG
+        self.model_type = None
+        self.model_name = None
+        self.model_builder = None
         
         # Create necessary directories
         os.makedirs('models', exist_ok=True)
@@ -123,30 +130,56 @@ class WeatherPredictor:
         try:
             # Split data
             X_train, X_test, y_train, y_test = train_test_split(
-                X, y,
-                test_size=0.2,
-                random_state=42
+                X, y, test_size=0.2, random_state=42
             )
             
             logging.info(f"Training data shape: {X_train.shape}")
             logging.info(f"Test data shape: {X_test.shape}")
             
-            # Build and train model
-            self.model = self.build_model(X.shape[1:])
-            
-            # Fit the model
-            logging.info("Fitting model...")
-            self.model.fit(X_train, y_train)
-            
-            # Make predictions
-            logging.info("Making predictions...")
-            y_train_pred = self.model.predict(X_train)
-            y_test_pred = self.model.predict(X_test)
+            # Handle different model types
+            if self.model_type == 'keras':
+                # Reshape input for LSTM and CNN
+                if self.model_name == 'LSTM':
+                    X_train = X_train.reshape(X_train.shape[0], self.sequence_shape[0], -1)
+                    X_test = X_test.reshape(X_test.shape[0], self.sequence_shape[0], -1)
+                elif self.model_name == 'CNN':
+                    # Reshape for CNN (samples, timesteps, features)
+                    X_train = X_train.reshape(X_train.shape[0], -1, 1)
+                    X_test = X_test.reshape(X_test.shape[0], -1, 1)
+                
+                # Build and train model
+                self.model = self.model_builder((X_train.shape[1:]))
+                
+                # Add early stopping
+                early_stopping = tf.keras.callbacks.EarlyStopping(
+                    monitor='val_loss',
+                    patience=10,
+                    restore_best_weights=True
+                )
+                
+                history = self.model.fit(
+                    X_train, y_train,
+                    epochs=self.config['epochs'],
+                    batch_size=self.config['batch_size'],
+                    validation_split=0.2,
+                    callbacks=[early_stopping],
+                    verbose=1
+                )
+                
+                # Make predictions
+                y_train_pred = self.model.predict(X_train).flatten()
+                y_test_pred = self.model.predict(X_test).flatten()
+                
+            else:  # sklearn models
+                self.model.fit(X_train, y_train)
+                y_train_pred = self.model.predict(X_train)
+                y_test_pred = self.model.predict(X_test)
             
             # Calculate metrics
             train_metrics = self.evaluate_predictions(y_train, y_train_pred)
             test_metrics = self.evaluate_predictions(y_test, y_test_pred)
             
+            logging.info(f"\nModel: {self.model_name}")
             logging.info("\nTraining Metrics:")
             logging.info(f"Train MAE: {train_metrics['MAE']:.4f}")
             logging.info(f"Train R2: {train_metrics['R2']:.4f}")
@@ -369,20 +402,52 @@ def main():
         # Define model configurations
         configurations = [
             {
-                'model': RandomForestRegressor(n_estimators=100, max_depth=None, random_state=42),
-                'name': 'Random Forest'
+                'model': RandomForestRegressor(
+                    n_estimators=100, 
+                    max_depth=None, 
+                    random_state=42
+                ),
+                'name': 'Random Forest',
+                'type': 'sklearn'
             },
             {
-                'model': XGBRegressor(n_estimators=100, learning_rate=0.1, random_state=42),
-                'name': 'XGBoost'
+                'model': build_lstm_model,
+                'name': 'LSTM',
+                'type': 'keras',
+                'epochs': 100,
+                'batch_size': 32
             },
             {
-                'model': LGBMRegressor(n_estimators=100, learning_rate=0.1, random_state=42),
-                'name': 'LightGBM'
+                'model': SVR(
+                    kernel='rbf', 
+                    C=1.0, 
+                    epsilon=0.1
+                ),
+                'name': 'SVM',
+                'type': 'sklearn'
             },
             {
-                'model': SVR(kernel='rbf', C=1.0, epsilon=0.1),
-                'name': 'Support Vector Regression'
+                'model': GradientBoostingRegressor(
+                    n_estimators=100,
+                    learning_rate=0.1,
+                    random_state=42
+                ),
+                'name': 'GBM',
+                'type': 'sklearn'
+            },
+            {
+                'model': build_cnn_model,
+                'name': 'CNN',
+                'type': 'keras',
+                'epochs': 100,
+                'batch_size': 32
+            },
+            {
+                'model': build_mlp_model,
+                'name': 'Backpropagation (MLP)',
+                'type': 'keras',
+                'epochs': 100,
+                'batch_size': 32
             }
         ]
         
@@ -402,32 +467,82 @@ def main():
         best_metrics = None
         best_mae = float('inf')
         
+        # Create a list to store results for comparison
+        results = []
+        
         # Try each configuration
         for i, config in enumerate(configurations, 1):
             logging.info(f"\nTrying configuration {i}/{len(configurations)}: {config['name']}")
             
             # Update model configuration
-            predictor.model = config['model']
+            predictor.model_type = config['type']
+            predictor.model_name = config['name']
+            
+            if config['type'] == 'keras':
+                predictor.model_builder = config['model']
+                predictor.config['epochs'] = config['epochs']
+                predictor.config['batch_size'] = config['batch_size']
+            else:
+                predictor.model = config['model']
             
             # Train and evaluate
             try:
                 metrics = predictor.train(X, y)
                 current_mae = metrics['MAE']
                 
+                # Store results
+                results.append({
+                    'Model': config['name'],
+                    'MAE': metrics['MAE'],
+                    'RMSE': metrics['RMSE'],
+                    'R2': metrics['R2'],
+                    'MAPE': metrics['MAPE']
+                })
+                
                 # Check if this is the best model so far
                 if current_mae < best_mae:
                     best_mae = current_mae
                     best_metrics = metrics
                     best_model = predictor.model
+                    best_model_type = config['type']
+                    best_model_name = config['name']
                     
                     # Save the best model
                     predictor.save_model()
-                    logging.info(f"\nNew best model found! (Configuration {i})")
+                    logging.info(f"\nNew best model found! ({config['name']})")
                     logging.info(f"MAE: {current_mae:.4f}")
                 
             except Exception as e:
-                logging.error(f"Error training configuration {i}: {str(e)}")
+                logging.error(f"Error training {config['name']}: {str(e)}")
+                results.append({
+                    'Model': config['name'],
+                    'MAE': None,
+                    'RMSE': None,
+                    'R2': None,
+                    'MAPE': None
+                })
                 continue
+        
+        # Create and display comparison table
+        logging.info("\n" + "="*50)
+        logging.info("MODEL COMPARISON RESULTS")
+        logging.info("="*50)
+        
+        # Convert results to DataFrame for better formatting
+        results_df = pd.DataFrame(results)
+        results_df = results_df.sort_values('MAE')  # Sort by MAE
+        
+        # Format the table
+        formatted_table = results_df.to_string(index=False, float_format=lambda x: '{:.4f}'.format(x) if pd.notnull(x) else 'Failed')
+        logging.info("\n" + formatted_table)
+        
+        logging.info("\n" + "="*50)
+        logging.info(f"BEST MODEL: {best_model_name}")
+        logging.info("="*50)
+        logging.info(f"MAE: {best_metrics['MAE']:.4f}")
+        logging.info(f"RMSE: {best_metrics['RMSE']:.4f}")
+        logging.info(f"R2 Score: {best_metrics['R2']:.4f}")
+        logging.info(f"MAPE: {best_metrics['MAPE']:.4f}")
         
         # Use the best model for predictions
         if best_model is not None:
@@ -437,9 +552,11 @@ def main():
             last_sequence = X[-1].reshape(predictor.sequence_shape)
             predictions = predictor.predict_next_days(last_sequence)
             
-            # Print predictions directly (no inverse transform needed)
+            # Print predictions
+            logging.info("\n" + "="*50)
+            logging.info(f"PREDICTIONS USING BEST MODEL ({best_model_name})")
+            logging.info("="*50)
             last_date = df_engineered['Tanggal'].iloc[-1]
-            logging.info("\nRainfall (RR) Predictions using best model:")
             for i, pred in enumerate(predictions, 1):
                 future_date = last_date + timedelta(days=i)
                 logging.info(f"{future_date.date()}: {pred:.2f} mm")
@@ -449,6 +566,69 @@ def main():
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         raise
+
+# Define model builders for neural network models
+def build_lstm_model(input_shape):
+    model = Sequential([
+        LSTM(64, input_shape=input_shape),
+        Dense(32, activation='relu'),
+        Dense(1)
+    ])
+    model.compile(optimizer='adam', loss='mse')
+    return model
+
+def build_cnn_model(input_shape):
+    """Build CNN model with proper input shape handling"""
+    # Reshape input_shape if needed
+    if len(input_shape) == 1:
+        # Add channel dimension for 1D CNN
+        input_shape = (input_shape[0], 1)
+    
+    model = Sequential([
+        # First Conv1D layer
+        Conv1D(
+            filters=32,
+            kernel_size=3,
+            activation='relu',
+            input_shape=input_shape,
+            padding='same'
+        ),
+        MaxPooling1D(pool_size=2),
+        
+        # Second Conv1D layer
+        Conv1D(
+            filters=64,
+            kernel_size=3,
+            activation='relu',
+            padding='same'
+        ),
+        MaxPooling1D(pool_size=2),
+        
+        # Flatten and Dense layers
+        Flatten(),
+        Dense(64, activation='relu'),
+        Dense(32, activation='relu'),
+        Dense(1)  # Output layer
+    ])
+    
+    # Compile model with MSE loss and Adam optimizer
+    model.compile(
+        optimizer='adam',
+        loss='mse',
+        metrics=['mae']
+    )
+    
+    return model
+
+def build_mlp_model(input_shape):
+    model = Sequential([
+        Dense(64, activation='relu', input_shape=(input_shape[0],)),
+        Dense(32, activation='relu'),
+        Dense(16, activation='relu'),
+        Dense(1)
+    ])
+    model.compile(optimizer='adam', loss='mse')
+    return model
 
 if __name__ == "__main__":
     main()

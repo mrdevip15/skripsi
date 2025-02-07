@@ -1599,3 +1599,346 @@ Rainfall (RR) Predictions using best model:
 2025-02-07 14:56:46,302 - INFO - 2024-07-03: 7.08 mm
 2025-02-07 14:56:46,302 - INFO - 2024-07-04: 7.21 mm
 2025-02-07 14:56:46,302 - INFO - 2024-07-05: 8.40 mm
+2025-02-07 15:02:02,708 - INFO - Loading and preprocessing data...
+2025-02-07 15:02:02,752 - INFO - Preparing sequences...
+2025-02-07 15:02:09,948 - ERROR - An error occurred: cannot reshape array of size 524950 into shape (10499,5,1)
+2025-02-07 15:03:56,365 - INFO - Loading and preprocessing data...
+2025-02-07 15:03:56,409 - INFO - Engineering features...
+2025-02-07 15:03:56,429 - INFO - Preparing sequences...
+2025-02-07 15:03:59,004 - INFO - 
+Trying configuration 1/6: Random Forest
+2025-02-07 15:03:59,007 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:03:59,007 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:04:13,611 - INFO - 
+Model: Random Forest
+2025-02-07 15:04:13,611 - INFO - 
+Training Metrics:
+2025-02-07 15:04:13,611 - INFO - Train MAE: 3.0695
+2025-02-07 15:04:13,612 - INFO - Train R2: 0.8672
+2025-02-07 15:04:13,612 - INFO - 
+Test Metrics:
+2025-02-07 15:04:13,612 - INFO - Test MAE: 8.0782
+2025-02-07 15:04:13,612 - INFO - Test R2: 0.0375
+2025-02-07 15:04:13,639 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:04:13,639 - INFO - 
+New best model found! (Random Forest)
+2025-02-07 15:04:13,639 - INFO - MAE: 8.0782
+2025-02-07 15:04:13,640 - INFO - 
+Trying configuration 2/6: LSTM
+2025-02-07 15:04:13,641 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:04:13,641 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:05:00,869 - INFO - 
+Model: LSTM
+2025-02-07 15:05:00,870 - INFO - 
+Training Metrics:
+2025-02-07 15:05:00,870 - INFO - Train MAE: 6.5154
+2025-02-07 15:05:00,870 - INFO - Train R2: 0.1668
+2025-02-07 15:05:00,870 - INFO - 
+Test Metrics:
+2025-02-07 15:05:00,870 - INFO - Test MAE: 6.7596
+2025-02-07 15:05:00,870 - INFO - Test R2: 0.0212
+2025-02-07 15:05:00,927 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:05:00,927 - INFO - 
+New best model found! (LSTM)
+2025-02-07 15:05:00,927 - INFO - MAE: 6.7596
+2025-02-07 15:05:00,927 - INFO - 
+Trying configuration 3/6: SVM
+2025-02-07 15:05:00,929 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:05:00,929 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:05:08,697 - INFO - 
+Model: SVM
+2025-02-07 15:05:08,697 - INFO - 
+Training Metrics:
+2025-02-07 15:05:08,698 - INFO - Train MAE: 5.8284
+2025-02-07 15:05:08,698 - INFO - Train R2: -0.0939
+2025-02-07 15:05:08,699 - INFO - 
+Test Metrics:
+2025-02-07 15:05:08,699 - INFO - Test MAE: 5.8536
+2025-02-07 15:05:08,699 - INFO - Test R2: -0.1058
+2025-02-07 15:05:08,700 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:05:08,700 - INFO - 
+New best model found! (SVM)
+2025-02-07 15:05:08,700 - INFO - MAE: 5.8536
+2025-02-07 15:05:08,700 - INFO - 
+Trying configuration 4/6: GBM
+2025-02-07 15:05:08,702 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:05:08,702 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:05:10,956 - INFO - 
+Model: GBM
+2025-02-07 15:05:10,956 - INFO - 
+Training Metrics:
+2025-02-07 15:05:10,956 - INFO - Train MAE: 6.9395
+2025-02-07 15:05:10,957 - INFO - Train R2: 0.3296
+2025-02-07 15:05:10,957 - INFO - 
+Test Metrics:
+2025-02-07 15:05:10,957 - INFO - Test MAE: 7.4820
+2025-02-07 15:05:10,957 - INFO - Test R2: 0.0571
+2025-02-07 15:05:10,957 - INFO - 
+Trying configuration 5/6: CNN
+2025-02-07 15:05:10,958 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:05:10,959 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:05:10,977 - ERROR - Error in training: One of the dimensions in the output is <= 0 due to downsampling in conv1d_1. Consider increasing the input size. Received input shape [None, 1, 64] which would produce output shape with a zero or negative value in a dimension.
+2025-02-07 15:05:10,978 - ERROR - Error training CNN: One of the dimensions in the output is <= 0 due to downsampling in conv1d_1. Consider increasing the input size. Received input shape [None, 1, 64] which would produce output shape with a zero or negative value in a dimension.
+2025-02-07 15:05:10,978 - INFO - 
+Trying configuration 6/6: Backpropagation (MLP)
+2025-02-07 15:05:10,979 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:05:10,980 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:05:27,786 - INFO - 
+Model: Backpropagation (MLP)
+2025-02-07 15:05:27,786 - INFO - 
+Training Metrics:
+2025-02-07 15:05:27,787 - INFO - Train MAE: 7.2456
+2025-02-07 15:05:27,787 - INFO - Train R2: 0.2888
+2025-02-07 15:05:27,787 - INFO - 
+Test Metrics:
+2025-02-07 15:05:27,787 - INFO - Test MAE: 8.2530
+2025-02-07 15:05:27,787 - INFO - Test R2: -0.1196
+2025-02-07 15:05:27,791 - INFO - 
+Rainfall (RR) Predictions using best model:
+2025-02-07 15:05:27,791 - INFO - 2024-07-03: 0.41 mm
+2025-02-07 15:05:27,791 - INFO - 2024-07-04: 0.39 mm
+2025-02-07 15:05:27,791 - INFO - 2024-07-05: 0.49 mm
+2025-02-07 15:08:10,063 - INFO - Loading and preprocessing data...
+2025-02-07 15:08:10,106 - INFO - Engineering features...
+2025-02-07 15:08:10,127 - INFO - Preparing sequences...
+2025-02-07 15:08:12,739 - INFO - 
+Trying configuration 1/6: Random Forest
+2025-02-07 15:08:12,741 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:08:12,743 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:08:27,084 - INFO - 
+Model: Random Forest
+2025-02-07 15:08:27,084 - INFO - 
+Training Metrics:
+2025-02-07 15:08:27,085 - INFO - Train MAE: 3.0695
+2025-02-07 15:08:27,085 - INFO - Train R2: 0.8672
+2025-02-07 15:08:27,085 - INFO - 
+Test Metrics:
+2025-02-07 15:08:27,085 - INFO - Test MAE: 8.0782
+2025-02-07 15:08:27,085 - INFO - Test R2: 0.0375
+2025-02-07 15:08:27,116 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:08:27,116 - INFO - 
+New best model found! (Random Forest)
+2025-02-07 15:08:27,117 - INFO - MAE: 8.0782
+2025-02-07 15:08:27,117 - INFO - 
+Trying configuration 2/6: LSTM
+2025-02-07 15:08:27,117 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:08:27,117 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:09:15,026 - INFO - 
+Model: LSTM
+2025-02-07 15:09:15,026 - INFO - 
+Training Metrics:
+2025-02-07 15:09:15,027 - INFO - Train MAE: 6.6747
+2025-02-07 15:09:15,027 - INFO - Train R2: 0.2897
+2025-02-07 15:09:15,027 - INFO - 
+Test Metrics:
+2025-02-07 15:09:15,027 - INFO - Test MAE: 7.2541
+2025-02-07 15:09:15,028 - INFO - Test R2: 0.0206
+2025-02-07 15:09:15,087 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:09:15,087 - INFO - 
+New best model found! (LSTM)
+2025-02-07 15:09:15,088 - INFO - MAE: 7.2541
+2025-02-07 15:09:15,088 - INFO - 
+Trying configuration 3/6: SVM
+2025-02-07 15:09:15,089 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:09:15,089 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:09:22,562 - INFO - 
+Model: SVM
+2025-02-07 15:09:22,563 - INFO - 
+Training Metrics:
+2025-02-07 15:09:22,564 - INFO - Train MAE: 5.8284
+2025-02-07 15:09:22,564 - INFO - Train R2: -0.0939
+2025-02-07 15:09:22,564 - INFO - 
+Test Metrics:
+2025-02-07 15:09:22,564 - INFO - Test MAE: 5.8536
+2025-02-07 15:09:22,564 - INFO - Test R2: -0.1058
+2025-02-07 15:09:22,565 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:09:22,565 - INFO - 
+New best model found! (SVM)
+2025-02-07 15:09:22,566 - INFO - MAE: 5.8536
+2025-02-07 15:09:22,566 - INFO - 
+Trying configuration 4/6: GBM
+2025-02-07 15:09:22,567 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:09:22,567 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:09:24,812 - INFO - 
+Model: GBM
+2025-02-07 15:09:24,812 - INFO - 
+Training Metrics:
+2025-02-07 15:09:24,812 - INFO - Train MAE: 6.9395
+2025-02-07 15:09:24,812 - INFO - Train R2: 0.3296
+2025-02-07 15:09:24,813 - INFO - 
+Test Metrics:
+2025-02-07 15:09:24,813 - INFO - Test MAE: 7.4820
+2025-02-07 15:09:24,813 - INFO - Test R2: 0.0571
+2025-02-07 15:09:24,813 - INFO - 
+Trying configuration 5/6: CNN
+2025-02-07 15:09:24,815 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:09:24,815 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:09:24,831 - ERROR - Error in training: One of the dimensions in the output is <= 0 due to downsampling in conv1d_1. Consider increasing the input size. Received input shape [None, 1, 64] which would produce output shape with a zero or negative value in a dimension.
+2025-02-07 15:09:24,832 - ERROR - Error training CNN: One of the dimensions in the output is <= 0 due to downsampling in conv1d_1. Consider increasing the input size. Received input shape [None, 1, 64] which would produce output shape with a zero or negative value in a dimension.
+2025-02-07 15:09:24,832 - INFO - 
+Trying configuration 6/6: Backpropagation (MLP)
+2025-02-07 15:09:24,834 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:09:24,834 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:09:40,942 - INFO - 
+Model: Backpropagation (MLP)
+2025-02-07 15:09:40,943 - INFO - 
+Training Metrics:
+2025-02-07 15:09:40,943 - INFO - Train MAE: 6.7233
+2025-02-07 15:09:40,943 - INFO - Train R2: 0.3013
+2025-02-07 15:09:40,943 - INFO - 
+Test Metrics:
+2025-02-07 15:09:40,943 - INFO - Test MAE: 7.6176
+2025-02-07 15:09:40,943 - INFO - Test R2: -0.1915
+2025-02-07 15:09:40,944 - INFO - 
+==================================================
+2025-02-07 15:09:40,944 - INFO - MODEL COMPARISON RESULTS
+2025-02-07 15:09:40,944 - INFO - ==================================================
+2025-02-07 15:09:40,953 - INFO - 
+                Model    MAE    RMSE      R2             MAPE
+                  SVM 5.8536 15.9492 -0.1058  2040026086.0603
+                 LSTM 7.2541 15.0105  0.0206 20906796609.6432
+                  GBM 7.4820 14.7275  0.0571 24472726552.4580
+Backpropagation (MLP) 7.6176 16.5558 -0.1915 23902598736.9768
+        Random Forest 8.0782 14.8801  0.0375 28295761724.2701
+                  CNN    NaN     NaN     NaN              NaN
+2025-02-07 15:09:40,954 - INFO - 
+==================================================
+2025-02-07 15:09:40,954 - INFO - BEST MODEL: SVM
+2025-02-07 15:09:40,954 - INFO - ==================================================
+2025-02-07 15:09:40,954 - INFO - MAE: 5.8536
+2025-02-07 15:09:40,955 - INFO - RMSE: 15.9492
+2025-02-07 15:09:40,955 - INFO - R2 Score: -0.1058
+2025-02-07 15:09:40,955 - INFO - MAPE: 2040026086.0603
+2025-02-07 15:09:40,957 - INFO - 
+==================================================
+2025-02-07 15:09:40,958 - INFO - PREDICTIONS USING BEST MODEL (SVM)
+2025-02-07 15:09:40,958 - INFO - ==================================================
+2025-02-07 15:09:40,958 - INFO - 2024-07-03: 0.41 mm
+2025-02-07 15:09:40,958 - INFO - 2024-07-04: 0.39 mm
+2025-02-07 15:09:40,958 - INFO - 2024-07-05: 0.49 mm
+2025-02-07 15:14:35,750 - INFO - Loading and preprocessing data...
+2025-02-07 15:14:35,798 - INFO - Engineering features...
+2025-02-07 15:14:35,821 - INFO - Preparing sequences...
+2025-02-07 15:14:38,608 - INFO - 
+Trying configuration 1/6: Random Forest
+2025-02-07 15:14:38,611 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:14:38,611 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:14:53,610 - INFO - 
+Model: Random Forest
+2025-02-07 15:14:53,612 - INFO - 
+Training Metrics:
+2025-02-07 15:14:53,612 - INFO - Train MAE: 3.0695
+2025-02-07 15:14:53,612 - INFO - Train R2: 0.8672
+2025-02-07 15:14:53,612 - INFO - 
+Test Metrics:
+2025-02-07 15:14:53,612 - INFO - Test MAE: 8.0782
+2025-02-07 15:14:53,612 - INFO - Test R2: 0.0375
+2025-02-07 15:14:53,642 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:14:53,642 - INFO - 
+New best model found! (Random Forest)
+2025-02-07 15:14:53,642 - INFO - MAE: 8.0782
+2025-02-07 15:14:53,643 - INFO - 
+Trying configuration 2/6: LSTM
+2025-02-07 15:14:53,645 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:14:53,645 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:15:10,805 - INFO - 
+Model: LSTM
+2025-02-07 15:15:10,805 - INFO - 
+Training Metrics:
+2025-02-07 15:15:10,806 - INFO - Train MAE: 7.6096
+2025-02-07 15:15:10,806 - INFO - Train R2: 0.1138
+2025-02-07 15:15:10,806 - INFO - 
+Test Metrics:
+2025-02-07 15:15:10,806 - INFO - Test MAE: 7.5412
+2025-02-07 15:15:10,806 - INFO - Test R2: 0.0756
+2025-02-07 15:15:10,839 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:15:10,839 - INFO - 
+New best model found! (LSTM)
+2025-02-07 15:15:10,839 - INFO - MAE: 7.5412
+2025-02-07 15:15:10,840 - INFO - 
+Trying configuration 3/6: SVM
+2025-02-07 15:15:10,842 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:15:10,842 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:15:20,264 - INFO - 
+Model: SVM
+2025-02-07 15:15:20,265 - INFO - 
+Training Metrics:
+2025-02-07 15:15:20,265 - INFO - Train MAE: 5.8284
+2025-02-07 15:15:20,265 - INFO - Train R2: -0.0939
+2025-02-07 15:15:20,265 - INFO - 
+Test Metrics:
+2025-02-07 15:15:20,265 - INFO - Test MAE: 5.8536
+2025-02-07 15:15:20,265 - INFO - Test R2: -0.1058
+2025-02-07 15:15:20,266 - INFO - Model saved to models/weather_model.pkl
+2025-02-07 15:15:20,267 - INFO - 
+New best model found! (SVM)
+2025-02-07 15:15:20,267 - INFO - MAE: 5.8536
+2025-02-07 15:15:20,267 - INFO - 
+Trying configuration 4/6: GBM
+2025-02-07 15:15:20,269 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:15:20,269 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:15:22,647 - INFO - 
+Model: GBM
+2025-02-07 15:15:22,647 - INFO - 
+Training Metrics:
+2025-02-07 15:15:22,647 - INFO - Train MAE: 6.9395
+2025-02-07 15:15:22,647 - INFO - Train R2: 0.3296
+2025-02-07 15:15:22,647 - INFO - 
+Test Metrics:
+2025-02-07 15:15:22,647 - INFO - Test MAE: 7.4820
+2025-02-07 15:15:22,647 - INFO - Test R2: 0.0571
+2025-02-07 15:15:22,647 - INFO - 
+Trying configuration 5/6: CNN
+2025-02-07 15:15:22,650 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:15:22,650 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:15:35,775 - INFO - 
+Model: CNN
+2025-02-07 15:15:35,775 - INFO - 
+Training Metrics:
+2025-02-07 15:15:35,775 - INFO - Train MAE: 7.5313
+2025-02-07 15:15:35,775 - INFO - Train R2: 0.1143
+2025-02-07 15:15:35,775 - INFO - 
+Test Metrics:
+2025-02-07 15:15:35,776 - INFO - Test MAE: 7.5431
+2025-02-07 15:15:35,776 - INFO - Test R2: 0.0620
+2025-02-07 15:15:35,776 - INFO - 
+Trying configuration 6/6: Backpropagation (MLP)
+2025-02-07 15:15:35,778 - INFO - Training data shape: (8394, 50)
+2025-02-07 15:15:35,778 - INFO - Test data shape: (2099, 50)
+2025-02-07 15:15:38,956 - INFO - 
+Model: Backpropagation (MLP)
+2025-02-07 15:15:38,957 - INFO - 
+Training Metrics:
+2025-02-07 15:15:38,957 - INFO - Train MAE: 7.9183
+2025-02-07 15:15:38,957 - INFO - Train R2: 0.0978
+2025-02-07 15:15:38,957 - INFO - 
+Test Metrics:
+2025-02-07 15:15:38,957 - INFO - Test MAE: 7.9065
+2025-02-07 15:15:38,957 - INFO - Test R2: 0.0551
+2025-02-07 15:15:38,958 - INFO - 
+==================================================
+2025-02-07 15:15:38,958 - INFO - MODEL COMPARISON RESULTS
+2025-02-07 15:15:38,958 - INFO - ==================================================
+2025-02-07 15:15:38,960 - INFO - 
+                Model    MAE    RMSE      R2             MAPE
+                  SVM 5.8536 15.9492 -0.1058  2040026086.0603
+                  GBM 7.4820 14.7275  0.0571 24472726552.4580
+                 LSTM 7.5412 14.5825  0.0756 25074805950.1419
+                  CNN 7.5431 14.6896  0.0620 26013529561.9822
+Backpropagation (MLP) 7.9065 14.7436  0.0551 28458408931.4118
+        Random Forest 8.0782 14.8801  0.0375 28295761724.2701
+2025-02-07 15:15:38,960 - INFO - 
+==================================================
+2025-02-07 15:15:38,961 - INFO - BEST MODEL: SVM
+2025-02-07 15:15:38,961 - INFO - ==================================================
+2025-02-07 15:15:38,961 - INFO - MAE: 5.8536
+2025-02-07 15:15:38,961 - INFO - RMSE: 15.9492
+2025-02-07 15:15:38,961 - INFO - R2 Score: -0.1058
+2025-02-07 15:15:38,961 - INFO - MAPE: 2040026086.0603
+2025-02-07 15:15:38,964 - INFO - 
+==================================================
+2025-02-07 15:15:38,964 - INFO - PREDICTIONS USING BEST MODEL (SVM)
+2025-02-07 15:15:38,964 - INFO - ==================================================
+2025-02-07 15:15:38,965 - INFO - 2024-07-03: 0.41 mm
+2025-02-07 15:15:38,965 - INFO - 2024-07-04: 0.39 mm
+2025-02-07 15:15:38,965 - INFO - 2024-07-05: 0.49 mm
