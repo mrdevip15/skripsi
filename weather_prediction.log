@@ -3631,3 +3631,1108 @@ Backpropagation (MLP) 1.101558 1.049551 0.531532  0.007434 102.445609           
 2025-02-10 17:05:15,707 - INFO - MAPE: 0.0579
 2025-02-10 17:05:15,707 - INFO - MAE_as_percentage_of_mean: 4.9510
 2025-02-10 17:05:15,707 - ERROR - An error occurred: unsupported format string passed to dict.__format__
+2025-02-10 19:08:51,115 - INFO - Loading and preprocessing data...
+2025-02-10 19:08:51,295 - INFO - 
+Original data types:
+2025-02-10 19:08:51,295 - INFO - STATION             object
+NAME                object
+LATITUDE           float64
+LONGITUDE          float64
+ELEVATION          float64
+                    ...   
+WT21_ATTRIBUTES     object
+WT22               float64
+WT22_ATTRIBUTES     object
+WV03               float64
+WV03_ATTRIBUTES     object
+Length: 99, dtype: object
+2025-02-10 19:08:51,303 - INFO - Initial data shape: (30737, 99)
+2025-02-10 19:08:51,304 - ERROR - Error in preprocessing: 'DATE'
+2025-02-10 19:08:51,304 - ERROR - An error occurred: 'DATE'
+2025-02-10 19:09:13,653 - INFO - Loading and preprocessing data...
+2025-02-10 19:09:13,821 - INFO - 
+Original data types:
+2025-02-10 19:09:13,821 - INFO - STATION             object
+NAME                object
+LATITUDE           float64
+LONGITUDE          float64
+ELEVATION          float64
+                    ...   
+WT21_ATTRIBUTES     object
+WT22               float64
+WT22_ATTRIBUTES     object
+WV03               float64
+WV03_ATTRIBUTES     object
+Length: 100, dtype: object
+2025-02-10 19:09:13,829 - INFO - Initial data shape: (30737, 100)
+2025-02-10 19:09:13,848 - INFO - 
+Preprocessing Results:
+2025-02-10 19:09:13,848 - INFO - Initial rows: 30737
+2025-02-10 19:09:13,848 - INFO - Final rows: 30732
+2025-02-10 19:09:13,848 - INFO - 
+PRCP Statistics:
+2025-02-10 19:09:13,848 - INFO - Mean: 0.00
+2025-02-10 19:09:13,848 - INFO - Std: 1.00
+2025-02-10 19:09:13,849 - INFO - Min: -0.35
+2025-02-10 19:09:13,849 - INFO - Max: 23.80
+2025-02-10 19:09:13,849 - INFO - 
+SNOW Statistics:
+2025-02-10 19:09:13,849 - INFO - Mean: -0.00
+2025-02-10 19:09:13,849 - INFO - Std: 1.00
+2025-02-10 19:09:13,850 - INFO - Min: -0.10
+2025-02-10 19:09:13,850 - INFO - Max: 48.19
+2025-02-10 19:09:13,850 - INFO - 
+SNWD Statistics:
+2025-02-10 19:09:13,850 - INFO - Mean: -0.00
+2025-02-10 19:09:13,850 - INFO - Std: 1.00
+2025-02-10 19:09:13,850 - INFO - Min: -0.15
+2025-02-10 19:09:13,852 - INFO - Max: 26.83
+2025-02-10 19:09:13,852 - INFO - 
+TMAX Statistics:
+2025-02-10 19:09:13,852 - INFO - Mean: 0.00
+2025-02-10 19:09:13,852 - INFO - Std: 1.00
+2025-02-10 19:09:13,852 - INFO - Min: -3.11
+2025-02-10 19:09:13,852 - INFO - Max: 2.11
+2025-02-10 19:09:13,852 - INFO - 
+TMIN Statistics:
+2025-02-10 19:09:13,853 - INFO - Mean: 0.00
+2025-02-10 19:09:13,854 - INFO - Std: 1.00
+2025-02-10 19:09:13,854 - INFO - Min: -3.15
+2025-02-10 19:09:13,854 - INFO - Max: 2.14
+2025-02-10 19:09:13,854 - INFO - 
+Cleaned data types:
+2025-02-10 19:09:13,854 - INFO - DATE    datetime64[ns]
+PRCP           float64
+SNOW           float64
+SNWD           float64
+TMAX           float64
+TMIN           float64
+dtype: object
+2025-02-10 19:09:13,855 - INFO - Initial data shape: (30732, 6)
+2025-02-10 19:09:13,893 - INFO - Rows removed due to NaN after feature engineering: 29
+2025-02-10 19:09:13,894 - INFO - Final data shape: (30703, 49)
+2025-02-10 19:09:13,894 - INFO - 
+Engineered data types:
+2025-02-10 19:09:13,894 - INFO - DATE                     datetime64[ns]
+PRCP                            float64
+SNOW                            float64
+SNWD                            float64
+TMAX                            float64
+TMIN                            float64
+day_of_year                       int32
+month                             int32
+day_of_week                       int32
+PRCP_rolling_mean_3d            float64
+PRCP_rolling_std_3d             float64
+SNOW_rolling_mean_3d            float64
+SNOW_rolling_std_3d             float64
+SNWD_rolling_mean_3d            float64
+SNWD_rolling_std_3d             float64
+TMAX_rolling_mean_3d            float64
+TMAX_rolling_std_3d             float64
+TMIN_rolling_mean_3d            float64
+TMIN_rolling_std_3d             float64
+PRCP_rolling_mean_7d            float64
+PRCP_rolling_std_7d             float64
+SNOW_rolling_mean_7d            float64
+SNOW_rolling_std_7d             float64
+SNWD_rolling_mean_7d            float64
+SNWD_rolling_std_7d             float64
+TMAX_rolling_mean_7d            float64
+TMAX_rolling_std_7d             float64
+TMIN_rolling_mean_7d            float64
+TMIN_rolling_std_7d             float64
+PRCP_rolling_mean_14d           float64
+PRCP_rolling_std_14d            float64
+SNOW_rolling_mean_14d           float64
+SNOW_rolling_std_14d            float64
+SNWD_rolling_mean_14d           float64
+SNWD_rolling_std_14d            float64
+TMAX_rolling_mean_14d           float64
+TMAX_rolling_std_14d            float64
+TMIN_rolling_mean_14d           float64
+TMIN_rolling_std_14d            float64
+PRCP_rolling_mean_30d           float64
+PRCP_rolling_std_30d            float64
+SNOW_rolling_mean_30d           float64
+SNOW_rolling_std_30d            float64
+SNWD_rolling_mean_30d           float64
+SNWD_rolling_std_30d            float64
+TMAX_rolling_mean_30d           float64
+TMAX_rolling_std_30d            float64
+TMIN_rolling_mean_30d           float64
+TMIN_rolling_std_30d            float64
+dtype: object
+2025-02-10 19:09:13,897 - INFO - 
+Training Random Forest...
+2025-02-10 19:09:13,897 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:09:13,897 - INFO - 
+Before preparing sequences:
+2025-02-10 19:09:13,899 - INFO - X shape: (30703, 5)
+2025-02-10 19:09:13,899 - INFO - y shape: (30703,)
+2025-02-10 19:09:13,899 - INFO - 
+After sequence preparation:
+2025-02-10 19:09:13,899 - INFO - X shape: (30703, 5)
+2025-02-10 19:09:13,899 - INFO - y shape: (30703,)
+2025-02-10 19:09:13,901 - INFO - 
+After train-test split:
+2025-02-10 19:09:13,901 - INFO - X_train shape: (24562, 5)
+2025-02-10 19:09:13,901 - INFO - X_test shape: (6141, 5)
+2025-02-10 19:09:13,901 - INFO - y_train shape: (24562,)
+2025-02-10 19:09:13,901 - INFO - y_test shape: (6141,)
+2025-02-10 19:09:21,639 - INFO - 
+Training LSTM...
+2025-02-10 19:09:21,639 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:09:28,146 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 19:09:28,166 - INFO - 
+Before preparing sequences:
+2025-02-10 19:09:28,167 - INFO - X shape: (30696, 35)
+2025-02-10 19:09:28,167 - INFO - y shape: (30696,)
+2025-02-10 19:09:28,167 - INFO - 
+After sequence preparation:
+2025-02-10 19:09:28,167 - INFO - X shape: (30696, 7, 5)
+2025-02-10 19:09:28,167 - INFO - y shape: (30696,)
+2025-02-10 19:09:28,172 - INFO - 
+After train-test split:
+2025-02-10 19:09:28,172 - INFO - X_train shape: (24556, 7, 5)
+2025-02-10 19:09:28,172 - INFO - X_test shape: (6140, 7, 5)
+2025-02-10 19:09:28,173 - INFO - y_train shape: (24556,)
+2025-02-10 19:09:28,173 - INFO - y_test shape: (6140,)
+2025-02-10 19:10:19,169 - INFO - 
+Training SVM...
+2025-02-10 19:10:19,170 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:10:19,171 - INFO - 
+Before preparing sequences:
+2025-02-10 19:10:19,171 - INFO - X shape: (30703, 5)
+2025-02-10 19:10:19,171 - INFO - y shape: (30703,)
+2025-02-10 19:10:19,171 - INFO - 
+After sequence preparation:
+2025-02-10 19:10:19,171 - INFO - X shape: (30703, 5)
+2025-02-10 19:10:19,171 - INFO - y shape: (30703,)
+2025-02-10 19:10:19,173 - INFO - 
+After train-test split:
+2025-02-10 19:10:19,173 - INFO - X_train shape: (24562, 5)
+2025-02-10 19:10:19,173 - INFO - X_test shape: (6141, 5)
+2025-02-10 19:10:19,173 - INFO - y_train shape: (24562,)
+2025-02-10 19:10:19,173 - INFO - y_test shape: (6141,)
+2025-02-10 19:10:22,169 - INFO - 
+Training GBM...
+2025-02-10 19:10:22,170 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:10:22,170 - INFO - 
+Before preparing sequences:
+2025-02-10 19:10:22,170 - INFO - X shape: (30703, 5)
+2025-02-10 19:10:22,170 - INFO - y shape: (30703,)
+2025-02-10 19:10:22,171 - INFO - 
+After sequence preparation:
+2025-02-10 19:10:22,171 - INFO - X shape: (30703, 5)
+2025-02-10 19:10:22,171 - INFO - y shape: (30703,)
+2025-02-10 19:10:22,172 - INFO - 
+After train-test split:
+2025-02-10 19:10:22,172 - INFO - X_train shape: (24562, 5)
+2025-02-10 19:10:22,172 - INFO - X_test shape: (6141, 5)
+2025-02-10 19:10:22,174 - INFO - y_train shape: (24562,)
+2025-02-10 19:10:22,174 - INFO - y_test shape: (6141,)
+2025-02-10 19:11:32,508 - INFO - 
+Training CNN...
+2025-02-10 19:11:32,508 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:11:39,014 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 19:11:39,032 - INFO - 
+Before preparing sequences:
+2025-02-10 19:11:39,033 - INFO - X shape: (30696, 35)
+2025-02-10 19:11:39,033 - INFO - y shape: (30696,)
+2025-02-10 19:11:39,033 - INFO - 
+After sequence preparation:
+2025-02-10 19:11:39,033 - INFO - X shape: (30696, 7, 5)
+2025-02-10 19:11:39,033 - INFO - y shape: (30696,)
+2025-02-10 19:11:39,039 - INFO - 
+After train-test split:
+2025-02-10 19:11:39,039 - INFO - X_train shape: (24556, 7, 5)
+2025-02-10 19:11:39,039 - INFO - X_test shape: (6140, 7, 5)
+2025-02-10 19:11:39,039 - INFO - y_train shape: (24556,)
+2025-02-10 19:11:39,039 - INFO - y_test shape: (6140,)
+2025-02-10 19:12:03,043 - INFO - 
+Training Backpropagation (MLP)...
+2025-02-10 19:12:03,043 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:12:09,576 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 19:12:09,598 - INFO - 
+Before preparing sequences:
+2025-02-10 19:12:09,598 - INFO - X shape: (30696, 35)
+2025-02-10 19:12:09,598 - INFO - y shape: (30696,)
+2025-02-10 19:12:09,598 - INFO - 
+After sequence preparation:
+2025-02-10 19:12:09,598 - INFO - X shape: (30696, 35)
+2025-02-10 19:12:09,598 - INFO - y shape: (30696,)
+2025-02-10 19:12:09,602 - INFO - 
+After train-test split:
+2025-02-10 19:12:09,602 - INFO - X_train shape: (24556, 35)
+2025-02-10 19:12:09,602 - INFO - X_test shape: (6140, 35)
+2025-02-10 19:12:09,604 - INFO - y_train shape: (24556,)
+2025-02-10 19:12:09,604 - INFO - y_test shape: (6140,)
+2025-02-10 19:12:33,477 - INFO - 
+==================================================
+2025-02-10 19:12:33,478 - INFO - MODEL COMPARISON RESULTS
+2025-02-10 19:12:33,478 - INFO - ==================================================
+2025-02-10 19:12:33,481 - INFO - 
+                Model      MSE     RMSE      MAE       R2       MAPE  MAE_as_percentage_of_mean                                                                     Context
+        Random Forest 0.012549 0.112024 0.015712 0.988628   5.104826                  84.018061 {'Mean_Rainfall': 0.018701031614459827, 'Max_Rainfall': 19.613608051086175}
+                 LSTM 1.095728 1.046770 0.552141 0.012688 108.965300                2247.565840 {'Mean_Rainfall': 0.024566190432852335, 'Max_Rainfall': 19.613608051086175}
+                  SVM 0.062835 0.250669 0.040987 0.943058  19.690035                 219.172161 {'Mean_Rainfall': 0.018701031614459827, 'Max_Rainfall': 19.613608051086175}
+                  GBM 0.000075 0.008641 0.000926 0.999932   0.057943                   4.950983 {'Mean_Rainfall': 0.018701031614459827, 'Max_Rainfall': 19.613608051086175}
+                  CNN 1.108676 1.052937 0.548938 0.001021 106.316469                2234.528154 {'Mean_Rainfall': 0.024566190432852335, 'Max_Rainfall': 19.613608051086175}
+Backpropagation (MLP) 1.103228 1.050347 0.533925 0.005929 102.951872                2173.412417 {'Mean_Rainfall': 0.024566190432852335, 'Max_Rainfall': 19.613608051086175}
+2025-02-10 19:12:33,481 - INFO - 
+==================================================
+2025-02-10 19:12:33,481 - INFO - BEST MODEL: GBM
+2025-02-10 19:12:33,481 - INFO - ==================================================
+2025-02-10 19:12:33,481 - INFO - MSE: 0.0001
+2025-02-10 19:12:33,481 - INFO - RMSE: 0.0086
+2025-02-10 19:12:33,481 - INFO - MAE: 0.0009
+2025-02-10 19:12:33,481 - INFO - R2: 0.9999
+2025-02-10 19:12:33,481 - INFO - MAPE: 0.0579
+2025-02-10 19:12:33,481 - INFO - MAE_as_percentage_of_mean: 4.9510
+2025-02-10 19:12:33,481 - ERROR - An error occurred: unsupported format string passed to dict.__format__
+2025-02-10 19:17:52,524 - INFO - Loading and preprocessing data...
+2025-02-10 19:17:52,680 - INFO - 
+Original data types:
+2025-02-10 19:17:52,681 - INFO - STATION             object
+NAME                object
+LATITUDE           float64
+LONGITUDE          float64
+ELEVATION          float64
+                    ...   
+WT21_ATTRIBUTES     object
+WT22               float64
+WT22_ATTRIBUTES     object
+WV03               float64
+WV03_ATTRIBUTES     object
+Length: 100, dtype: object
+2025-02-10 19:17:52,687 - INFO - Initial data shape: (30737, 100)
+2025-02-10 19:17:52,705 - INFO - 
+Preprocessing Results:
+2025-02-10 19:17:52,705 - INFO - Initial rows: 30737
+2025-02-10 19:17:52,705 - INFO - Final rows: 30732
+2025-02-10 19:17:52,705 - INFO - 
+PRCP Statistics:
+2025-02-10 19:17:52,705 - INFO - Mean: 0.00
+2025-02-10 19:17:52,705 - INFO - Std: 1.00
+2025-02-10 19:17:52,707 - INFO - Min: -0.35
+2025-02-10 19:17:52,707 - INFO - Max: 23.80
+2025-02-10 19:17:52,707 - INFO - 
+SNOW Statistics:
+2025-02-10 19:17:52,707 - INFO - Mean: -0.00
+2025-02-10 19:17:52,707 - INFO - Std: 1.00
+2025-02-10 19:17:52,708 - INFO - Min: -0.10
+2025-02-10 19:17:52,708 - INFO - Max: 48.19
+2025-02-10 19:17:52,708 - INFO - 
+SNWD Statistics:
+2025-02-10 19:17:52,708 - INFO - Mean: -0.00
+2025-02-10 19:17:52,708 - INFO - Std: 1.00
+2025-02-10 19:17:52,708 - INFO - Min: -0.15
+2025-02-10 19:17:52,708 - INFO - Max: 26.83
+2025-02-10 19:17:52,709 - INFO - 
+TMAX Statistics:
+2025-02-10 19:17:52,709 - INFO - Mean: 0.00
+2025-02-10 19:17:52,709 - INFO - Std: 1.00
+2025-02-10 19:17:52,709 - INFO - Min: -3.11
+2025-02-10 19:17:52,709 - INFO - Max: 2.11
+2025-02-10 19:17:52,709 - INFO - 
+TMIN Statistics:
+2025-02-10 19:17:52,710 - INFO - Mean: 0.00
+2025-02-10 19:17:52,710 - INFO - Std: 1.00
+2025-02-10 19:17:52,710 - INFO - Min: -3.15
+2025-02-10 19:17:52,710 - INFO - Max: 2.14
+2025-02-10 19:17:52,712 - INFO - 
+Cleaned data types:
+2025-02-10 19:17:52,712 - INFO - DATE    datetime64[ns]
+PRCP           float64
+SNOW           float64
+SNWD           float64
+TMAX           float64
+TMIN           float64
+dtype: object
+2025-02-10 19:17:52,713 - INFO - Initial data shape: (30732, 6)
+2025-02-10 19:17:52,751 - INFO - Rows removed due to NaN after feature engineering: 29
+2025-02-10 19:17:52,751 - INFO - Final data shape: (30703, 49)
+2025-02-10 19:17:52,751 - INFO - 
+Engineered data types:
+2025-02-10 19:17:52,752 - INFO - DATE                     datetime64[ns]
+PRCP                            float64
+SNOW                            float64
+SNWD                            float64
+TMAX                            float64
+TMIN                            float64
+day_of_year                       int32
+month                             int32
+day_of_week                       int32
+PRCP_rolling_mean_3d            float64
+PRCP_rolling_std_3d             float64
+SNOW_rolling_mean_3d            float64
+SNOW_rolling_std_3d             float64
+SNWD_rolling_mean_3d            float64
+SNWD_rolling_std_3d             float64
+TMAX_rolling_mean_3d            float64
+TMAX_rolling_std_3d             float64
+TMIN_rolling_mean_3d            float64
+TMIN_rolling_std_3d             float64
+PRCP_rolling_mean_7d            float64
+PRCP_rolling_std_7d             float64
+SNOW_rolling_mean_7d            float64
+SNOW_rolling_std_7d             float64
+SNWD_rolling_mean_7d            float64
+SNWD_rolling_std_7d             float64
+TMAX_rolling_mean_7d            float64
+TMAX_rolling_std_7d             float64
+TMIN_rolling_mean_7d            float64
+TMIN_rolling_std_7d             float64
+PRCP_rolling_mean_14d           float64
+PRCP_rolling_std_14d            float64
+SNOW_rolling_mean_14d           float64
+SNOW_rolling_std_14d            float64
+SNWD_rolling_mean_14d           float64
+SNWD_rolling_std_14d            float64
+TMAX_rolling_mean_14d           float64
+TMAX_rolling_std_14d            float64
+TMIN_rolling_mean_14d           float64
+TMIN_rolling_std_14d            float64
+PRCP_rolling_mean_30d           float64
+PRCP_rolling_std_30d            float64
+SNOW_rolling_mean_30d           float64
+SNOW_rolling_std_30d            float64
+SNWD_rolling_mean_30d           float64
+SNWD_rolling_std_30d            float64
+TMAX_rolling_mean_30d           float64
+TMAX_rolling_std_30d            float64
+TMIN_rolling_mean_30d           float64
+TMIN_rolling_std_30d            float64
+dtype: object
+2025-02-10 19:17:52,755 - INFO - 
+Training Random Forest...
+2025-02-10 19:17:52,755 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:17:52,756 - INFO - 
+Before preparing sequences:
+2025-02-10 19:17:52,756 - INFO - X shape: (30703, 5)
+2025-02-10 19:17:52,756 - INFO - y shape: (30703,)
+2025-02-10 19:17:52,756 - INFO - Date range before split: 1940-07-30T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:17:52,756 - INFO - 
+After train-test split:
+2025-02-10 19:17:52,757 - INFO - X_train shape: (24562, 5)
+2025-02-10 19:17:52,757 - INFO - X_test shape: (6141, 5)
+2025-02-10 19:17:52,757 - INFO - y_train shape: (24562,)
+2025-02-10 19:17:52,757 - INFO - y_test shape: (6141,)
+2025-02-10 19:17:52,757 - INFO - Training data date range: 1940-07-30T00:00:00.000000000 to 2008-04-06T00:00:00.000000000
+2025-02-10 19:17:52,757 - INFO - Testing data date range: 2008-04-07T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:18:03,144 - INFO - 
+Training LSTM...
+2025-02-10 19:18:03,144 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:18:10,783 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 19:18:10,808 - INFO - 
+Before preparing sequences:
+2025-02-10 19:18:10,808 - INFO - X shape: (30696, 35)
+2025-02-10 19:18:10,808 - INFO - y shape: (30696,)
+2025-02-10 19:18:10,808 - INFO - Date range before split: 1940-08-06T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:18:10,808 - INFO - 
+After train-test split:
+2025-02-10 19:18:10,809 - INFO - X_train shape: (24556, 7, 5)
+2025-02-10 19:18:10,809 - INFO - X_test shape: (6140, 7, 5)
+2025-02-10 19:18:10,809 - INFO - y_train shape: (24556,)
+2025-02-10 19:18:10,809 - INFO - y_test shape: (6140,)
+2025-02-10 19:18:10,809 - INFO - Training data date range: 1940-08-06T00:00:00.000000000 to 2008-04-07T00:00:00.000000000
+2025-02-10 19:18:10,809 - INFO - Testing data date range: 2008-04-08T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:20:29,478 - INFO - 
+Training SVM...
+2025-02-10 19:20:29,479 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:20:29,480 - INFO - 
+Before preparing sequences:
+2025-02-10 19:20:29,480 - INFO - X shape: (30703, 5)
+2025-02-10 19:20:29,480 - INFO - y shape: (30703,)
+2025-02-10 19:20:29,481 - INFO - Date range before split: 1940-07-30T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:20:29,481 - INFO - 
+After train-test split:
+2025-02-10 19:20:29,481 - INFO - X_train shape: (24562, 5)
+2025-02-10 19:20:29,481 - INFO - X_test shape: (6141, 5)
+2025-02-10 19:20:29,481 - INFO - y_train shape: (24562,)
+2025-02-10 19:20:29,481 - INFO - y_test shape: (6141,)
+2025-02-10 19:20:29,481 - INFO - Training data date range: 1940-07-30T00:00:00.000000000 to 2008-04-06T00:00:00.000000000
+2025-02-10 19:20:29,481 - INFO - Testing data date range: 2008-04-07T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:20:32,379 - INFO - 
+Training GBM...
+2025-02-10 19:20:32,379 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:20:32,380 - INFO - 
+Before preparing sequences:
+2025-02-10 19:20:32,380 - INFO - X shape: (30703, 5)
+2025-02-10 19:20:32,380 - INFO - y shape: (30703,)
+2025-02-10 19:20:32,381 - INFO - Date range before split: 1940-07-30T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:20:32,381 - INFO - 
+After train-test split:
+2025-02-10 19:20:32,381 - INFO - X_train shape: (24562, 5)
+2025-02-10 19:20:32,381 - INFO - X_test shape: (6141, 5)
+2025-02-10 19:20:32,381 - INFO - y_train shape: (24562,)
+2025-02-10 19:20:32,381 - INFO - y_test shape: (6141,)
+2025-02-10 19:20:32,381 - INFO - Training data date range: 1940-07-30T00:00:00.000000000 to 2008-04-06T00:00:00.000000000
+2025-02-10 19:20:32,381 - INFO - Testing data date range: 2008-04-07T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:33:36,785 - INFO - 
+Training CNN...
+2025-02-10 19:33:36,786 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:33:44,082 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 19:33:44,102 - INFO - 
+Before preparing sequences:
+2025-02-10 19:33:44,102 - INFO - X shape: (30696, 35)
+2025-02-10 19:33:44,102 - INFO - y shape: (30696,)
+2025-02-10 19:33:44,102 - INFO - Date range before split: 1940-08-06T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:33:44,104 - INFO - 
+After train-test split:
+2025-02-10 19:33:44,104 - INFO - X_train shape: (24556, 7, 5)
+2025-02-10 19:33:44,104 - INFO - X_test shape: (6140, 7, 5)
+2025-02-10 19:33:44,104 - INFO - y_train shape: (24556,)
+2025-02-10 19:33:44,104 - INFO - y_test shape: (6140,)
+2025-02-10 19:33:44,104 - INFO - Training data date range: 1940-08-06T00:00:00.000000000 to 2008-04-07T00:00:00.000000000
+2025-02-10 19:33:44,104 - INFO - Testing data date range: 2008-04-08T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:34:15,647 - INFO - 
+Training Backpropagation (MLP)...
+2025-02-10 19:34:15,648 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 19:34:23,050 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 19:34:23,073 - INFO - 
+Before preparing sequences:
+2025-02-10 19:34:23,073 - INFO - X shape: (30696, 35)
+2025-02-10 19:34:23,073 - INFO - y shape: (30696,)
+2025-02-10 19:34:23,074 - INFO - Date range before split: 1940-08-06T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:34:23,074 - INFO - 
+After train-test split:
+2025-02-10 19:34:23,074 - INFO - X_train shape: (24556, 35)
+2025-02-10 19:34:23,074 - INFO - X_test shape: (6140, 35)
+2025-02-10 19:34:23,074 - INFO - y_train shape: (24556,)
+2025-02-10 19:34:23,074 - INFO - y_test shape: (6140,)
+2025-02-10 19:34:23,074 - INFO - Training data date range: 1940-08-06T00:00:00.000000000 to 2008-04-07T00:00:00.000000000
+2025-02-10 19:34:23,074 - INFO - Testing data date range: 2008-04-08T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 19:34:44,580 - INFO - 
+==================================================
+2025-02-10 19:34:44,580 - INFO - MODEL COMPARISON RESULTS
+2025-02-10 19:34:44,580 - INFO - ==================================================
+2025-02-10 19:34:44,582 - INFO - 
+                Model      MSE     RMSE      MAE       R2       MAPE  MAE_as_percentage_of_mean                                                                   Context
+        Random Forest 0.034949 0.186945 0.019311 0.973088   5.739716                  54.965713 {'Mean_Rainfall': 0.03513367495449081, 'Max_Rainfall': 23.79806013039417}
+                 LSTM 1.282486 1.132469 0.550689 0.012577 117.301978                1564.884609   {'Mean_Rainfall': 0.035190361010051, 'Max_Rainfall': 23.79806013039417}
+                  SVM 0.098783 0.314298 0.044027 0.923933  19.378963                 125.314080 {'Mean_Rainfall': 0.03513367495449081, 'Max_Rainfall': 23.79806013039417}
+                  GBM 0.003109 0.055755 0.001687 0.997606   0.049704                   4.802056 {'Mean_Rainfall': 0.03513367495449081, 'Max_Rainfall': 23.79806013039417}
+                  CNN 1.294608 1.137808 0.551195 0.003244 112.207758                1566.324214   {'Mean_Rainfall': 0.035190361010051, 'Max_Rainfall': 23.79806013039417}
+Backpropagation (MLP) 1.284339 1.133287 0.561446 0.011150 119.527877                1595.455332   {'Mean_Rainfall': 0.035190361010051, 'Max_Rainfall': 23.79806013039417}
+2025-02-10 19:34:44,583 - INFO - 
+==================================================
+2025-02-10 19:34:44,583 - INFO - BEST MODEL: GBM
+2025-02-10 19:34:44,583 - INFO - ==================================================
+2025-02-10 19:34:44,583 - INFO - MSE: 0.0031
+2025-02-10 19:34:44,583 - INFO - RMSE: 0.0558
+2025-02-10 19:34:44,584 - INFO - MAE: 0.0017
+2025-02-10 19:34:44,584 - INFO - R2: 0.9976
+2025-02-10 19:34:44,584 - INFO - MAPE: 0.0497
+2025-02-10 19:34:44,584 - INFO - MAE_as_percentage_of_mean: 4.8021
+2025-02-10 19:34:44,584 - ERROR - An error occurred: unsupported format string passed to dict.__format__
+2025-02-10 21:25:14,439 - INFO - Loading and preprocessing data...
+2025-02-10 21:25:14,613 - INFO - 
+Original data types:
+2025-02-10 21:25:14,613 - INFO - STATION             object
+NAME                object
+LATITUDE           float64
+LONGITUDE          float64
+ELEVATION          float64
+                    ...   
+WT21_ATTRIBUTES     object
+WT22               float64
+WT22_ATTRIBUTES     object
+WV03               float64
+WV03_ATTRIBUTES     object
+Length: 100, dtype: object
+2025-02-10 21:25:14,621 - INFO - Initial data shape: (30737, 100)
+2025-02-10 21:25:14,638 - INFO - 
+Preprocessing Results:
+2025-02-10 21:25:14,639 - INFO - Initial rows: 30737
+2025-02-10 21:25:14,639 - INFO - Final rows: 30732
+2025-02-10 21:25:14,639 - INFO - 
+PRCP Statistics:
+2025-02-10 21:25:14,639 - INFO - Mean: 0.00
+2025-02-10 21:25:14,640 - INFO - Std: 1.00
+2025-02-10 21:25:14,640 - INFO - Min: -0.35
+2025-02-10 21:25:14,640 - INFO - Max: 23.80
+2025-02-10 21:25:14,641 - INFO - 
+SNOW Statistics:
+2025-02-10 21:25:14,641 - INFO - Mean: -0.00
+2025-02-10 21:25:14,641 - INFO - Std: 1.00
+2025-02-10 21:25:14,641 - INFO - Min: -0.10
+2025-02-10 21:25:14,643 - INFO - Max: 48.19
+2025-02-10 21:25:14,643 - INFO - 
+SNWD Statistics:
+2025-02-10 21:25:14,643 - INFO - Mean: -0.00
+2025-02-10 21:25:14,643 - INFO - Std: 1.00
+2025-02-10 21:25:14,643 - INFO - Min: -0.15
+2025-02-10 21:25:14,644 - INFO - Max: 26.83
+2025-02-10 21:25:14,644 - INFO - 
+TMAX Statistics:
+2025-02-10 21:25:14,644 - INFO - Mean: 0.00
+2025-02-10 21:25:14,644 - INFO - Std: 1.00
+2025-02-10 21:25:14,644 - INFO - Min: -3.11
+2025-02-10 21:25:14,645 - INFO - Max: 2.11
+2025-02-10 21:25:14,645 - INFO - 
+TMIN Statistics:
+2025-02-10 21:25:14,645 - INFO - Mean: 0.00
+2025-02-10 21:25:14,645 - INFO - Std: 1.00
+2025-02-10 21:25:14,647 - INFO - Min: -3.15
+2025-02-10 21:25:14,647 - INFO - Max: 2.14
+2025-02-10 21:25:14,647 - INFO - 
+Cleaned data types:
+2025-02-10 21:25:14,647 - INFO - DATE    datetime64[ns]
+PRCP           float64
+SNOW           float64
+SNWD           float64
+TMAX           float64
+TMIN           float64
+dtype: object
+2025-02-10 21:25:14,648 - INFO - Initial data shape: (30732, 6)
+2025-02-10 21:25:14,688 - INFO - Rows removed due to NaN after feature engineering: 29
+2025-02-10 21:25:14,689 - INFO - Final data shape: (30703, 49)
+2025-02-10 21:25:14,689 - INFO - 
+Engineered data types:
+2025-02-10 21:25:14,689 - INFO - DATE                     datetime64[ns]
+PRCP                            float64
+SNOW                            float64
+SNWD                            float64
+TMAX                            float64
+TMIN                            float64
+day_of_year                       int32
+month                             int32
+day_of_week                       int32
+PRCP_rolling_mean_3d            float64
+PRCP_rolling_std_3d             float64
+SNOW_rolling_mean_3d            float64
+SNOW_rolling_std_3d             float64
+SNWD_rolling_mean_3d            float64
+SNWD_rolling_std_3d             float64
+TMAX_rolling_mean_3d            float64
+TMAX_rolling_std_3d             float64
+TMIN_rolling_mean_3d            float64
+TMIN_rolling_std_3d             float64
+PRCP_rolling_mean_7d            float64
+PRCP_rolling_std_7d             float64
+SNOW_rolling_mean_7d            float64
+SNOW_rolling_std_7d             float64
+SNWD_rolling_mean_7d            float64
+SNWD_rolling_std_7d             float64
+TMAX_rolling_mean_7d            float64
+TMAX_rolling_std_7d             float64
+TMIN_rolling_mean_7d            float64
+TMIN_rolling_std_7d             float64
+PRCP_rolling_mean_14d           float64
+PRCP_rolling_std_14d            float64
+SNOW_rolling_mean_14d           float64
+SNOW_rolling_std_14d            float64
+SNWD_rolling_mean_14d           float64
+SNWD_rolling_std_14d            float64
+TMAX_rolling_mean_14d           float64
+TMAX_rolling_std_14d            float64
+TMIN_rolling_mean_14d           float64
+TMIN_rolling_std_14d            float64
+PRCP_rolling_mean_30d           float64
+PRCP_rolling_std_30d            float64
+SNOW_rolling_mean_30d           float64
+SNOW_rolling_std_30d            float64
+SNWD_rolling_mean_30d           float64
+SNWD_rolling_std_30d            float64
+TMAX_rolling_mean_30d           float64
+TMAX_rolling_std_30d            float64
+TMIN_rolling_mean_30d           float64
+TMIN_rolling_std_30d            float64
+dtype: object
+2025-02-10 21:25:14,692 - INFO - 
+Training Random Forest...
+2025-02-10 21:25:14,693 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 21:25:14,693 - INFO - 
+Before preparing sequences:
+2025-02-10 21:25:14,694 - INFO - X shape: (30703, 5)
+2025-02-10 21:25:14,694 - INFO - y shape: (30703,)
+2025-02-10 21:25:14,694 - INFO - Date range before split: 1940-07-30T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:25:14,694 - INFO - 
+After train-test split:
+2025-02-10 21:25:14,694 - INFO - X_train shape: (24562, 5)
+2025-02-10 21:25:14,694 - INFO - X_test shape: (6141, 5)
+2025-02-10 21:25:14,694 - INFO - y_train shape: (24562,)
+2025-02-10 21:25:14,694 - INFO - y_test shape: (6141,)
+2025-02-10 21:25:14,695 - INFO - Training data date range: 1940-07-30T00:00:00.000000000 to 2008-04-06T00:00:00.000000000
+2025-02-10 21:25:14,695 - INFO - Testing data date range: 2008-04-07T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:25:24,814 - INFO - 
+Training LSTM...
+2025-02-10 21:25:24,814 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 21:25:31,405 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 21:25:31,427 - INFO - 
+Before preparing sequences:
+2025-02-10 21:25:31,427 - INFO - X shape: (30696, 35)
+2025-02-10 21:25:31,427 - INFO - y shape: (30696,)
+2025-02-10 21:25:31,427 - INFO - Date range before split: 1940-08-06T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:25:31,427 - INFO - 
+After train-test split:
+2025-02-10 21:25:31,427 - INFO - X_train shape: (24556, 7, 5)
+2025-02-10 21:25:31,427 - INFO - X_test shape: (6140, 7, 5)
+2025-02-10 21:25:31,428 - INFO - y_train shape: (24556,)
+2025-02-10 21:25:31,428 - INFO - y_test shape: (6140,)
+2025-02-10 21:25:31,428 - INFO - Training data date range: 1940-08-06T00:00:00.000000000 to 2008-04-07T00:00:00.000000000
+2025-02-10 21:25:31,428 - INFO - Testing data date range: 2008-04-08T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:27:11,549 - INFO - 
+Training SVM...
+2025-02-10 21:27:11,549 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 21:27:11,550 - INFO - 
+Before preparing sequences:
+2025-02-10 21:27:11,551 - INFO - X shape: (30703, 5)
+2025-02-10 21:27:11,551 - INFO - y shape: (30703,)
+2025-02-10 21:27:11,551 - INFO - Date range before split: 1940-07-30T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:27:11,551 - INFO - 
+After train-test split:
+2025-02-10 21:27:11,551 - INFO - X_train shape: (24562, 5)
+2025-02-10 21:27:11,551 - INFO - X_test shape: (6141, 5)
+2025-02-10 21:27:11,551 - INFO - y_train shape: (24562,)
+2025-02-10 21:27:11,551 - INFO - y_test shape: (6141,)
+2025-02-10 21:27:11,551 - INFO - Training data date range: 1940-07-30T00:00:00.000000000 to 2008-04-06T00:00:00.000000000
+2025-02-10 21:27:11,553 - INFO - Testing data date range: 2008-04-07T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:27:14,540 - INFO - 
+Training GBM...
+2025-02-10 21:27:14,541 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 21:27:14,541 - INFO - 
+Before preparing sequences:
+2025-02-10 21:27:14,542 - INFO - X shape: (30703, 5)
+2025-02-10 21:27:14,542 - INFO - y shape: (30703,)
+2025-02-10 21:27:14,542 - INFO - Date range before split: 1940-07-30T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:27:14,542 - INFO - 
+After train-test split:
+2025-02-10 21:27:14,542 - INFO - X_train shape: (24562, 5)
+2025-02-10 21:27:14,542 - INFO - X_test shape: (6141, 5)
+2025-02-10 21:27:14,542 - INFO - y_train shape: (24562,)
+2025-02-10 21:27:14,542 - INFO - y_test shape: (6141,)
+2025-02-10 21:27:14,542 - INFO - Training data date range: 1940-07-30T00:00:00.000000000 to 2008-04-06T00:00:00.000000000
+2025-02-10 21:27:14,542 - INFO - Testing data date range: 2008-04-07T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:40:10,182 - INFO - 
+Training CNN...
+2025-02-10 21:40:10,184 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 21:40:17,336 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 21:40:17,358 - INFO - 
+Before preparing sequences:
+2025-02-10 21:40:17,358 - INFO - X shape: (30696, 35)
+2025-02-10 21:40:17,358 - INFO - y shape: (30696,)
+2025-02-10 21:40:17,358 - INFO - Date range before split: 1940-08-06T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:40:17,358 - INFO - 
+After train-test split:
+2025-02-10 21:40:17,359 - INFO - X_train shape: (24556, 7, 5)
+2025-02-10 21:40:17,359 - INFO - X_test shape: (6140, 7, 5)
+2025-02-10 21:40:17,359 - INFO - y_train shape: (24556,)
+2025-02-10 21:40:17,359 - INFO - y_test shape: (6140,)
+2025-02-10 21:40:17,359 - INFO - Training data date range: 1940-08-06T00:00:00.000000000 to 2008-04-07T00:00:00.000000000
+2025-02-10 21:40:17,359 - INFO - Testing data date range: 2008-04-08T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:40:39,272 - INFO - 
+Training Backpropagation (MLP)...
+2025-02-10 21:40:39,273 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 21:40:46,265 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 21:40:46,288 - INFO - 
+Before preparing sequences:
+2025-02-10 21:40:46,288 - INFO - X shape: (30696, 35)
+2025-02-10 21:40:46,289 - INFO - y shape: (30696,)
+2025-02-10 21:40:46,289 - INFO - Date range before split: 1940-08-06T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:40:46,290 - INFO - 
+After train-test split:
+2025-02-10 21:40:46,290 - INFO - X_train shape: (24556, 35)
+2025-02-10 21:40:46,290 - INFO - X_test shape: (6140, 35)
+2025-02-10 21:40:46,290 - INFO - y_train shape: (24556,)
+2025-02-10 21:40:46,291 - INFO - y_test shape: (6140,)
+2025-02-10 21:40:46,291 - INFO - Training data date range: 1940-08-06T00:00:00.000000000 to 2008-04-07T00:00:00.000000000
+2025-02-10 21:40:46,291 - INFO - Testing data date range: 2008-04-08T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 21:41:02,463 - INFO - 
+==================================================
+2025-02-10 21:41:02,464 - INFO - MODEL COMPARISON RESULTS
+2025-02-10 21:41:02,464 - INFO - ==================================================
+2025-02-10 21:41:02,466 - INFO - 
+                Model      MSE     RMSE      MAE       R2       MAPE  MAE_as_percentage_of_mean                                                                   Context
+        Random Forest 0.034949 0.186945 0.019311 0.973088   5.739716                  54.965713 {'Mean_Rainfall': 0.03513367495449081, 'Max_Rainfall': 23.79806013039417}
+                 LSTM 1.281200 1.131901 0.546711 0.013567 117.592382                1553.580982   {'Mean_Rainfall': 0.035190361010051, 'Max_Rainfall': 23.79806013039417}
+                  SVM 0.098783 0.314298 0.044027 0.923933  19.378963                 125.314080 {'Mean_Rainfall': 0.03513367495449081, 'Max_Rainfall': 23.79806013039417}
+                  GBM 0.003109 0.055755 0.001687 0.997606   0.049704                   4.802056 {'Mean_Rainfall': 0.03513367495449081, 'Max_Rainfall': 23.79806013039417}
+                  CNN 1.290780 1.136125 0.566779 0.006191 112.345827                1610.609344   {'Mean_Rainfall': 0.035190361010051, 'Max_Rainfall': 23.79806013039417}
+Backpropagation (MLP) 1.283170 1.132771 0.557824 0.012050 113.711065                1585.162217   {'Mean_Rainfall': 0.035190361010051, 'Max_Rainfall': 23.79806013039417}
+2025-02-10 21:41:02,468 - INFO - 
+==================================================
+2025-02-10 21:41:02,468 - INFO - BEST MODEL: GBM
+2025-02-10 21:41:02,468 - INFO - ==================================================
+2025-02-10 21:41:02,468 - INFO - MSE: 0.0031
+2025-02-10 21:41:02,468 - INFO - RMSE: 0.0558
+2025-02-10 21:41:02,469 - INFO - MAE: 0.0017
+2025-02-10 21:41:02,469 - INFO - R2: 0.9976
+2025-02-10 21:41:02,469 - INFO - MAPE: 0.0497
+2025-02-10 21:41:02,469 - INFO - MAE_as_percentage_of_mean: 4.8021
+2025-02-10 21:41:02,469 - INFO - Context:
+2025-02-10 21:41:02,469 - INFO -   Mean_Rainfall: 0.0351
+2025-02-10 21:41:02,470 - INFO -   Max_Rainfall: 23.7981
+2025-02-10 22:12:28,198 - INFO - Loading and preprocessing data...
+2025-02-10 22:12:28,363 - INFO - 
+Original data types:
+2025-02-10 22:12:28,363 - INFO - STATION             object
+NAME                object
+LATITUDE           float64
+LONGITUDE          float64
+ELEVATION          float64
+                    ...   
+WT21_ATTRIBUTES     object
+WT22               float64
+WT22_ATTRIBUTES     object
+WV03               float64
+WV03_ATTRIBUTES     object
+Length: 100, dtype: object
+2025-02-10 22:12:28,372 - INFO - Initial data shape: (30737, 100)
+2025-02-10 22:12:29,082 - INFO - 
+Preprocessing Results:
+2025-02-10 22:12:29,082 - INFO - Initial rows: 30737
+2025-02-10 22:12:29,082 - INFO - Final rows: 30732
+2025-02-10 22:12:29,082 - INFO - 
+PRCP Statistics:
+2025-02-10 22:12:29,082 - INFO - Mean: 0.00
+2025-02-10 22:12:29,083 - INFO - Std: 1.00
+2025-02-10 22:12:29,083 - INFO - Min: -0.35
+2025-02-10 22:12:29,083 - INFO - Max: 23.80
+2025-02-10 22:12:29,083 - INFO - 
+SNOW Statistics:
+2025-02-10 22:12:29,084 - INFO - Mean: -0.00
+2025-02-10 22:12:29,084 - INFO - Std: 1.00
+2025-02-10 22:12:29,084 - INFO - Min: -0.10
+2025-02-10 22:12:29,084 - INFO - Max: 48.19
+2025-02-10 22:12:29,085 - INFO - 
+SNWD Statistics:
+2025-02-10 22:12:29,085 - INFO - Mean: -0.00
+2025-02-10 22:12:29,085 - INFO - Std: 1.00
+2025-02-10 22:12:29,086 - INFO - Min: -0.15
+2025-02-10 22:12:29,086 - INFO - Max: 26.83
+2025-02-10 22:12:29,086 - INFO - 
+TMAX Statistics:
+2025-02-10 22:12:29,086 - INFO - Mean: 0.00
+2025-02-10 22:12:29,086 - INFO - Std: 1.00
+2025-02-10 22:12:29,087 - INFO - Min: -3.11
+2025-02-10 22:12:29,087 - INFO - Max: 2.11
+2025-02-10 22:12:29,087 - INFO - 
+TMIN Statistics:
+2025-02-10 22:12:29,087 - INFO - Mean: 0.00
+2025-02-10 22:12:29,087 - INFO - Std: 1.00
+2025-02-10 22:12:29,088 - INFO - Min: -3.15
+2025-02-10 22:12:29,088 - INFO - Max: 2.14
+2025-02-10 22:12:29,088 - INFO - 
+Cleaned data types:
+2025-02-10 22:12:29,088 - INFO - DATE    datetime64[ns]
+PRCP           float64
+SNOW           float64
+SNWD           float64
+TMAX           float64
+TMIN           float64
+dtype: object
+2025-02-10 22:12:29,090 - INFO - Initial data shape: (30732, 6)
+2025-02-10 22:12:29,128 - INFO - Rows removed due to NaN after feature engineering: 29
+2025-02-10 22:12:29,129 - INFO - Final data shape: (30703, 49)
+2025-02-10 22:12:29,129 - INFO - 
+Engineered data types:
+2025-02-10 22:12:29,129 - INFO - DATE                     datetime64[ns]
+PRCP                            float64
+SNOW                            float64
+SNWD                            float64
+TMAX                            float64
+TMIN                            float64
+day_of_year                       int32
+month                             int32
+day_of_week                       int32
+PRCP_rolling_mean_3d            float64
+PRCP_rolling_std_3d             float64
+SNOW_rolling_mean_3d            float64
+SNOW_rolling_std_3d             float64
+SNWD_rolling_mean_3d            float64
+SNWD_rolling_std_3d             float64
+TMAX_rolling_mean_3d            float64
+TMAX_rolling_std_3d             float64
+TMIN_rolling_mean_3d            float64
+TMIN_rolling_std_3d             float64
+PRCP_rolling_mean_7d            float64
+PRCP_rolling_std_7d             float64
+SNOW_rolling_mean_7d            float64
+SNOW_rolling_std_7d             float64
+SNWD_rolling_mean_7d            float64
+SNWD_rolling_std_7d             float64
+TMAX_rolling_mean_7d            float64
+TMAX_rolling_std_7d             float64
+TMIN_rolling_mean_7d            float64
+TMIN_rolling_std_7d             float64
+PRCP_rolling_mean_14d           float64
+PRCP_rolling_std_14d            float64
+SNOW_rolling_mean_14d           float64
+SNOW_rolling_std_14d            float64
+SNWD_rolling_mean_14d           float64
+SNWD_rolling_std_14d            float64
+TMAX_rolling_mean_14d           float64
+TMAX_rolling_std_14d            float64
+TMIN_rolling_mean_14d           float64
+TMIN_rolling_std_14d            float64
+PRCP_rolling_mean_30d           float64
+PRCP_rolling_std_30d            float64
+SNOW_rolling_mean_30d           float64
+SNOW_rolling_std_30d            float64
+SNWD_rolling_mean_30d           float64
+SNWD_rolling_std_30d            float64
+TMAX_rolling_mean_30d           float64
+TMAX_rolling_std_30d            float64
+TMIN_rolling_mean_30d           float64
+TMIN_rolling_std_30d            float64
+dtype: object
+2025-02-10 22:12:29,132 - INFO - 
+Training Random Forest...
+2025-02-10 22:12:29,132 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 22:12:29,133 - INFO - 
+Before preparing sequences:
+2025-02-10 22:12:29,133 - INFO - X shape: (30703, 5)
+2025-02-10 22:12:29,133 - INFO - y shape: (30703,)
+2025-02-10 22:12:29,133 - INFO - Date range before split: 1975-01-01T00:00:00.000000000 to 2074-12-31T00:00:00.000000000
+2025-02-10 22:12:29,133 - INFO - 
+After train-test split:
+2025-02-10 22:12:29,133 - INFO - X_train shape: (24562, 5)
+2025-02-10 22:12:29,134 - INFO - X_test shape: (6141, 5)
+2025-02-10 22:12:29,134 - INFO - y_train shape: (24562,)
+2025-02-10 22:12:29,134 - INFO - y_test shape: (6141,)
+2025-02-10 22:12:29,135 - INFO - Training data date range: 2040-07-30T00:00:00.000000000 to 2008-06-04T00:00:00.000000000
+2025-02-10 22:12:29,135 - INFO - Testing data date range: 2008-07-04T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 22:12:38,970 - INFO - 
+Training LSTM...
+2025-02-10 22:12:38,971 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 22:13:03,588 - INFO - Loading and preprocessing data...
+2025-02-10 22:13:03,772 - INFO - 
+Original data types:
+2025-02-10 22:13:03,773 - INFO - STATION             object
+NAME                object
+LATITUDE           float64
+LONGITUDE          float64
+ELEVATION          float64
+                    ...   
+WT21_ATTRIBUTES     object
+WT22               float64
+WT22_ATTRIBUTES     object
+WV03               float64
+WV03_ATTRIBUTES     object
+Length: 100, dtype: object
+2025-02-10 22:13:03,781 - INFO - Initial data shape: (30737, 100)
+2025-02-10 22:13:04,474 - INFO - 
+Preprocessing Results:
+2025-02-10 22:13:04,475 - INFO - Initial rows: 30737
+2025-02-10 22:13:04,475 - INFO - Final rows: 30732
+2025-02-10 22:13:04,475 - INFO - 
+PRCP Statistics:
+2025-02-10 22:13:04,475 - INFO - Mean: 0.00
+2025-02-10 22:13:04,476 - INFO - Std: 1.00
+2025-02-10 22:13:04,476 - INFO - Min: -0.35
+2025-02-10 22:13:04,476 - INFO - Max: 23.80
+2025-02-10 22:13:04,476 - INFO - 
+SNOW Statistics:
+2025-02-10 22:13:04,477 - INFO - Mean: -0.00
+2025-02-10 22:13:04,477 - INFO - Std: 1.00
+2025-02-10 22:13:04,477 - INFO - Min: -0.10
+2025-02-10 22:13:04,477 - INFO - Max: 48.19
+2025-02-10 22:13:04,477 - INFO - 
+SNWD Statistics:
+2025-02-10 22:13:04,477 - INFO - Mean: -0.00
+2025-02-10 22:13:04,477 - INFO - Std: 1.00
+2025-02-10 22:13:04,478 - INFO - Min: -0.15
+2025-02-10 22:13:04,478 - INFO - Max: 26.83
+2025-02-10 22:13:04,478 - INFO - 
+TMAX Statistics:
+2025-02-10 22:13:04,478 - INFO - Mean: 0.00
+2025-02-10 22:13:04,478 - INFO - Std: 1.00
+2025-02-10 22:13:04,480 - INFO - Min: -3.11
+2025-02-10 22:13:04,480 - INFO - Max: 2.11
+2025-02-10 22:13:04,480 - INFO - 
+TMIN Statistics:
+2025-02-10 22:13:04,481 - INFO - Mean: 0.00
+2025-02-10 22:13:04,481 - INFO - Std: 1.00
+2025-02-10 22:13:04,481 - INFO - Min: -3.15
+2025-02-10 22:13:04,481 - INFO - Max: 2.14
+2025-02-10 22:13:04,481 - INFO - 
+Cleaned data types:
+2025-02-10 22:13:04,482 - INFO - DATE    datetime64[ns]
+PRCP           float64
+SNOW           float64
+SNWD           float64
+TMAX           float64
+TMIN           float64
+dtype: object
+2025-02-10 22:13:04,483 - INFO - Initial data shape: (30732, 6)
+2025-02-10 22:13:04,523 - INFO - Rows removed due to NaN after feature engineering: 29
+2025-02-10 22:13:04,523 - INFO - Final data shape: (30703, 49)
+2025-02-10 22:13:04,523 - INFO - 
+Engineered data types:
+2025-02-10 22:13:04,524 - INFO - DATE                     datetime64[ns]
+PRCP                            float64
+SNOW                            float64
+SNWD                            float64
+TMAX                            float64
+TMIN                            float64
+day_of_year                       int32
+month                             int32
+day_of_week                       int32
+PRCP_rolling_mean_3d            float64
+PRCP_rolling_std_3d             float64
+SNOW_rolling_mean_3d            float64
+SNOW_rolling_std_3d             float64
+SNWD_rolling_mean_3d            float64
+SNWD_rolling_std_3d             float64
+TMAX_rolling_mean_3d            float64
+TMAX_rolling_std_3d             float64
+TMIN_rolling_mean_3d            float64
+TMIN_rolling_std_3d             float64
+PRCP_rolling_mean_7d            float64
+PRCP_rolling_std_7d             float64
+SNOW_rolling_mean_7d            float64
+SNOW_rolling_std_7d             float64
+SNWD_rolling_mean_7d            float64
+SNWD_rolling_std_7d             float64
+TMAX_rolling_mean_7d            float64
+TMAX_rolling_std_7d             float64
+TMIN_rolling_mean_7d            float64
+TMIN_rolling_std_7d             float64
+PRCP_rolling_mean_14d           float64
+PRCP_rolling_std_14d            float64
+SNOW_rolling_mean_14d           float64
+SNOW_rolling_std_14d            float64
+SNWD_rolling_mean_14d           float64
+SNWD_rolling_std_14d            float64
+TMAX_rolling_mean_14d           float64
+TMAX_rolling_std_14d            float64
+TMIN_rolling_mean_14d           float64
+TMIN_rolling_std_14d            float64
+PRCP_rolling_mean_30d           float64
+PRCP_rolling_std_30d            float64
+SNOW_rolling_mean_30d           float64
+SNOW_rolling_std_30d            float64
+SNWD_rolling_mean_30d           float64
+SNWD_rolling_std_30d            float64
+TMAX_rolling_mean_30d           float64
+TMAX_rolling_std_30d            float64
+TMIN_rolling_mean_30d           float64
+TMIN_rolling_std_30d            float64
+dtype: object
+2025-02-10 22:13:04,528 - INFO - 
+Training Random Forest...
+2025-02-10 22:13:04,528 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 22:13:04,528 - INFO - 
+Before preparing sequences:
+2025-02-10 22:13:04,529 - INFO - X shape: (30703, 5)
+2025-02-10 22:13:04,529 - INFO - y shape: (30703,)
+2025-02-10 22:13:04,529 - INFO - Date range before split: 1975-01-01T00:00:00.000000000 to 2074-12-31T00:00:00.000000000
+2025-02-10 22:13:04,529 - INFO - 
+After train-test split:
+2025-02-10 22:13:04,529 - INFO - X_train shape: (24562, 5)
+2025-02-10 22:13:04,529 - INFO - X_test shape: (6141, 5)
+2025-02-10 22:13:04,529 - INFO - y_train shape: (24562,)
+2025-02-10 22:13:04,530 - INFO - y_test shape: (6141,)
+2025-02-10 22:13:04,530 - INFO - Training data date range: 2040-07-30T00:00:00.000000000 to 2008-06-04T00:00:00.000000000
+2025-02-10 22:13:04,530 - INFO - Testing data date range: 2008-07-04T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 22:13:13,806 - INFO - 
+Training LSTM...
+2025-02-10 22:13:13,807 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 22:13:20,697 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 22:13:20,718 - INFO - 
+Before preparing sequences:
+2025-02-10 22:13:20,718 - INFO - X shape: (30696, 35)
+2025-02-10 22:13:20,719 - INFO - y shape: (30696,)
+2025-02-10 22:13:20,719 - INFO - Date range before split: 1975-01-01T00:00:00.000000000 to 2074-12-31T00:00:00.000000000
+2025-02-10 22:13:20,719 - INFO - 
+After train-test split:
+2025-02-10 22:13:20,719 - INFO - X_train shape: (24556, 7, 5)
+2025-02-10 22:13:20,719 - INFO - X_test shape: (6140, 7, 5)
+2025-02-10 22:13:20,719 - INFO - y_train shape: (24556,)
+2025-02-10 22:13:20,719 - INFO - y_test shape: (6140,)
+2025-02-10 22:13:20,720 - INFO - Training data date range: 2040-06-08T00:00:00.000000000 to 2008-07-04T00:00:00.000000000
+2025-02-10 22:13:20,720 - INFO - Testing data date range: 2008-08-04T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 22:14:47,796 - INFO - 
+Training SVM...
+2025-02-10 22:14:47,797 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 22:14:47,798 - INFO - 
+Before preparing sequences:
+2025-02-10 22:14:47,798 - INFO - X shape: (30703, 5)
+2025-02-10 22:14:47,798 - INFO - y shape: (30703,)
+2025-02-10 22:14:47,798 - INFO - Date range before split: 1975-01-01T00:00:00.000000000 to 2074-12-31T00:00:00.000000000
+2025-02-10 22:14:47,798 - INFO - 
+After train-test split:
+2025-02-10 22:14:47,798 - INFO - X_train shape: (24562, 5)
+2025-02-10 22:14:47,799 - INFO - X_test shape: (6141, 5)
+2025-02-10 22:14:47,799 - INFO - y_train shape: (24562,)
+2025-02-10 22:14:47,799 - INFO - y_test shape: (6141,)
+2025-02-10 22:14:47,799 - INFO - Training data date range: 2040-07-30T00:00:00.000000000 to 2008-06-04T00:00:00.000000000
+2025-02-10 22:14:47,799 - INFO - Testing data date range: 2008-07-04T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 22:14:52,085 - INFO - 
+Training GBM...
+2025-02-10 22:14:52,086 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 22:14:52,087 - INFO - 
+Before preparing sequences:
+2025-02-10 22:14:52,087 - INFO - X shape: (30703, 5)
+2025-02-10 22:14:52,087 - INFO - y shape: (30703,)
+2025-02-10 22:14:52,087 - INFO - Date range before split: 1975-01-01T00:00:00.000000000 to 2074-12-31T00:00:00.000000000
+2025-02-10 22:14:52,087 - INFO - 
+After train-test split:
+2025-02-10 22:14:52,088 - INFO - X_train shape: (24562, 5)
+2025-02-10 22:14:52,088 - INFO - X_test shape: (6141, 5)
+2025-02-10 22:14:52,088 - INFO - y_train shape: (24562,)
+2025-02-10 22:14:52,088 - INFO - y_test shape: (6141,)
+2025-02-10 22:14:52,088 - INFO - Training data date range: 2040-07-30T00:00:00.000000000 to 2008-06-04T00:00:00.000000000
+2025-02-10 22:14:52,088 - INFO - Testing data date range: 2008-07-04T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 22:27:45,453 - INFO - 
+Training CNN...
+2025-02-10 22:27:45,453 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 22:27:51,918 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 22:27:51,940 - INFO - 
+Before preparing sequences:
+2025-02-10 22:27:51,942 - INFO - X shape: (30696, 35)
+2025-02-10 22:27:51,942 - INFO - y shape: (30696,)
+2025-02-10 22:27:51,942 - INFO - Date range before split: 1975-01-01T00:00:00.000000000 to 2074-12-31T00:00:00.000000000
+2025-02-10 22:27:51,942 - INFO - 
+After train-test split:
+2025-02-10 22:27:51,942 - INFO - X_train shape: (24556, 7, 5)
+2025-02-10 22:27:51,942 - INFO - X_test shape: (6140, 7, 5)
+2025-02-10 22:27:51,943 - INFO - y_train shape: (24556,)
+2025-02-10 22:27:51,943 - INFO - y_test shape: (6140,)
+2025-02-10 22:27:51,943 - INFO - Training data date range: 2040-06-08T00:00:00.000000000 to 2008-07-04T00:00:00.000000000
+2025-02-10 22:27:51,943 - INFO - Testing data date range: 2008-08-04T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 22:28:09,729 - INFO - 
+Training Backpropagation (MLP)...
+2025-02-10 22:28:09,729 - INFO - Data shape before sequence creation: (30703, 49)
+2025-02-10 22:28:16,346 - INFO - Created 30696 sequences from 30703 data points
+2025-02-10 22:28:16,366 - INFO - 
+Before preparing sequences:
+2025-02-10 22:28:16,366 - INFO - X shape: (30696, 35)
+2025-02-10 22:28:16,366 - INFO - y shape: (30696,)
+2025-02-10 22:28:16,366 - INFO - Date range before split: 1975-01-01T00:00:00.000000000 to 2074-12-31T00:00:00.000000000
+2025-02-10 22:28:16,366 - INFO - 
+After train-test split:
+2025-02-10 22:28:16,366 - INFO - X_train shape: (24556, 35)
+2025-02-10 22:28:16,367 - INFO - X_test shape: (6140, 35)
+2025-02-10 22:28:16,367 - INFO - y_train shape: (24556,)
+2025-02-10 22:28:16,367 - INFO - y_test shape: (6140,)
+2025-02-10 22:28:16,367 - INFO - Training data date range: 2040-06-08T00:00:00.000000000 to 2008-07-04T00:00:00.000000000
+2025-02-10 22:28:16,367 - INFO - Testing data date range: 2008-08-04T00:00:00.000000000 to 2025-02-02T00:00:00.000000000
+2025-02-10 22:28:37,964 - INFO - 
+==================================================
+2025-02-10 22:28:37,965 - INFO - MODEL COMPARISON RESULTS
+2025-02-10 22:28:37,965 - INFO - ==================================================
+2025-02-10 22:28:37,968 - INFO - 
+                Model      MSE     RMSE      MAE        R2       MAPE  MAE_as_percentage_of_mean                                                                    Context
+        Random Forest 0.030327 0.174147 0.019116  0.976647   5.502498                  54.399650 {'Mean_Rainfall': 0.03514027574496726, 'Max_Rainfall': 23.798080786498325}
+                 LSTM 1.285818 1.133939 0.544243  0.010005 114.663815                1546.024084 {'Mean_Rainfall': 0.03520275527771085, 'Max_Rainfall': 23.798080786498325}
+                  SVM 0.123354 0.351218 0.044027  0.905012  20.130132                 125.289869 {'Mean_Rainfall': 0.03514027574496726, 'Max_Rainfall': 23.798080786498325}
+                  GBM 0.003136 0.055999 0.001650  0.997585   0.050693                   4.694046 {'Mean_Rainfall': 0.03514027574496726, 'Max_Rainfall': 23.798080786498325}
+                  CNN 1.300036 1.140191 0.552295 -0.000942 106.993077                1568.897467 {'Mean_Rainfall': 0.03520275527771085, 'Max_Rainfall': 23.798080786498325}
+Backpropagation (MLP) 1.290060 1.135808 0.552054  0.006739 107.072379                1568.212860 {'Mean_Rainfall': 0.03520275527771085, 'Max_Rainfall': 23.798080786498325}
+2025-02-10 22:28:37,968 - INFO - 
+==================================================
+2025-02-10 22:28:37,968 - INFO - BEST MODEL: GBM
+2025-02-10 22:28:37,968 - INFO - ==================================================
+2025-02-10 22:28:37,968 - INFO - MSE: 0.0031
+2025-02-10 22:28:37,968 - INFO - RMSE: 0.0560
+2025-02-10 22:28:37,968 - INFO - MAE: 0.0016
+2025-02-10 22:28:37,968 - INFO - R2: 0.9976
+2025-02-10 22:28:37,968 - INFO - MAPE: 0.0507
+2025-02-10 22:28:37,968 - INFO - MAE_as_percentage_of_mean: 4.6940
+2025-02-10 22:28:37,969 - INFO - Context:
+2025-02-10 22:28:37,969 - INFO -   Mean_Rainfall: 0.0351
+2025-02-10 22:28:37,969 - INFO -   Max_Rainfall: 23.7981

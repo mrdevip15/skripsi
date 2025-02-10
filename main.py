@@ -170,8 +170,6 @@ class WeatherPredictor:
 
     def train_and_evaluate(self, X, y, dates, config):
         """Train and evaluate a model configuration"""
-        from sklearn.model_selection import train_test_split
-        
         try:
             # Set model type before preparing sequences
             self.model_type = config['type']
@@ -182,32 +180,40 @@ class WeatherPredictor:
             logging.info(f"X shape: {X.shape if isinstance(X, np.ndarray) else 'not an array'}")
             logging.info(f"y shape: {y.shape if isinstance(y, np.ndarray) else 'not an array'}")
             
+            # Log date range before splitting
+            logging.info(f"Date range before split: {dates.min()} to {dates.max()}")
+            
             # Prepare sequences based on model type
             if self.model_type == 'sklearn':
-                # For sklearn models, use the features directly
                 X = X
                 y = y
             elif self.model_type == 'keras':
-                # For keras models, reshape the input
                 if config['name'] in ['LSTM', 'CNN']:
                     X = X.reshape(X.shape[0], self.sequence_shape[0], -1)
             
-            # Log the shapes after preparation
-            logging.info(f"\nAfter sequence preparation:")
-            logging.info(f"X shape: {X.shape}")
-            logging.info(f"y shape: {y.shape}")
+            # Calculate split index - chronological split instead of random
+            split_idx = int(len(X) * (1 - self.config['TEST_SPLIT']))
             
-            # Split the data
-            X_train, X_test, y_train, y_test, dates_train, dates_test = train_test_split(
-                X, y, dates, test_size=self.config['TEST_SPLIT'], random_state=42
-            )
+            # Split the data chronologically
+            X_train = X[:split_idx]
+            X_test = X[split_idx:]
+            y_train = y[:split_idx]
+            y_test = y[split_idx:]
+            dates_train = dates[:split_idx]
+            dates_test = dates[split_idx:]
             
-            # Log split shapes
+            # Log split shapes and date ranges
             logging.info(f"\nAfter train-test split:")
             logging.info(f"X_train shape: {X_train.shape}")
             logging.info(f"X_test shape: {X_test.shape}")
             logging.info(f"y_train shape: {y_train.shape}")
             logging.info(f"y_test shape: {y_test.shape}")
+            logging.info(f"Training data date range: {dates_train[0]} to {dates_train[-1]}")
+            logging.info(f"Testing data date range: {dates_test[0]} to {dates_test[-1]}")
+            
+            # Check for future dates in training data
+            if dates_train[-1] > pd.Timestamp.now():
+                logging.warning("Future dates found in training data!")
             
             if config['type'] == 'keras':
                 # Handle Keras models
@@ -506,7 +512,7 @@ def main():
         
         # Load and preprocess data
         logging.info("Loading and preprocessing data...")
-        df = pd.read_csv('weather.csv')
+        df = pd.read_csv('weather_final.csv')
         logging.info("\nOriginal data types:")
         logging.info(df.dtypes)
         
@@ -575,8 +581,17 @@ def main():
         logging.info("\n" + "="*50)
         logging.info(f"BEST MODEL: {best_model_name}")
         logging.info("="*50)
+
+        # Modified logging of metrics to handle nested dictionary
         for metric, value in best_metrics.items():
-            logging.info(f"{metric}: {value:.4f}")
+            if isinstance(value, dict):
+                # Handle nested dictionary (like 'Context')
+                logging.info(f"{metric}:")
+                for sub_metric, sub_value in value.items():
+                    logging.info(f"  {sub_metric}: {sub_value:.4f}")
+            else:
+                # Handle regular numeric metrics
+                logging.info(f"{metric}: {value:.4f}")
         
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
