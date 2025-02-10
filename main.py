@@ -64,9 +64,9 @@ class WeatherPredictor:
             return df
             
         # Add time-based features
-        df['day_of_year'] = df['Tanggal'].dt.dayofyear
-        df['month'] = df['Tanggal'].dt.month
-        df['day_of_week'] = df['Tanggal'].dt.dayofweek
+        df['day_of_year'] = df['DATE'].dt.dayofyear
+        df['month'] = df['DATE'].dt.month
+        df['day_of_week'] = df['DATE'].dt.dayofweek
         
         # Add rolling statistics
         for window in self.config['ROLLING_WINDOW_SIZES']:
@@ -93,33 +93,41 @@ class WeatherPredictor:
         missing_features = [f for f in features if f not in df.columns]
         if missing_features:
             logging.error(f"Missing features in data: {missing_features}")
-            return np.array([]), np.array([]), np.array([])  # Added empty dates array
+            return np.array([]), np.array([]), np.array([])
         
         logging.info(f"Data shape before sequence creation: {df.shape}")
         
         if len(df) <= lookback:
             logging.error(f"Not enough data points. Need more than {lookback} rows")
-            return np.array([]), np.array([]), np.array([])  # Added empty dates array
+            return np.array([]), np.array([]), np.array([])
         
-        X, y, dates = [], [], []  # Added dates list
+        # For non-sequential models (like Random Forest), use direct features
+        if self.model_type == 'sklearn':
+            X = df[features].values
+            y = df['PRCP'].values
+            dates = df['DATE'].values
+            return X, y, dates
+        
+        # For sequential models (like LSTM)
+        X, y, dates = [], [], []
         for i in range(len(df) - lookback):
             sequence = df[features].values[i:i+lookback]
             if not np.isnan(sequence).any():
                 X.append(sequence.flatten())
-                y.append(df['RR'].values[i+lookback])
-                dates.append(df['Tanggal'].values[i+lookback])  # Store corresponding date
+                y.append(df['PRCP'].values[i+lookback])
+                dates.append(df['DATE'].values[i+lookback])
         
         logging.info(f"Created {len(X)} sequences from {len(df)} data points")
         
         if len(X) == 0:
             logging.error("No valid sequences could be created")
-            return np.array([]), np.array([]), np.array([])  # Added empty dates array
+            return np.array([]), np.array([]), np.array([])
         
         self.sequence_shape = (lookback, len(features))
-        return np.array(X), np.array(y), np.array(dates)  # Return dates array
+        return np.array(X), np.array(y), np.array(dates)
 
     def build_model(self, input_shape):
-        """Build model for single target (RR) prediction"""
+        """Build model for single target (PRCP) prediction"""
         model = MLPRegressor(
             hidden_layer_sizes=(64, 32, 16),
             learning_rate_init=0.001,
@@ -164,21 +172,47 @@ class WeatherPredictor:
         """Train and evaluate a model configuration"""
         from sklearn.model_selection import train_test_split
         
-        # Split the data and dates together
-        X_train, X_test, y_train, y_test, dates_train, dates_test = train_test_split(
-            X, y, dates, test_size=self.config['TEST_SPLIT'], random_state=42
-        )
-        
         try:
+            # Set model type before preparing sequences
+            self.model_type = config['type']
+            self.model_name = config['name']
+            
+            # Log the data shapes before splitting
+            logging.info(f"\nBefore preparing sequences:")
+            logging.info(f"X shape: {X.shape if isinstance(X, np.ndarray) else 'not an array'}")
+            logging.info(f"y shape: {y.shape if isinstance(y, np.ndarray) else 'not an array'}")
+            
+            # Prepare sequences based on model type
+            if self.model_type == 'sklearn':
+                # For sklearn models, use the features directly
+                X = X
+                y = y
+            elif self.model_type == 'keras':
+                # For keras models, reshape the input
+                if config['name'] in ['LSTM', 'CNN']:
+                    X = X.reshape(X.shape[0], self.sequence_shape[0], -1)
+            
+            # Log the shapes after preparation
+            logging.info(f"\nAfter sequence preparation:")
+            logging.info(f"X shape: {X.shape}")
+            logging.info(f"y shape: {y.shape}")
+            
+            # Split the data
+            X_train, X_test, y_train, y_test, dates_train, dates_test = train_test_split(
+                X, y, dates, test_size=self.config['TEST_SPLIT'], random_state=42
+            )
+            
+            # Log split shapes
+            logging.info(f"\nAfter train-test split:")
+            logging.info(f"X_train shape: {X_train.shape}")
+            logging.info(f"X_test shape: {X_test.shape}")
+            logging.info(f"y_train shape: {y_train.shape}")
+            logging.info(f"y_test shape: {y_test.shape}")
+            
             if config['type'] == 'keras':
                 # Handle Keras models
-                if config['name'] in ['LSTM', 'CNN']:
-                    X_train = X_train.reshape(X_train.shape[0], self.sequence_shape[0], -1)
-                    X_test = X_test.reshape(X_test.shape[0], self.sequence_shape[0], -1)
-                
                 self.model = config['model'](X_train.shape[1:])
                 
-                # Add early stopping
                 early_stopping = tf.keras.callbacks.EarlyStopping(
                     monitor='val_loss',
                     patience=10,
@@ -203,7 +237,7 @@ class WeatherPredictor:
                 y_pred = self.model.predict(X_test)
             
             # Calculate metrics
-            metrics = self.calculate_metrics(y_test, y_pred)
+            metrics = self.evaluate_predictions(y_test, y_pred)
             
             # Create visualizations with actual dates
             plot_predictions(
@@ -232,6 +266,7 @@ class WeatherPredictor:
             
         except Exception as e:
             logging.error(f"Error training {config['name']}: {str(e)}")
+            logging.error(f"Error details:", exc_info=True)  # This will print the full traceback
             return None, None
 
     def calculate_metrics(self, y_true, y_pred):
@@ -265,9 +300,9 @@ class WeatherPredictor:
             
             # Update sequence for next prediction
             current_sequence = np.roll(current_sequence, -len(self.config['INPUT_FEATURES']))
-            # Update only the RR value in the appropriate position
-            rr_idx = self.config['INPUT_FEATURES'].index('RR')
-            current_sequence[-len(self.config['INPUT_FEATURES']) + rr_idx] = pred[0]
+            # Update only the PRCP value in the appropriate position
+            prcp_idx = self.config['INPUT_FEATURES'].index('PRCP')
+            current_sequence[-len(self.config['INPUT_FEATURES']) + prcp_idx] = pred[0]
         
         return np.array(predictions)
 
@@ -407,13 +442,9 @@ def convert_wind_direction(direction):
     direction = str(direction).strip().upper()
     return direction_dict.get(direction, 0)
 
-def preprocess_data(df):
+def preprocess_data(df, config):
     """
-    Preprocess the weather data by:
-    1. Converting wind directions to numerical values
-    2. Converting all columns to numeric type
-    3. Removing invalid values (8888, 9999)
-    4. Normalizing features
+    Preprocess the weather data
     """
     # Make a copy to avoid modifying original data
     df = df.copy()
@@ -424,27 +455,25 @@ def preprocess_data(df):
     
     try:
         # Convert date column
-        df['Tanggal'] = pd.to_datetime(df['Tanggal'], format='%d-%m-%Y')
+        df['DATE'] = pd.to_datetime(df['DATE'])
         
-        # Convert wind directions to numerical values
-        df['ddd_car'] = df['ddd_car'].str.strip()  # Remove any whitespace
-        df['ddd_car'] = df['ddd_car'].apply(convert_wind_direction)
+        # Select only the columns we want
+        columns_to_use = ['DATE', 'PRCP', 'SNOW', 'SNWD', 'TMAX', 'TMIN']
+        df = df[columns_to_use]
         
         # Convert all columns (except date) to numeric
         for column in df.columns:
-            if column != 'Tanggal':
+            if column != 'DATE':
+                # Remove any 'T' values (trace amounts) and convert to numeric
+                df[column] = df[column].replace('T', '0')
                 df[column] = pd.to_numeric(df[column], errors='coerce')
-        
-        # Remove invalid rainfall values (8888, 9999)
-        df = df[~df['RR'].isin([8888, 9999])]
-        rows_after_invalid = len(df)
         
         # Remove rows with any missing values
         df = df.dropna()
         rows_after_nan = len(df)
         
-        # Normalize numerical columns (except date and target)
-        numerical_cols = [col for col in df.columns if col not in ['Tanggal', 'RR']]
+        # Normalize numerical columns (except date)
+        numerical_cols = [col for col in df.columns if col != 'DATE']
         for col in numerical_cols:
             mean = df[col].mean()
             std = df[col].std()
@@ -454,16 +483,15 @@ def preprocess_data(df):
         # Log preprocessing results
         logging.info("\nPreprocessing Results:")
         logging.info(f"Initial rows: {initial_rows}")
-        logging.info(f"Rows after removing invalid RR: {rows_after_invalid}")
-        logging.info(f"Rows after removing NaN: {rows_after_nan}")
         logging.info(f"Final rows: {len(df)}")
         
-        # Log RR statistics
-        logging.info("\nRainfall (RR) Statistics:")
-        logging.info(f"Mean: {df['RR'].mean():.2f}")
-        logging.info(f"Std: {df['RR'].std():.2f}")
-        logging.info(f"Min: {df['RR'].min():.2f}")
-        logging.info(f"Max: {df['RR'].max():.2f}")
+        # Log statistics for each feature
+        for col in numerical_cols:
+            logging.info(f"\n{col} Statistics:")
+            logging.info(f"Mean: {df[col].mean():.2f}")
+            logging.info(f"Std: {df[col].std():.2f}")
+            logging.info(f"Min: {df[col].min():.2f}")
+            logging.info(f"Max: {df[col].max():.2f}")
         
         return df
         
@@ -478,17 +506,23 @@ def main():
         
         # Load and preprocess data
         logging.info("Loading and preprocessing data...")
-        df = pd.read_csv('data_jakarta.csv')
-        df_cleaned = preprocess_data(df)
+        df = pd.read_csv('weather.csv')
+        logging.info("\nOriginal data types:")
+        logging.info(df.dtypes)
+        
+        df_cleaned = preprocess_data(df, CONFIG)
+        logging.info("\nCleaned data types:")
+        logging.info(df_cleaned.dtypes)
         
         # Engineer features
         df_engineered = predictor.engineer_features(df_cleaned)
+        logging.info("\nEngineered data types:")
+        logging.info(df_engineered.dtypes)
         
-        # Prepare sequences
-        X, y, dates = predictor.prepare_sequences(df_engineered)
-        
-        if len(X) == 0:
-            return
+        # Check for any NaN values
+        if df_engineered.isna().any().any():
+            logging.warning("\nWarning: NaN values found in engineered data!")
+            logging.warning(df_engineered.isna().sum())
         
         # Get model configurations
         configurations = get_model_configurations()
@@ -503,6 +537,17 @@ def main():
         for config in configurations:
             logging.info(f"\nTraining {config['name']}...")
             
+            # Set model type before preparing sequences
+            predictor.model_type = config['type']
+            predictor.model_name = config['name']
+            
+            # Prepare sequences
+            X, y, dates = predictor.prepare_sequences(df_engineered)
+            
+            if len(X) == 0:
+                logging.error(f"No valid sequences created for {config['name']}")
+                continue
+                
             metrics, model = predictor.train_and_evaluate(X, y, dates, config)
             
             if metrics is not None:

@@ -6,20 +6,13 @@ from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.svm import SVR
 
 def build_lstm_model(input_shape):
-    """LSTM model with BatchNorm and proper dropout"""
+    """LSTM model with simpler architecture"""
     model = Sequential([
-        # First LSTM layer
-        LSTM(128, input_shape=input_shape, return_sequences=True),
+        LSTM(64, input_shape=input_shape, return_sequences=True),  # Reduced from 128
         BatchNormalization(),
         
-        # Second LSTM layer
-        LSTM(64),
+        LSTM(32),                                                  # Reduced from 64
         BatchNormalization(),
-        
-        # Dense layers with dropout
-        Dense(32, activation='relu'),
-        BatchNormalization(),
-        Dropout(0.3),
         
         Dense(16, activation='relu'),
         BatchNormalization(),
@@ -102,11 +95,14 @@ def get_model_configurations():
     return [
         {
             'model': RandomForestRegressor(
-                n_estimators=200,
-                max_depth=10,
-                min_samples_split=5,
-                min_samples_leaf=2,
-                random_state=42
+                n_estimators=500,          # Increased number of trees
+                max_depth=12,              # Deeper trees
+                min_samples_split=2,       # Allow for finer splits
+                min_samples_leaf=1,        # Allow smaller leaf nodes
+                max_features='sqrt',       # Use sqrt of features for each split
+                bootstrap=True,            # Enable bootstrapping
+                random_state=42,
+                n_jobs=-1                  # Use all CPU cores
             ),
             'name': 'Random Forest',
             'type': 'sklearn'
@@ -115,13 +111,13 @@ def get_model_configurations():
             'model': build_lstm_model,
             'name': 'LSTM',
             'type': 'keras',
-            'epochs': 200,
-            'batch_size': 64
+            'epochs': 100,         # Reduced from 200
+            'batch_size': 32       # Reduced from 64
         },
         {
             'model': SVR(
                 kernel='rbf',
-                C=10.0,
+                C=1.0,             # Reduced from 10.0
                 epsilon=0.1,
                 gamma='scale'
             ),
@@ -130,9 +126,9 @@ def get_model_configurations():
         },
         {
             'model': GradientBoostingRegressor(
-                n_estimators=200,
-                learning_rate=0.05,
-                max_depth=5,
+                n_estimators=100,   # Reduced from 200
+                learning_rate=0.1,  # Increased from 0.05
+                max_depth=4,        # Reduced from 5
                 subsample=0.8,
                 random_state=42
             ),
