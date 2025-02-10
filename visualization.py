@@ -25,24 +25,33 @@ def plot_model_comparison(results_df, save_path=None):
         plt.savefig(f"{save_path}/model_comparison.png")
     plt.close()
 
-def plot_predictions(dates, actual, predicted, model_name, save_path=None):
-    """Plot actual vs predicted values"""
-    plt.figure(figsize=(15, 6))
+def plot_predictions(dates, actual, predicted, model_name, save_path):
+    """Plot actual vs predicted values for test data only"""
+    plt.figure(figsize=(12, 6))
     
-    plt.plot(dates, actual, label='Actual', marker='o')
-    plt.plot(dates, predicted, label='Predicted', marker='s')
+    # Convert dates to datetime if they're not already
+    dates = pd.to_datetime(dates)
     
-    plt.title(f'Actual vs Predicted Rainfall - {model_name}')
+    # Plot actual and predicted values
+    plt.plot(dates, actual, label='Actual', color='blue', alpha=0.5)
+    plt.plot(dates, predicted, label='Predicted', color='red', alpha=0.5)
+    
+    plt.title(f'Actual vs Predicted Values - {model_name} (Test Set Only)')
     plt.xlabel('Date')
-    plt.ylabel('Rainfall (mm)')
+    plt.ylabel('Precipitation')
     plt.legend()
-    plt.grid(True)
     
+    # Rotate x-axis labels for better readability
     plt.xticks(rotation=45)
+    
+    # Add grid
+    plt.grid(True, alpha=0.3)
+    
+    # Tight layout to prevent label cutoff
     plt.tight_layout()
     
-    if save_path:
-        plt.savefig(f"{save_path}/predictions_{model_name.lower().replace(' ', '_')}.png")
+    # Save the plot
+    plt.savefig(f'{save_path}/predictions_{model_name}.png')
     plt.close()
 
 def plot_feature_importance(model, feature_names, save_path=None):

@@ -29,6 +29,7 @@ from visualization import (
     plot_feature_importance,
     plot_error_distribution
 )
+import json
 
 # Set up logging
 logging.basicConfig(
@@ -173,41 +174,19 @@ class WeatherPredictor:
         from sklearn.model_selection import train_test_split
         
         try:
-            # Set model type before preparing sequences
             self.model_type = config['type']
             self.model_name = config['name']
             
-            # Log the data shapes before splitting
-            logging.info(f"\nBefore preparing sequences:")
-            logging.info(f"X shape: {X.shape if isinstance(X, np.ndarray) else 'not an array'}")
-            logging.info(f"y shape: {y.shape if isinstance(y, np.ndarray) else 'not an array'}")
-            
-            # Prepare sequences based on model type
-            if self.model_type == 'sklearn':
-                # For sklearn models, use the features directly
-                X = X
-                y = y
-            elif self.model_type == 'keras':
-                # For keras models, reshape the input
-                if config['name'] in ['LSTM', 'CNN']:
-                    X = X.reshape(X.shape[0], self.sequence_shape[0], -1)
-            
-            # Log the shapes after preparation
-            logging.info(f"\nAfter sequence preparation:")
-            logging.info(f"X shape: {X.shape}")
-            logging.info(f"y shape: {y.shape}")
-            
             # Split the data
             X_train, X_test, y_train, y_test, dates_train, dates_test = train_test_split(
-                X, y, dates, test_size=self.config['TEST_SPLIT'], random_state=42
+                X, y, dates, 
+                test_size=self.config['TEST_SPLIT'], 
+                random_state=42,
+                shuffle=False  # Keep time series order
             )
             
-            # Log split shapes
-            logging.info(f"\nAfter train-test split:")
-            logging.info(f"X_train shape: {X_train.shape}")
-            logging.info(f"X_test shape: {X_test.shape}")
-            logging.info(f"y_train shape: {y_train.shape}")
-            logging.info(f"y_test shape: {y_test.shape}")
+            logging.info(f"\nTraining set size: {len(X_train)}")
+            logging.info(f"Test set size: {len(X_test)}")
             
             if config['type'] == 'keras':
                 # Handle Keras models
@@ -228,29 +207,31 @@ class WeatherPredictor:
                     verbose=1
                 )
                 
+                # Only predict on test set
                 y_pred = self.model.predict(X_test).flatten()
                 
             else:
                 # Handle sklearn models
                 self.model = config['model']
                 self.model.fit(X_train, y_train)
+                # Only predict on test set
                 y_pred = self.model.predict(X_test)
             
-            # Calculate metrics
+            # Calculate metrics using only test data
             metrics = self.evaluate_predictions(y_test, y_pred)
             
-            # Create visualizations with actual dates
+            # Create visualizations using only test data
             plot_predictions(
-                dates=dates_test,
-                actual=y_test,
-                predicted=y_pred,
+                dates=dates_test,      # Only test dates
+                actual=y_test,         # Only test actual values
+                predicted=y_pred,      # Predictions for test set
                 model_name=config['name'],
                 save_path='plots'
             )
             
             plot_error_distribution(
-                actual=y_test,
-                predicted=y_pred,
+                actual=y_test,         # Only test actual values
+                predicted=y_pred,      # Predictions for test set
                 model_name=config['name'],
                 save_path='plots'
             )
@@ -266,7 +247,7 @@ class WeatherPredictor:
             
         except Exception as e:
             logging.error(f"Error training {config['name']}: {str(e)}")
-            logging.error(f"Error details:", exc_info=True)  # This will print the full traceback
+            logging.error(f"Error details:", exc_info=True)
             return None, None
 
     def calculate_metrics(self, y_true, y_pred):
@@ -306,24 +287,37 @@ class WeatherPredictor:
         
         return np.array(predictions)
 
-    def save_model(self):
-        """Save model and scaler"""
+    def save_model(self, model, model_name):
+        """Save model with specific name"""
         import pickle
-        with open(self.config['MODEL_SAVE_PATH'], 'wb') as f:
-            pickle.dump(self.model, f)
-        logging.info(f"Model saved to {self.config['MODEL_SAVE_PATH']}")
-
-    def load_model(self):
-        """Load saved model and scaler"""
+        
+        # Create models directory if it doesn't exist
+        os.makedirs('models', exist_ok=True)
+        
+        # Create a filename with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f'models/{model_name}_{timestamp}.pkl'
+        
         try:
-            import pickle
-            with open(self.config['MODEL_SAVE_PATH'], 'rb') as f:
-                self.model = pickle.load(f)
-            logging.info("Model loaded successfully")
+            with open(filename, 'wb') as f:
+                pickle.dump(model, f)
+            logging.info(f"Model {model_name} saved to {filename}")
             return True
         except Exception as e:
-            logging.error(f"Error loading model: {str(e)}")
+            logging.error(f"Error saving model {model_name}: {str(e)}")
             return False
+
+    def load_specific_model(self, model_path):
+        """Load a specific saved model"""
+        try:
+            import pickle
+            with open(model_path, 'rb') as f:
+                model = pickle.load(f)
+            logging.info(f"Model loaded successfully from {model_path}")
+            return model
+        except Exception as e:
+            logging.error(f"Error loading model from {model_path}: {str(e)}")
+            return None
 
 class ModelOptimizer:
     def __init__(self, max_trials=10):
@@ -398,7 +392,7 @@ class ModelOptimizer:
                     self.best_model = model
                     
                     # Save the best model
-                    predictor.save_model()
+                    predictor.save_model(model, trial_config['name'])
                     
                     logging.info(f"\nNew best model found!")
                     logging.info(f"MAE percentage: {mae_percentage:.2f}%")
@@ -529,6 +523,7 @@ def main():
         
         # Store results
         results = []
+        saved_models = {}  # Dictionary to store model paths
         best_model = None
         best_metrics = None
         best_mae = float('inf')
@@ -537,11 +532,9 @@ def main():
         for config in configurations:
             logging.info(f"\nTraining {config['name']}...")
             
-            # Set model type before preparing sequences
             predictor.model_type = config['type']
             predictor.model_name = config['name']
             
-            # Prepare sequences
             X, y, dates = predictor.prepare_sequences(df_engineered)
             
             if len(X) == 0:
@@ -551,6 +544,13 @@ def main():
             metrics, model = predictor.train_and_evaluate(X, y, dates, config)
             
             if metrics is not None:
+                # Save the model
+                if predictor.save_model(model, config['name']):
+                    saved_models[config['name']] = {
+                        'metrics': metrics,
+                        'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S")
+                    }
+                
                 results.append({
                     'Model': config['name'],
                     **metrics
@@ -561,6 +561,22 @@ def main():
                     best_metrics = metrics
                     best_model = model
                     best_model_name = config['name']
+        
+        # Save model information to a summary file
+        model_summary = {
+            'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S"),
+            'best_model': best_model_name,
+            'models': saved_models
+        }
+        
+        with open('models/model_summary.json', 'w') as f:
+            json.dump(model_summary, f, indent=4)
+        
+        logging.info("\nSaved Models Summary:")
+        for model_name, info in saved_models.items():
+            logging.info(f"\n{model_name}:")
+            logging.info(f"  Timestamp: {info['timestamp']}")
+            logging.info(f"  Metrics: {info['metrics']}")
         
         # Create comparison plot
         results_df = pd.DataFrame(results)
@@ -575,8 +591,15 @@ def main():
         logging.info("\n" + "="*50)
         logging.info(f"BEST MODEL: {best_model_name}")
         logging.info("="*50)
+        
+        # Modified metrics logging to handle nested dictionary
         for metric, value in best_metrics.items():
-            logging.info(f"{metric}: {value:.4f}")
+            if metric == 'Context':
+                logging.info(f"\n{metric}:")
+                for context_key, context_value in value.items():
+                    logging.info(f"  {context_key}: {context_value:.4f}")
+            else:
+                logging.info(f"{metric}: {value:.4f}")
         
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
@@ -653,5 +676,82 @@ def build_mlp_model(input_shape):
     model.compile(optimizer='adam', loss='mse')
     return model
 
+def predict_with_manual_input(model, model_type='sklearn'):
+    """
+    Make predictions using manual input data
+    """
+    try:
+        # Get input from user
+        print("\nEnter the following weather data:")
+        snow = float(input("Snow (mm): "))
+        snwd = float(input("Snow Depth (mm): "))
+        tmax = float(input("Maximum Temperature (°C): "))
+        tmin = float(input("Minimum Temperature (°C): "))
+        
+        # Create input array
+        input_data = np.array([0, snow, snwd, tmax, tmin])  # PRCP set to 0 initially
+        
+        # Reshape input data based on model type
+        if model_type == 'sklearn':
+            # For Random Forest, SVR, GBM
+            input_data = input_data.reshape(1, -1)
+        elif model_type == 'keras':
+            # For LSTM, CNN
+            input_data = input_data.reshape(1, 1, -1)
+        
+        # Make prediction
+        prediction = model.predict(input_data)
+        
+        print(f"\nPredicted Precipitation: {prediction[0]:.2f} mm")
+        return prediction[0]
+        
+    except Exception as e:
+        print(f"Error making prediction: {str(e)}")
+        return None
+
+def predict_with_manual_input_batch(model, model_type='sklearn', num_predictions=3):
+    """
+    Make multiple predictions using manual input data
+    """
+    predictions = []
+    
+    try:
+        for i in range(num_predictions):
+            print(f"\nEnter data for prediction {i+1}:")
+            snow = float(input("Snow (mm): "))
+            snwd = float(input("Snow Depth (mm): "))
+            tmax = float(input("Maximum Temperature (°C): "))
+            tmin = float(input("Minimum Temperature (°C): "))
+            
+            input_data = np.array([0, snow, snwd, tmax, tmin])
+            
+            if model_type == 'sklearn':
+                input_data = input_data.reshape(1, -1)
+            elif model_type == 'keras':
+                input_data = input_data.reshape(1, 1, -1)
+            
+            prediction = model.predict(input_data)
+            predictions.append(prediction[0])
+            
+            print(f"Predicted Precipitation: {prediction[0]:.2f} mm")
+        
+        return predictions
+        
+    except Exception as e:
+        print(f"Error making predictions: {str(e)}")
+        return None
+
 if __name__ == "__main__":
-    main()
+    try:
+        # Load the model
+        predictor = WeatherPredictor(CONFIG)
+        model = predictor.load_specific_model('models/Random_Forest_20240210_235959.pkl')
+        
+        if model is not None:
+            # Make prediction with manual input
+            predict_with_manual_input(model, model_type='sklearn')
+        else:
+            print("Failed to load model")
+            
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
