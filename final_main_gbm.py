@@ -340,7 +340,7 @@ class GBMWeatherPredictor:
                 f.write(f"{key}: {value}\n")
     
     def prepare_multi_day_dataset(self, df):
-        """Prepare dataset for multi-day forecasting including today (day 0)"""
+        """Prepare dataset for multi-day forecasting using past 5 days data"""
         multi_day_data = {}
         
         # Create a copy of the dataframe to avoid modifying the original
@@ -354,9 +354,44 @@ class GBMWeatherPredictor:
         # Sort data by date to ensure correct ordering
         df_copy = df_copy.sort_values('Tanggal')
         
+        # Log initial state
+        logging.info(f"\nInitial data shape: {df_copy.shape}")
+        logging.info(f"Initial NaN counts:\n{df_copy.isna().sum()}")
+        
+        # Create features from past 5 days for each feature
+        for feature in self.feature_columns:
+            for i in range(1, 6):  # Past 5 days
+                df_copy[f'{feature}_past_{i}d'] = df_copy[feature].shift(i)
+        
+        # Log state after creating historical features
+        logging.info(f"\nAfter adding historical features - shape: {df_copy.shape}")
+        logging.info(f"NaN counts after historical features:\n{df_copy.isna().sum()}")
+        
+        # Update feature columns to include historical features
+        historical_features = []
+        for feature in self.feature_columns:
+            historical_features.extend([f'{feature}_past_{i}d' for i in range(1, 6)])
+        
+        # Combine current and historical features
+        self.extended_features = self.feature_columns + historical_features
+        
+        # Handle missing values in historical features using forward fill and backward fill
+        for feature in self.extended_features:
+            # First try forward fill
+            df_copy[feature] = df_copy[feature].fillna(method='ffill')
+            # Then backward fill any remaining NaNs
+            df_copy[feature] = df_copy[feature].fillna(method='bfill')
+            # Finally, if any NaNs remain, fill with column median
+            df_copy[feature] = df_copy[feature].fillna(df_copy[feature].median())
+        
+        # Log state after handling missing values
+        logging.info(f"\nAfter handling missing values - shape: {df_copy.shape}")
+        logging.info(f"NaN counts after handling missing values:\n{df_copy.isna().sum()}")
+        
         # First include today (day 0) - no need to shift the target
-        day_df = df_copy[['Tanggal'] + self.feature_columns].copy()
-        day_df[f'Future_RR_0d'] = df_copy[self.target_column]  # Today's rainfall
+        day_df = df_copy[['Tanggal'] + self.extended_features].copy()
+        day_df[f'Future_RR_0d'] = df_copy[self.target_column]
+        day_df = day_df.dropna()  # Remove any remaining NaN rows
         multi_day_data[0] = day_df.copy()
         
         # For each forecast day (1 to forecast_days)
@@ -364,16 +399,65 @@ class GBMWeatherPredictor:
             # Shift target variable to create future target
             future_target = df_copy[self.target_column].shift(-day)
             
-            # Create dataset with current features, date column, and future target
-            day_df = df_copy[['Tanggal'] + self.feature_columns].copy()
+            # Create dataset with current features, historical features, date column, and future target
+            day_df = df_copy[['Tanggal'] + self.extended_features].copy()
             day_df[f'Future_RR_{day}d'] = future_target
             
-            # Drop rows with NaN (will be at the end due to shifting)
+            # Drop rows with NaN
             day_df = day_df.dropna()
+            
+            # Log info about the dataset for this day
+            logging.info(f"\nDay {day} dataset - shape before dropping NaN: {len(day_df)}")
+            logging.info(f"Number of NaN values in day {day} dataset: {day_df.isna().sum().sum()}")
             
             multi_day_data[day] = day_df
             
+            # Log final dataset size for this day
+            logging.info(f"Final size of day {day} dataset: {len(multi_day_data[day])}")
+        
         return multi_day_data
+
+    def plot_feature_importance_extended(self, feature_importance, day):
+        """Plot feature importance including historical features"""
+        # Sort features by importance
+        indices = np.argsort(feature_importance)[::-1]
+        sorted_feature_names = [self.extended_features[i] for i in indices]
+        sorted_importance = feature_importance[indices]
+        
+        # Group features by type (current vs historical)
+        current_features = []
+        historical_features = []
+        importances_current = []
+        importances_historical = []
+        
+        for name, importance in zip(sorted_feature_names, sorted_importance):
+            if '_past_' in name:
+                historical_features.append(name)
+                importances_historical.append(importance)
+            else:
+                current_features.append(name)
+                importances_current.append(importance)
+        
+        # Plot separate graphs for current and historical features
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 8))
+        
+        # Current features
+        y_pos = np.arange(len(current_features))
+        ax1.barh(y_pos, importances_current)
+        ax1.set_yticks(y_pos)
+        ax1.set_yticklabels(current_features)
+        ax1.set_title('Current Day Features Importance')
+        
+        # Historical features
+        y_pos = np.arange(len(historical_features))
+        ax2.barh(y_pos, importances_historical)
+        ax2.set_yticks(y_pos)
+        ax2.set_yticklabels(historical_features)
+        ax2.set_title('Historical Features Importance')
+        
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.run_dir, f'feature_importance_day{day}.png'))
+        plt.close()
 
     def train_multi_day_models(self, multi_day_data):
         """Train separate models for each forecast day"""
@@ -426,6 +510,16 @@ class GBMWeatherPredictor:
             logging.info(f"RMSE: {rmse:.4f}")
             logging.info(f"MAE: {mae:.4f}")
             logging.info(f"R²: {r2:.4f}")
+            
+            # Plot feature importance for this day's model
+            self.plot_feature_importance_extended(model.feature_importances_, day)
+            
+            # Log top 5 most important features for this day
+            feature_importance = list(zip(self.extended_features, model.feature_importances_))
+            feature_importance.sort(key=lambda x: x[1], reverse=True)
+            logging.info(f"\nTop 5 most important features for {day}-day ahead prediction:")
+            for feature, importance in feature_importance[:5]:
+                logging.info(f"{feature}: {importance:.4f}")
             
             # Estimate prediction intervals (simplistic approach)
             pred_std = np.std(y_test - y_pred)
