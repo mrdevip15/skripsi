@@ -1621,3 +1621,1402 @@ Model saved to gbm\models\gbm_model.pkl
 2025-05-20 00:12:49,366 - INFO - Scaler saved to gbm\models\scaler.pkl
 2025-05-20 00:12:49,367 - INFO - Feature list saved to gbm\models\feature_columns.pkl
 2025-05-20 00:12:49,367 - INFO - Process completed successfully.
+2025-05-20 00:20:07,190 - INFO - Loading dataset...
+2025-05-20 00:20:07,199 - INFO - Preprocessing data...
+2025-05-20 00:20:07,199 - INFO - Initial dataset size: 5295
+2025-05-20 00:20:07,636 - INFO - 
+Outliers removed: 52 rows
+2025-05-20 00:20:07,636 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-20 00:20:07,637 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-20 00:20:07,638 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-20 00:20:07,638 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-20 00:20:07,639 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-20 00:20:07,639 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-20 00:20:07,639 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-20 00:20:07,640 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-20 00:20:07,641 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-20 00:20:07,641 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-20 00:20:07,642 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-20 00:20:07,642 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-20 00:20:07,642 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-20 00:20:07,644 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 00:20:07,644 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-20 00:20:07,644 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-20 00:20:07,645 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-20 00:20:07,645 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 00:20:07,645 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-20 00:20:07,645 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-20 00:20:07,647 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-20 00:20:07,647 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-20 00:20:07,647 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-20 00:20:07,648 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-20 00:20:07,648 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-20 00:20:07,649 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-20 00:20:07,649 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-20 00:20:07,649 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-20 00:20:07,650 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-20 00:20:07,650 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-20 00:20:07,650 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-20 00:20:07,651 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-20 00:20:07,651 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-20 00:20:07,652 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-20 00:20:07,652 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-20 00:20:07,652 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-20 00:20:07,653 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-20 00:20:07,653 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-20 00:20:07,653 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-20 00:20:07,654 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-20 00:20:07,654 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-20 00:20:07,654 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-20 00:20:07,655 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-20 00:20:07,655 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-20 00:20:07,656 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-20 00:20:07,656 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-20 00:20:07,656 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-20 00:20:07,657 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-20 00:20:07,657 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-20 00:20:07,657 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-20 00:20:07,658 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-20 00:20:07,658 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-20 00:20:07,658 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-20 00:20:09,222 - INFO - 
+Rows dropped due to NaN values: 53
+2025-05-20 00:20:09,223 - INFO - 
+Final dataset size: 3604
+2025-05-20 00:20:09,225 - INFO - Total rows removed: 1691
+2025-05-20 00:20:09,225 - INFO - 
+Rainfall Statistics After Processing:
+2025-05-20 00:20:09,225 - INFO - Mean: 9.88mm
+2025-05-20 00:20:09,225 - INFO - Median: 1.00mm
+2025-05-20 00:20:09,226 - INFO - Std Dev: 17.50mm
+2025-05-20 00:20:09,226 - INFO - Max: 100.00mm
+2025-05-20 00:20:09,229 - INFO - 
+No NaN values remain in the dataset.
+2025-05-20 00:20:09,229 - INFO - 
+Final feature list (55 features):
+2025-05-20 00:20:09,230 - INFO - Tn, Tx, Tavg, RH_avg, ss, ff_x, ff_avg, ddd_x, Month, Day, DayOfWeek, Season, Temp_Range, Month_sin, Month_cos, Day_sin, Day_cos, DayOfYear_sin, DayOfYear_cos, Temp_Humidity, Temp_Range_RH, Dew_Point, Heat_Index, Rain_Streak, Dry_Streak, RR_Rolling_Mean_3d, RR_Rolling_Std_3d, Tavg_Rolling_Mean_3d, RH_Rolling_Mean_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tavg_Rolling_Mean_7d, RH_Rolling_Mean_7d, RR_Rolling_Mean_14d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_14d, RH_Rolling_Mean_14d, RR_Lag_1, Tavg_Lag_1, Rain_Binary_Lag_1, RR_Lag_2, Tavg_Lag_2, Rain_Binary_Lag_2, RR_Lag_3, Tavg_Lag_3, Rain_Binary_Lag_3, RR_Lag_5, Tavg_Lag_5, Rain_Binary_Lag_5, RR_Lag_7, Tavg_Lag_7, Rain_Binary_Lag_7, RR_Lag_14, Tavg_Lag_14, Rain_Binary_Lag_14
+2025-05-20 00:20:09,236 - INFO - 
+Plotting correlations for top 15 features: RR_Rolling_Mean_3d, RR_Rolling_Std_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tx, RR_Rolling_Mean_14d, RH_avg, Tavg, RH_Rolling_Mean_3d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_3d, Tavg_Lag_1, RH_Rolling_Mean_7d, Heat_Index, DayOfYear_cos
+2025-05-20 00:20:11,312 - INFO - Training and evaluating model...
+2025-05-20 00:20:11,314 - INFO - 
+Feature matrix shape: (3604, 55)
+2025-05-20 00:20:11,325 - INFO - 
+Training Gradient Boosting model...
+2025-05-20 00:20:17,060 - INFO - Making predictions...
+2025-05-20 00:20:17,064 - INFO - 
+Model evaluation metrics:
+2025-05-20 00:20:17,064 - INFO - Mean Squared Error (MSE): 5.6175
+2025-05-20 00:20:17,065 - INFO - Root Mean Squared Error (RMSE): 2.3701
+2025-05-20 00:20:17,065 - INFO - Mean Absolute Error (MAE): 1.0219
+2025-05-20 00:20:17,065 - INFO - R-squared (R²): 0.9726
+2025-05-20 00:20:17,270 - INFO - Computing permutation importance (this may take a while)...
+2025-05-20 00:20:20,619 - INFO - 
+Feature Importance (top 10):
+2025-05-20 00:20:20,620 - INFO - RR_Rolling_Mean_3d: 3.1787
+2025-05-20 00:20:20,620 - INFO - RR_Lag_2: 0.6252
+2025-05-20 00:20:20,620 - INFO - RR_Lag_1: 0.5478
+2025-05-20 00:20:20,620 - INFO - RR_Rolling_Std_3d: 0.0833
+2025-05-20 00:20:20,620 - INFO - Tx: 0.0134
+2025-05-20 00:20:20,620 - INFO - Rain_Streak: 0.0037
+2025-05-20 00:20:20,620 - INFO - Dry_Streak: 0.0034
+2025-05-20 00:20:20,621 - INFO - Tn: 0.0022
+2025-05-20 00:20:20,621 - INFO - RR_Rolling_Std_7d: 0.0021
+2025-05-20 00:20:20,621 - INFO - Tavg_Lag_2: 0.0020
+2025-05-20 00:20:20,850 - INFO - 
+Preparing multi-day forecasting dataset...
+2025-05-20 00:20:20,853 - INFO - 
+Initial data shape: (3604, 61)
+2025-05-20 00:20:20,854 - INFO - Initial NaN counts:
+Tanggal               0
+Tn                    0
+Tx                    0
+Tavg                  0
+RH_avg                0
+                     ..
+Tavg_Lag_14           0
+Rain_Binary_Lag_14    0
+RainToday             0
+Rain_Streak           0
+Dry_Streak            0
+Length: 61, dtype: int64
+2025-05-20 00:20:20,984 - INFO - 
+After adding all features - shape: (3604, 352)
+2025-05-20 00:20:20,993 - INFO - NaN counts after features:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          6
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 00:20:21,088 - INFO - 
+After handling missing values - shape: (3604, 352)
+2025-05-20 00:20:21,097 - INFO - NaN counts after handling missing values:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          0
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 00:20:21,155 - INFO - 
+Day 1 dataset - shape: 3603
+2025-05-20 00:20:21,157 - INFO - Number of NaN values in day 1 dataset: 0
+2025-05-20 00:20:21,157 - INFO - Final size of day 1 dataset: 3603
+2025-05-20 00:20:21,180 - INFO - 
+Day 2 dataset - shape: 3602
+2025-05-20 00:20:21,182 - INFO - Number of NaN values in day 2 dataset: 0
+2025-05-20 00:20:21,183 - INFO - Final size of day 2 dataset: 3602
+2025-05-20 00:20:21,207 - INFO - 
+Day 3 dataset - shape: 3601
+2025-05-20 00:20:21,209 - INFO - Number of NaN values in day 3 dataset: 0
+2025-05-20 00:20:21,210 - INFO - Final size of day 3 dataset: 3601
+2025-05-20 00:20:21,235 - INFO - 
+Day 4 dataset - shape: 3600
+2025-05-20 00:20:21,237 - INFO - Number of NaN values in day 4 dataset: 0
+2025-05-20 00:20:21,237 - INFO - Final size of day 4 dataset: 3600
+2025-05-20 00:20:21,262 - INFO - 
+Day 5 dataset - shape: 3599
+2025-05-20 00:20:21,265 - INFO - Number of NaN values in day 5 dataset: 0
+2025-05-20 00:20:21,265 - INFO - Final size of day 5 dataset: 3599
+2025-05-20 00:20:21,266 - INFO - 
+Training multi-day forecasting models...
+2025-05-20 00:20:21,266 - INFO - 
+--- Training models for 0-day ahead prediction ---
+2025-05-20 00:20:21,267 - INFO - Using 346 features for day 0 prediction
+2025-05-20 00:20:21,303 - INFO - Training gbm model for day 0...
+2025-05-20 00:20:24,992 - INFO - gbm - MSE: 5.2043, RMSE: 2.2813, MAE: 1.1903, R²: 0.9746
+2025-05-20 00:20:24,992 - INFO - Training rf model for day 0...
+2025-05-20 00:20:25,968 - INFO - rf - MSE: 11.8969, RMSE: 3.4492, MAE: 1.8393, R²: 0.9419
+2025-05-20 00:20:25,969 - INFO - Training ridge model for day 0...
+2025-05-20 00:20:25,982 - INFO - ridge - MSE: 0.5326, RMSE: 0.7298, MAE: 0.1670, R²: 0.9974
+2025-05-20 00:20:25,982 - INFO - Training mlp model for day 0...
+2025-05-20 00:20:28,742 - INFO - mlp - MSE: 16651.0093, RMSE: 129.0388, MAE: 11.7430, R²: -80.3629
+2025-05-20 00:20:28,743 - INFO - Weighted Ensemble - MSE: 53.9748, RMSE: 7.3468, MAE: 1.4976, R²: 0.7363
+2025-05-20 00:20:28,744 - INFO -   gbm weight in ensemble: 0.3158
+2025-05-20 00:20:28,744 - INFO -   rf weight in ensemble: 0.3022
+2025-05-20 00:20:28,744 - INFO -   ridge weight in ensemble: 0.3271
+2025-05-20 00:20:28,744 - INFO -   mlp weight in ensemble: 0.0550
+2025-05-20 00:20:28,745 - INFO - Best model for day 0: ridge with R²: 0.9974
+2025-05-20 00:20:31,244 - INFO - 
+Top 10 most important features for 0-day ahead prediction:
+2025-05-20 00:20:31,244 - INFO - 1. RR_Rolling_Mean_3d: 0.3117
+2025-05-20 00:20:31,244 - INFO - 2. RR_cum_3d: 0.1478
+2025-05-20 00:20:31,245 - INFO - 3. RR_1d_change: 0.1459
+2025-05-20 00:20:31,245 - INFO - 4. RR_7d_change: 0.1440
+2025-05-20 00:20:31,246 - INFO - 5. RR_Lag_1_past_1d: 0.1112
+2025-05-20 00:20:31,246 - INFO - 6. RR_Rolling_Mean_3d_past_2d: 0.1092
+2025-05-20 00:20:31,246 - INFO - 7. RR_3d_change: 0.0908
+2025-05-20 00:20:31,246 - INFO - 8. RR_SameDay_1wk: 0.0790
+2025-05-20 00:20:31,246 - INFO - 9. RR_Rolling_Mean_3d_past_3d: 0.0464
+2025-05-20 00:20:31,246 - INFO - 10. RR_Rolling_Mean_14d: 0.0355
+2025-05-20 00:20:31,597 - INFO - 
+--- Training models for 1-day ahead prediction ---
+2025-05-20 00:20:31,597 - INFO - Using 219 features for day 1 prediction
+2025-05-20 00:20:31,600 - INFO - Test data contains seasons: [2 3 4 1]
+2025-05-20 00:20:31,602 - INFO - Season 2 has 720 examples in training data
+2025-05-20 00:20:31,603 - INFO - Season 3 has 672 examples in training data
+2025-05-20 00:20:31,603 - INFO - Season 4 has 608 examples in training data
+2025-05-20 00:20:31,603 - INFO - Season 1 has 882 examples in training data
+2025-05-20 00:20:31,619 - INFO - Training gbm model for day 1...
+2025-05-20 00:20:34,477 - INFO - gbm - MSE: 144.7562, RMSE: 12.0315, MAE: 7.6286, R²: 0.2927
+2025-05-20 00:20:34,477 - INFO - Training rf model for day 1...
+2025-05-20 00:20:35,425 - INFO - rf - MSE: 130.4252, RMSE: 11.4204, MAE: 7.4240, R²: 0.3627
+2025-05-20 00:20:35,425 - INFO - Training ridge model for day 1...
+2025-05-20 00:20:35,442 - INFO - ridge - MSE: 7894.5014, RMSE: 88.8510, MAE: 13.0324, R²: -37.5754
+2025-05-20 00:20:35,442 - INFO - Training mlp model for day 1...
+2025-05-20 00:20:36,040 - INFO - mlp - MSE: 4891.0587, RMSE: 69.9361, MAE: 11.1378, R²: -22.8995
+2025-05-20 00:20:36,041 - INFO - Weighted Ensemble - MSE: 434.2541, RMSE: 20.8388, MAE: 7.9139, R²: -1.1219
+2025-05-20 00:20:36,041 - INFO -   gbm weight in ensemble: 0.2502
+2025-05-20 00:20:36,041 - INFO -   rf weight in ensemble: 0.3415
+2025-05-20 00:20:36,041 - INFO -   ridge weight in ensemble: 0.2042
+2025-05-20 00:20:36,041 - INFO -   mlp weight in ensemble: 0.2042
+2025-05-20 00:20:36,042 - INFO - Best model for day 1: rf with R²: 0.3627
+2025-05-20 00:20:36,291 - INFO - 
+Top 10 most important features for 1-day ahead prediction:
+2025-05-20 00:20:36,292 - INFO - 1. Tn_past_3d: 0.0421
+2025-05-20 00:20:36,292 - INFO - 2. RR_Rolling_Std_3d: 0.0414
+2025-05-20 00:20:36,292 - INFO - 3. DayOfYear_cos_past_1d: 0.0301
+2025-05-20 00:20:36,292 - INFO - 4. Day_sin_past_4d: 0.0237
+2025-05-20 00:20:36,293 - INFO - 5. RR_Rolling_Std_7d: 0.0203
+2025-05-20 00:20:36,293 - INFO - 6. Tavg_Rolling_Mean_3d_past_1d: 0.0195
+2025-05-20 00:20:36,293 - INFO - 7. Tavg_Lag_2: 0.0171
+2025-05-20 00:20:36,293 - INFO - 8. Temp_Humidity_past_3d: 0.0168
+2025-05-20 00:20:36,293 - INFO - 9. Rain_Binary_Lag_2: 0.0156
+2025-05-20 00:20:36,293 - INFO - 10. ff_avg: 0.0137
+2025-05-20 00:20:36,585 - INFO - 
+--- Training models for 2-day ahead prediction ---
+2025-05-20 00:20:36,585 - INFO - Using 219 features for day 2 prediction
+2025-05-20 00:20:36,588 - INFO - Test data contains seasons: [2 3 4 1]
+2025-05-20 00:20:36,588 - INFO - Season 2 has 719 examples in training data
+2025-05-20 00:20:36,589 - INFO - Season 3 has 672 examples in training data
+2025-05-20 00:20:36,589 - INFO - Season 4 has 608 examples in training data
+2025-05-20 00:20:36,590 - INFO - Season 1 has 882 examples in training data
+2025-05-20 00:20:36,608 - INFO - Training gbm model for day 2...
+2025-05-20 00:20:39,538 - INFO - gbm - MSE: 182.3218, RMSE: 13.5027, MAE: 8.8760, R²: 0.1091
+2025-05-20 00:20:39,538 - INFO - Training rf model for day 2...
+2025-05-20 00:20:40,508 - INFO - rf - MSE: 165.3024, RMSE: 12.8570, MAE: 8.5177, R²: 0.1923
+2025-05-20 00:20:40,508 - INFO - Training ridge model for day 2...
+2025-05-20 00:20:40,517 - INFO - ridge - MSE: 13077.0675, RMSE: 114.3550, MAE: 16.3251, R²: -62.8993
+2025-05-20 00:20:40,517 - INFO - Training mlp model for day 2...
+2025-05-20 00:20:41,021 - INFO - mlp - MSE: 4226.7421, RMSE: 65.0134, MAE: 11.6814, R²: -19.6534
+2025-05-20 00:20:41,022 - INFO - Weighted Ensemble - MSE: 323.6736, RMSE: 17.9909, MAE: 9.0200, R²: -0.5816
+2025-05-20 00:20:41,022 - INFO -   gbm weight in ensemble: 0.2500
+2025-05-20 00:20:41,022 - INFO -   rf weight in ensemble: 0.2500
+2025-05-20 00:20:41,023 - INFO -   ridge weight in ensemble: 0.2500
+2025-05-20 00:20:41,023 - INFO -   mlp weight in ensemble: 0.2500
+2025-05-20 00:20:41,023 - INFO - Best model for day 2: rf with R²: 0.1923
+2025-05-20 00:20:41,290 - INFO - 
+Top 10 most important features for 2-day ahead prediction:
+2025-05-20 00:20:41,290 - INFO - 1. Temp_Humidity_past_3d: 0.0232
+2025-05-20 00:20:41,290 - INFO - 2. Month_past_2d: 0.0198
+2025-05-20 00:20:41,291 - INFO - 3. RR_Rolling_Std_7d_past_5d: 0.0181
+2025-05-20 00:20:41,291 - INFO - 4. RR_Rolling_Mean_7d_past_5d: 0.0171
+2025-05-20 00:20:41,291 - INFO - 5. ff_avg: 0.0160
+2025-05-20 00:20:41,292 - INFO - 6. RR_Rolling_Mean_14d: 0.0153
+2025-05-20 00:20:41,292 - INFO - 7. DayOfYear_sin_past_3d: 0.0148
+2025-05-20 00:20:41,292 - INFO - 8. RR_Rolling_Std_3d_past_5d: 0.0142
+2025-05-20 00:20:41,292 - INFO - 9. RR_Rolling_Std_7d_past_2d: 0.0128
+2025-05-20 00:20:41,293 - INFO - 10. ddd_x_past_3d: 0.0120
+2025-05-20 00:20:41,585 - INFO - 
+--- Training models for 3-day ahead prediction ---
+2025-05-20 00:20:41,585 - INFO - Using 172 features for day 3 prediction
+2025-05-20 00:20:41,588 - INFO - Test data contains seasons: [2 3 4 1]
+2025-05-20 00:20:41,588 - INFO - Season 2 has 718 examples in training data
+2025-05-20 00:20:41,588 - INFO - Season 3 has 672 examples in training data
+2025-05-20 00:20:41,589 - INFO - Season 4 has 608 examples in training data
+2025-05-20 00:20:41,589 - INFO - Season 1 has 882 examples in training data
+2025-05-20 00:20:41,603 - INFO - Training gbm model for day 3...
+2025-05-20 00:20:44,667 - INFO - gbm - MSE: 201.1269, RMSE: 14.1819, MAE: 9.1402, R²: 0.0172
+2025-05-20 00:20:44,668 - INFO - Training rf model for day 3...
+2025-05-20 00:20:45,668 - INFO - rf - MSE: 178.9156, RMSE: 13.3759, MAE: 8.9049, R²: 0.1258
+2025-05-20 00:20:45,668 - INFO - Training ridge model for day 3...
+2025-05-20 00:20:45,674 - INFO - ridge - MSE: 10973.4353, RMSE: 104.7542, MAE: 12.7184, R²: -52.6202
+2025-05-20 00:20:45,674 - INFO - Training mlp model for day 3...
+2025-05-20 00:20:46,771 - INFO - mlp - MSE: 214.8151, RMSE: 14.6566, MAE: 8.8952, R²: -0.0497
+2025-05-20 00:20:46,772 - INFO - Weighted Ensemble - MSE: 790.0877, RMSE: 28.1085, MAE: 9.5483, R²: -2.8607
+2025-05-20 00:20:46,772 - INFO -   gbm weight in ensemble: 0.2500
+2025-05-20 00:20:46,772 - INFO -   rf weight in ensemble: 0.2500
+2025-05-20 00:20:46,772 - INFO -   ridge weight in ensemble: 0.2500
+2025-05-20 00:20:46,772 - INFO -   mlp weight in ensemble: 0.2500
+2025-05-20 00:20:46,773 - INFO - Best model for day 3: rf with R²: 0.1258
+2025-05-20 00:20:47,012 - INFO - 
+Top 10 most important features for 3-day ahead prediction:
+2025-05-20 00:20:47,012 - INFO - 1. DayOfWeek_past_5d: 0.0331
+2025-05-20 00:20:47,013 - INFO - 2. Month_past_3d: 0.0241
+2025-05-20 00:20:47,013 - INFO - 3. Heat_Index_past_2d: 0.0188
+2025-05-20 00:20:47,014 - INFO - 4. Day_cos: 0.0172
+2025-05-20 00:20:47,014 - INFO - 5. ss_past_1d: 0.0169
+2025-05-20 00:20:47,014 - INFO - 6. Season_past_1d: 0.0168
+2025-05-20 00:20:47,014 - INFO - 7. Dew_Point_past_3d: 0.0153
+2025-05-20 00:20:47,014 - INFO - 8. Day_cos_past_2d: 0.0148
+2025-05-20 00:20:47,014 - INFO - 9. Rain_Streak_past_2d: 0.0146
+2025-05-20 00:20:47,014 - INFO - 10. ss: 0.0138
+2025-05-20 00:20:47,299 - INFO - 
+--- Training models for 4-day ahead prediction ---
+2025-05-20 00:20:47,300 - INFO - Using 172 features for day 4 prediction
+2025-05-20 00:20:47,303 - INFO - Test data contains seasons: [2 3 4 1]
+2025-05-20 00:20:47,304 - INFO - Season 2 has 718 examples in training data
+2025-05-20 00:20:47,304 - INFO - Season 3 has 672 examples in training data
+2025-05-20 00:20:47,304 - INFO - Season 4 has 608 examples in training data
+2025-05-20 00:20:47,305 - INFO - Season 1 has 882 examples in training data
+2025-05-20 00:20:47,318 - INFO - Training gbm model for day 4...
+2025-05-20 00:20:50,476 - INFO - gbm - MSE: 214.1950, RMSE: 14.6354, MAE: 9.3401, R²: -0.0456
+2025-05-20 00:20:50,476 - INFO - Training rf model for day 4...
+2025-05-20 00:20:51,516 - INFO - rf - MSE: 176.7631, RMSE: 13.2952, MAE: 8.8226, R²: 0.1372
+2025-05-20 00:20:51,516 - INFO - Training ridge model for day 4...
+2025-05-20 00:20:51,523 - INFO - ridge - MSE: 9530.5408, RMSE: 97.6245, MAE: 12.4292, R²: -45.5221
+2025-05-20 00:20:51,524 - INFO - Training mlp model for day 4...
+2025-05-20 00:20:52,578 - INFO - mlp - MSE: 176.1224, RMSE: 13.2711, MAE: 8.2603, R²: 0.1403
+2025-05-20 00:20:52,580 - INFO - Weighted Ensemble - MSE: 751.6294, RMSE: 27.4159, MAE: 9.4579, R²: -2.6690
+2025-05-20 00:20:52,580 - INFO -   gbm weight in ensemble: 0.2500
+2025-05-20 00:20:52,580 - INFO -   rf weight in ensemble: 0.2500
+2025-05-20 00:20:52,580 - INFO -   ridge weight in ensemble: 0.2500
+2025-05-20 00:20:52,580 - INFO -   mlp weight in ensemble: 0.2500
+2025-05-20 00:20:52,581 - INFO - Best model for day 4: mlp with R²: 0.1403
+2025-05-20 00:20:55,660 - INFO - 
+Top 10 most important features for 4-day ahead prediction:
+2025-05-20 00:20:55,660 - INFO - 1. Temp_Range_past_2d: 0.0098
+2025-05-20 00:20:55,660 - INFO - 2. ff_x_past_3d: 0.0082
+2025-05-20 00:20:55,661 - INFO - 3. Temp_Range: 0.0069
+2025-05-20 00:20:55,661 - INFO - 4. Tavg_past_5d: 0.0058
+2025-05-20 00:20:55,661 - INFO - 5. RH_avg_past_4d: 0.0057
+2025-05-20 00:20:55,662 - INFO - 6. RR_Rolling_Std_14d: 0.0056
+2025-05-20 00:20:55,662 - INFO - 7. Month_sin: 0.0052
+2025-05-20 00:20:55,662 - INFO - 8. Temp_Range_RH_past_4d: 0.0052
+2025-05-20 00:20:55,662 - INFO - 9. RH_Rolling_Mean_14d: 0.0051
+2025-05-20 00:20:55,662 - INFO - 10. Day_cos_past_1d: 0.0050
+2025-05-20 00:20:56,135 - INFO - 
+--- Training models for 5-day ahead prediction ---
+2025-05-20 00:20:56,136 - INFO - Using 172 features for day 5 prediction
+2025-05-20 00:20:56,140 - INFO - Test data contains seasons: [2 3 4 1]
+2025-05-20 00:20:56,141 - INFO - Season 2 has 717 examples in training data
+2025-05-20 00:20:56,141 - INFO - Season 3 has 672 examples in training data
+2025-05-20 00:20:56,142 - INFO - Season 4 has 608 examples in training data
+2025-05-20 00:20:56,143 - INFO - Season 1 has 882 examples in training data
+2025-05-20 00:20:56,159 - INFO - Training gbm model for day 5...
+2025-05-20 00:20:59,296 - INFO - gbm - MSE: 192.8282, RMSE: 13.8863, MAE: 8.9153, R²: 0.0587
+2025-05-20 00:20:59,298 - INFO - Training rf model for day 5...
+2025-05-20 00:21:00,291 - INFO - rf - MSE: 181.0751, RMSE: 13.4564, MAE: 8.9968, R²: 0.1161
+2025-05-20 00:21:00,292 - INFO - Training ridge model for day 5...
+2025-05-20 00:21:00,298 - INFO - ridge - MSE: 4091.1176, RMSE: 63.9618, MAE: 11.2062, R²: -18.9702
+2025-05-20 00:21:00,298 - INFO - Training mlp model for day 5...
+2025-05-20 00:21:00,958 - INFO - mlp - MSE: 2496.0746, RMSE: 49.9607, MAE: 9.8029, R²: -11.1843
+2025-05-20 00:21:00,959 - INFO - Weighted Ensemble - MSE: 955.8534, RMSE: 30.9169, MAE: 9.5318, R²: -3.6659
+2025-05-20 00:21:00,959 - INFO -   gbm weight in ensemble: 0.2500
+2025-05-20 00:21:00,960 - INFO -   rf weight in ensemble: 0.2500
+2025-05-20 00:21:00,960 - INFO -   ridge weight in ensemble: 0.2500
+2025-05-20 00:21:00,960 - INFO -   mlp weight in ensemble: 0.2500
+2025-05-20 00:21:00,960 - INFO - Best model for day 5: rf with R²: 0.1161
+2025-05-20 00:21:01,260 - INFO - 
+Top 10 most important features for 5-day ahead prediction:
+2025-05-20 00:21:01,261 - INFO - 1. DayOfWeek_past_5d: 0.0345
+2025-05-20 00:21:01,261 - INFO - 2. Month_past_3d: 0.0245
+2025-05-20 00:21:01,261 - INFO - 3. Heat_Index_past_2d: 0.0183
+2025-05-20 00:21:01,261 - INFO - 4. Season_past_1d: 0.0170
+2025-05-20 00:21:01,261 - INFO - 5. Day_cos: 0.0170
+2025-05-20 00:21:01,262 - INFO - 6. Dew_Point_past_3d: 0.0165
+2025-05-20 00:21:01,262 - INFO - 7. ss_past_1d: 0.0150
+2025-05-20 00:21:01,262 - INFO - 8. Rain_Binary_Lag_3: 0.0129
+2025-05-20 00:21:01,262 - INFO - 9. Tn_past_5d: 0.0127
+2025-05-20 00:21:01,262 - INFO - 10. Day_cos_past_3d: 0.0127
+2025-05-20 00:21:02,129 - ERROR - Error in model training and evaluation: 'pred_std'
+2025-05-20 00:21:02,129 - ERROR - Error in main process: 'pred_std'
+2025-05-20 00:24:42,615 - INFO - Loading dataset...
+2025-05-20 00:24:42,623 - INFO - Preprocessing data...
+2025-05-20 00:24:42,624 - INFO - Initial dataset size: 5295
+2025-05-20 00:24:43,019 - INFO - 
+Outliers removed: 52 rows
+2025-05-20 00:24:43,019 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-20 00:24:43,020 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-20 00:24:43,020 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-20 00:24:43,021 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-20 00:24:43,021 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-20 00:24:43,022 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-20 00:24:43,022 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-20 00:24:43,022 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-20 00:24:43,023 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-20 00:24:43,023 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-20 00:24:43,023 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-20 00:24:43,023 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-20 00:24:43,024 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-20 00:24:43,024 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 00:24:43,024 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-20 00:24:43,024 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-20 00:24:43,024 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-20 00:24:43,025 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 00:24:43,026 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-20 00:24:43,026 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-20 00:24:43,026 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-20 00:24:43,028 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-20 00:24:43,028 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-20 00:24:43,029 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-20 00:24:43,029 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-20 00:24:43,029 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-20 00:24:43,029 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-20 00:24:43,030 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-20 00:24:43,030 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-20 00:24:43,030 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-20 00:24:43,031 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-20 00:24:43,031 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-20 00:24:43,032 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-20 00:24:43,032 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-20 00:24:43,032 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-20 00:24:43,034 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-20 00:24:43,034 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-20 00:24:43,034 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-20 00:24:43,035 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-20 00:24:43,035 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-20 00:24:43,035 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-20 00:24:43,035 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-20 00:24:43,035 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-20 00:24:43,036 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-20 00:24:43,036 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-20 00:24:43,036 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-20 00:24:43,037 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-20 00:24:43,037 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-20 00:24:43,038 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-20 00:24:43,038 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-20 00:24:43,038 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-20 00:24:43,039 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-20 00:24:43,039 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-20 00:24:44,678 - INFO - 
+Rows dropped due to NaN values: 53
+2025-05-20 00:24:44,679 - INFO - 
+Final dataset size: 3604
+2025-05-20 00:24:44,680 - INFO - Total rows removed: 1691
+2025-05-20 00:24:44,680 - INFO - 
+Rainfall Statistics After Processing:
+2025-05-20 00:24:44,680 - INFO - Mean: 9.88mm
+2025-05-20 00:24:44,681 - INFO - Median: 1.00mm
+2025-05-20 00:24:44,681 - INFO - Std Dev: 17.50mm
+2025-05-20 00:24:44,681 - INFO - Max: 100.00mm
+2025-05-20 00:24:44,683 - INFO - 
+No NaN values remain in the dataset.
+2025-05-20 00:24:44,683 - INFO - 
+Final feature list (55 features):
+2025-05-20 00:24:44,683 - INFO - Tn, Tx, Tavg, RH_avg, ss, ff_x, ff_avg, ddd_x, Month, Day, DayOfWeek, Season, Temp_Range, Month_sin, Month_cos, Day_sin, Day_cos, DayOfYear_sin, DayOfYear_cos, Temp_Humidity, Temp_Range_RH, Dew_Point, Heat_Index, Rain_Streak, Dry_Streak, RR_Rolling_Mean_3d, RR_Rolling_Std_3d, Tavg_Rolling_Mean_3d, RH_Rolling_Mean_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tavg_Rolling_Mean_7d, RH_Rolling_Mean_7d, RR_Rolling_Mean_14d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_14d, RH_Rolling_Mean_14d, RR_Lag_1, Tavg_Lag_1, Rain_Binary_Lag_1, RR_Lag_2, Tavg_Lag_2, Rain_Binary_Lag_2, RR_Lag_3, Tavg_Lag_3, Rain_Binary_Lag_3, RR_Lag_5, Tavg_Lag_5, Rain_Binary_Lag_5, RR_Lag_7, Tavg_Lag_7, Rain_Binary_Lag_7, RR_Lag_14, Tavg_Lag_14, Rain_Binary_Lag_14
+2025-05-20 00:24:44,691 - INFO - 
+Plotting correlations for top 15 features: RR_Rolling_Mean_3d, RR_Rolling_Std_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tx, RR_Rolling_Mean_14d, RH_avg, Tavg, RH_Rolling_Mean_3d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_3d, Tavg_Lag_1, RH_Rolling_Mean_7d, Heat_Index, DayOfYear_cos
+2025-05-20 00:24:46,821 - INFO - Training and evaluating model...
+2025-05-20 00:24:46,823 - INFO - 
+Feature matrix shape: (3604, 55)
+2025-05-20 00:24:46,835 - INFO - 
+Training Gradient Boosting model...
+2025-05-20 00:24:52,586 - INFO - Making predictions...
+2025-05-20 00:24:52,590 - INFO - 
+Model evaluation metrics:
+2025-05-20 00:24:52,590 - INFO - Mean Squared Error (MSE): 5.6175
+2025-05-20 00:24:52,590 - INFO - Root Mean Squared Error (RMSE): 2.3701
+2025-05-20 00:24:52,590 - INFO - Mean Absolute Error (MAE): 1.0219
+2025-05-20 00:24:52,590 - INFO - R-squared (R²): 0.9726
+2025-05-20 00:24:52,787 - INFO - Computing permutation importance (this may take a while)...
+2025-05-20 00:24:56,523 - INFO - 
+Feature Importance (top 10):
+2025-05-20 00:24:56,523 - INFO - RR_Rolling_Mean_3d: 3.1787
+2025-05-20 00:24:56,523 - INFO - RR_Lag_2: 0.6252
+2025-05-20 00:24:56,525 - INFO - RR_Lag_1: 0.5478
+2025-05-20 00:24:56,525 - INFO - RR_Rolling_Std_3d: 0.0833
+2025-05-20 00:24:56,525 - INFO - Tx: 0.0134
+2025-05-20 00:24:56,525 - INFO - Rain_Streak: 0.0037
+2025-05-20 00:24:56,525 - INFO - Dry_Streak: 0.0034
+2025-05-20 00:24:56,525 - INFO - Tn: 0.0022
+2025-05-20 00:24:56,525 - INFO - RR_Rolling_Std_7d: 0.0021
+2025-05-20 00:24:56,525 - INFO - Tavg_Lag_2: 0.0020
+2025-05-20 00:24:56,747 - INFO - 
+Preparing multi-day forecasting dataset...
+2025-05-20 00:24:56,750 - INFO - 
+Initial data shape: (3604, 61)
+2025-05-20 00:24:56,752 - INFO - Initial NaN counts:
+Tanggal               0
+Tn                    0
+Tx                    0
+Tavg                  0
+RH_avg                0
+                     ..
+Tavg_Lag_14           0
+Rain_Binary_Lag_14    0
+RainToday             0
+Rain_Streak           0
+Dry_Streak            0
+Length: 61, dtype: int64
+2025-05-20 00:24:56,886 - INFO - 
+After adding all features - shape: (3604, 352)
+2025-05-20 00:24:56,894 - INFO - NaN counts after features:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          6
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 00:24:56,997 - INFO - 
+After handling missing values - shape: (3604, 352)
+2025-05-20 00:24:57,006 - INFO - NaN counts after handling missing values:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          0
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 00:24:57,067 - INFO - 
+Day 1 dataset - shape: 3603
+2025-05-20 00:24:57,070 - INFO - Number of NaN values in day 1 dataset: 0
+2025-05-20 00:24:57,071 - INFO - Final size of day 1 dataset: 3603
+2025-05-20 00:24:57,094 - INFO - 
+Day 2 dataset - shape: 3602
+2025-05-20 00:24:57,098 - INFO - Number of NaN values in day 2 dataset: 0
+2025-05-20 00:24:57,098 - INFO - Final size of day 2 dataset: 3602
+2025-05-20 00:24:57,125 - INFO - 
+Day 3 dataset - shape: 3601
+2025-05-20 00:24:57,127 - INFO - Number of NaN values in day 3 dataset: 0
+2025-05-20 00:24:57,128 - INFO - Final size of day 3 dataset: 3601
+2025-05-20 00:24:57,154 - INFO - 
+Day 4 dataset - shape: 3600
+2025-05-20 00:24:57,156 - INFO - Number of NaN values in day 4 dataset: 0
+2025-05-20 00:24:57,157 - INFO - Final size of day 4 dataset: 3600
+2025-05-20 00:24:57,180 - INFO - 
+Day 5 dataset - shape: 3599
+2025-05-20 00:24:57,183 - INFO - Number of NaN values in day 5 dataset: 0
+2025-05-20 00:24:57,183 - INFO - Final size of day 5 dataset: 3599
+2025-05-20 00:24:57,185 - INFO - 
+Training multi-day forecasting models...
+2025-05-20 00:24:57,185 - INFO - 
+--- Training models for 0-day ahead prediction ---
+2025-05-20 00:24:57,185 - INFO - Using 346 features for day 0 prediction
+2025-05-20 00:25:13,309 - INFO - gbm CV R² scores: 0.9582 ± 0.0107
+2025-05-20 00:25:17,900 - INFO - rf CV R² scores: 0.9150 ± 0.0072
+2025-05-20 00:25:17,968 - INFO - ridge CV R² scores: 0.9987 ± 0.0009
+2025-05-20 00:25:27,096 - INFO - mlp CV R² scores: 0.9886 ± 0.0025
+2025-05-20 00:25:27,098 - ERROR - Error in model training and evaluation: 'GBMWeatherPredictor' object has no attribute '_plot_prediction_with_error_bars'
+2025-05-20 00:25:27,098 - ERROR - Error in main process: 'GBMWeatherPredictor' object has no attribute '_plot_prediction_with_error_bars'
+2025-05-20 00:26:25,021 - INFO - Loading dataset...
+2025-05-20 00:26:25,031 - INFO - Preprocessing data...
+2025-05-20 00:26:25,032 - INFO - Initial dataset size: 5295
+2025-05-20 00:26:25,358 - INFO - 
+Outliers removed: 52 rows
+2025-05-20 00:26:25,359 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-20 00:26:25,359 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-20 00:26:25,360 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-20 00:26:25,360 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-20 00:26:25,360 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-20 00:26:25,360 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-20 00:26:25,361 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-20 00:26:25,361 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-20 00:26:25,361 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-20 00:26:25,361 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-20 00:26:25,362 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-20 00:26:25,362 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-20 00:26:25,362 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-20 00:26:25,362 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 00:26:25,363 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-20 00:26:25,363 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-20 00:26:25,363 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-20 00:26:25,363 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 00:26:25,364 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-20 00:26:25,364 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-20 00:26:25,364 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-20 00:26:25,364 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-20 00:26:25,366 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-20 00:26:25,366 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-20 00:26:25,366 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-20 00:26:25,367 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-20 00:26:25,367 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-20 00:26:25,367 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-20 00:26:25,367 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-20 00:26:25,368 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-20 00:26:25,368 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-20 00:26:25,368 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-20 00:26:25,369 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-20 00:26:25,369 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-20 00:26:25,369 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-20 00:26:25,370 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-20 00:26:25,370 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-20 00:26:25,370 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-20 00:26:25,370 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-20 00:26:25,371 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-20 00:26:25,371 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-20 00:26:25,372 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-20 00:26:25,373 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-20 00:26:25,373 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-20 00:26:25,373 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-20 00:26:25,373 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-20 00:26:25,374 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-20 00:26:25,374 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-20 00:26:25,375 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-20 00:26:25,375 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-20 00:26:25,375 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-20 00:26:25,376 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-20 00:26:25,376 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-20 00:26:26,973 - INFO - 
+Rows dropped due to NaN values: 53
+2025-05-20 00:26:26,975 - INFO - 
+Final dataset size: 3604
+2025-05-20 00:26:26,975 - INFO - Total rows removed: 1691
+2025-05-20 00:26:26,975 - INFO - 
+Rainfall Statistics After Processing:
+2025-05-20 00:26:26,976 - INFO - Mean: 9.88mm
+2025-05-20 00:26:26,976 - INFO - Median: 1.00mm
+2025-05-20 00:26:26,976 - INFO - Std Dev: 17.50mm
+2025-05-20 00:26:26,977 - INFO - Max: 100.00mm
+2025-05-20 00:26:26,978 - INFO - 
+No NaN values remain in the dataset.
+2025-05-20 00:26:26,979 - INFO - 
+Final feature list (55 features):
+2025-05-20 00:26:26,979 - INFO - Tn, Tx, Tavg, RH_avg, ss, ff_x, ff_avg, ddd_x, Month, Day, DayOfWeek, Season, Temp_Range, Month_sin, Month_cos, Day_sin, Day_cos, DayOfYear_sin, DayOfYear_cos, Temp_Humidity, Temp_Range_RH, Dew_Point, Heat_Index, Rain_Streak, Dry_Streak, RR_Rolling_Mean_3d, RR_Rolling_Std_3d, Tavg_Rolling_Mean_3d, RH_Rolling_Mean_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tavg_Rolling_Mean_7d, RH_Rolling_Mean_7d, RR_Rolling_Mean_14d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_14d, RH_Rolling_Mean_14d, RR_Lag_1, Tavg_Lag_1, Rain_Binary_Lag_1, RR_Lag_2, Tavg_Lag_2, Rain_Binary_Lag_2, RR_Lag_3, Tavg_Lag_3, Rain_Binary_Lag_3, RR_Lag_5, Tavg_Lag_5, Rain_Binary_Lag_5, RR_Lag_7, Tavg_Lag_7, Rain_Binary_Lag_7, RR_Lag_14, Tavg_Lag_14, Rain_Binary_Lag_14
+2025-05-20 00:26:26,985 - INFO - 
+Plotting correlations for top 15 features: RR_Rolling_Mean_3d, RR_Rolling_Std_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tx, RR_Rolling_Mean_14d, RH_avg, Tavg, RH_Rolling_Mean_3d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_3d, Tavg_Lag_1, RH_Rolling_Mean_7d, Heat_Index, DayOfYear_cos
+2025-05-20 00:26:29,442 - INFO - Training and evaluating model...
+2025-05-20 00:26:29,444 - INFO - 
+Feature matrix shape: (3604, 55)
+2025-05-20 00:26:29,458 - INFO - 
+Training Gradient Boosting model...
+2025-05-20 00:26:36,236 - INFO - Making predictions...
+2025-05-20 00:26:36,241 - INFO - 
+Model evaluation metrics:
+2025-05-20 00:26:36,241 - INFO - Mean Squared Error (MSE): 5.6175
+2025-05-20 00:26:36,242 - INFO - Root Mean Squared Error (RMSE): 2.3701
+2025-05-20 00:26:36,242 - INFO - Mean Absolute Error (MAE): 1.0219
+2025-05-20 00:26:36,242 - INFO - R-squared (R²): 0.9726
+2025-05-20 00:26:36,498 - INFO - Computing permutation importance (this may take a while)...
+2025-05-20 00:26:39,982 - INFO - 
+Feature Importance (top 10):
+2025-05-20 00:26:39,982 - INFO - RR_Rolling_Mean_3d: 3.1787
+2025-05-20 00:26:39,983 - INFO - RR_Lag_2: 0.6252
+2025-05-20 00:26:39,983 - INFO - RR_Lag_1: 0.5478
+2025-05-20 00:26:39,983 - INFO - RR_Rolling_Std_3d: 0.0833
+2025-05-20 00:26:39,983 - INFO - Tx: 0.0134
+2025-05-20 00:26:39,983 - INFO - Rain_Streak: 0.0037
+2025-05-20 00:26:39,984 - INFO - Dry_Streak: 0.0034
+2025-05-20 00:26:39,984 - INFO - Tn: 0.0022
+2025-05-20 00:26:39,984 - INFO - RR_Rolling_Std_7d: 0.0021
+2025-05-20 00:26:39,985 - INFO - Tavg_Lag_2: 0.0020
+2025-05-20 00:26:40,264 - INFO - 
+Preparing multi-day forecasting dataset...
+2025-05-20 00:26:40,267 - INFO - 
+Initial data shape: (3604, 61)
+2025-05-20 00:26:40,270 - INFO - Initial NaN counts:
+Tanggal               0
+Tn                    0
+Tx                    0
+Tavg                  0
+RH_avg                0
+                     ..
+Tavg_Lag_14           0
+Rain_Binary_Lag_14    0
+RainToday             0
+Rain_Streak           0
+Dry_Streak            0
+Length: 61, dtype: int64
+2025-05-20 00:26:40,416 - INFO - 
+After adding all features - shape: (3604, 352)
+2025-05-20 00:26:40,424 - INFO - NaN counts after features:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          6
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 00:26:40,533 - INFO - 
+After handling missing values - shape: (3604, 352)
+2025-05-20 00:26:40,543 - INFO - NaN counts after handling missing values:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          0
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 00:26:40,618 - INFO - 
+Day 1 dataset - shape: 3603
+2025-05-20 00:26:40,623 - INFO - Number of NaN values in day 1 dataset: 0
+2025-05-20 00:26:40,623 - INFO - Final size of day 1 dataset: 3603
+2025-05-20 00:26:40,652 - INFO - 
+Day 2 dataset - shape: 3602
+2025-05-20 00:26:40,654 - INFO - Number of NaN values in day 2 dataset: 0
+2025-05-20 00:26:40,654 - INFO - Final size of day 2 dataset: 3602
+2025-05-20 00:26:40,684 - INFO - 
+Day 3 dataset - shape: 3601
+2025-05-20 00:26:40,686 - INFO - Number of NaN values in day 3 dataset: 0
+2025-05-20 00:26:40,686 - INFO - Final size of day 3 dataset: 3601
+2025-05-20 00:26:40,720 - INFO - 
+Day 4 dataset - shape: 3600
+2025-05-20 00:26:40,722 - INFO - Number of NaN values in day 4 dataset: 0
+2025-05-20 00:26:40,723 - INFO - Final size of day 4 dataset: 3600
+2025-05-20 00:26:40,749 - INFO - 
+Day 5 dataset - shape: 3599
+2025-05-20 00:26:40,753 - INFO - Number of NaN values in day 5 dataset: 0
+2025-05-20 00:26:40,753 - INFO - Final size of day 5 dataset: 3599
+2025-05-20 00:26:40,755 - INFO - 
+Training multi-day forecasting models...
+2025-05-20 00:26:40,755 - INFO - 
+--- Training models for 0-day ahead prediction ---
+2025-05-20 00:26:40,755 - INFO - Using 346 features for day 0 prediction
+2025-05-20 00:26:59,871 - INFO - gbm CV R² scores: 0.9582 ± 0.0107
+2025-05-20 00:27:05,090 - INFO - rf CV R² scores: 0.9150 ± 0.0072
+2025-05-20 00:27:05,155 - INFO - ridge CV R² scores: 0.9987 ± 0.0009
+2025-05-20 00:27:13,972 - INFO - mlp CV R² scores: 0.9886 ± 0.0025
+2025-05-20 00:27:14,829 - INFO - 
+--- Training models for 1-day ahead prediction ---
+2025-05-20 00:27:14,829 - INFO - Using 225 features for day 1 prediction
+2025-05-20 00:27:27,778 - INFO - gbm CV R² scores: 0.3203 ± 0.0351
+2025-05-20 00:27:32,315 - INFO - rf CV R² scores: 0.3319 ± 0.0343
+2025-05-20 00:27:32,362 - INFO - ridge CV R² scores: 0.2971 ± 0.0203
+2025-05-20 00:27:35,689 - INFO - mlp CV R² scores: 0.3363 ± 0.0478
+2025-05-20 00:27:36,528 - INFO - 
+--- Training models for 2-day ahead prediction ---
+2025-05-20 00:27:36,529 - INFO - Using 225 features for day 2 prediction
+2025-05-20 00:27:49,279 - INFO - gbm CV R² scores: 0.1547 ± 0.0667
+2025-05-20 00:27:53,796 - INFO - rf CV R² scores: 0.1987 ± 0.0534
+2025-05-20 00:27:53,837 - INFO - ridge CV R² scores: 0.1257 ± 0.0476
+2025-05-20 00:27:56,734 - INFO - mlp CV R² scores: 0.1678 ± 0.0458
+2025-05-20 00:27:57,578 - INFO - 
+--- Training models for 3-day ahead prediction ---
+2025-05-20 00:27:57,579 - INFO - Using 121 features for day 3 prediction
+2025-05-20 00:28:08,118 - INFO - gbm CV R² scores: 0.1620 ± 0.0455
+2025-05-20 01:16:13,251 - ERROR - Error in main process: module 'numpy' has no attribute 'set_num_threads'
+2025-05-20 01:24:08,541 - INFO - Loading dataset...
+2025-05-20 01:24:08,550 - INFO - Preprocessing data...
+2025-05-20 01:24:08,551 - INFO - Initial dataset size: 5295
+2025-05-20 01:24:08,809 - INFO - 
+Outliers removed: 52 rows
+2025-05-20 01:24:08,809 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-20 01:24:08,810 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-20 01:24:08,810 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-20 01:24:08,811 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-20 01:24:08,811 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-20 01:24:08,811 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-20 01:24:08,811 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-20 01:24:08,812 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-20 01:24:08,812 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-20 01:24:08,812 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-20 01:24:08,812 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-20 01:24:08,813 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-20 01:24:08,813 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-20 01:24:08,813 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 01:24:08,813 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-20 01:24:08,814 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-20 01:24:08,814 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-20 01:24:08,814 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 01:24:08,816 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-20 01:24:08,816 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-20 01:24:08,816 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-20 01:24:08,816 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-20 01:24:08,816 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-20 01:24:08,818 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-20 01:24:08,818 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-20 01:24:08,818 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-20 01:24:08,819 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-20 01:24:08,819 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-20 01:24:08,820 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-20 01:24:08,820 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-20 01:24:08,821 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-20 01:24:08,821 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-20 01:24:08,822 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-20 01:24:08,822 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-20 01:24:08,822 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-20 01:24:08,822 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-20 01:24:08,824 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-20 01:24:08,824 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-20 01:24:08,824 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-20 01:24:08,825 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-20 01:24:08,825 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-20 01:24:08,825 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-20 01:24:08,825 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-20 01:24:08,825 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-20 01:24:08,826 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-20 01:24:08,826 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-20 01:24:08,826 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-20 01:24:08,827 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-20 01:24:08,827 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-20 01:24:08,827 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-20 01:24:08,827 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-20 01:24:08,828 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-20 01:24:08,828 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-20 01:24:10,368 - INFO - 
+Rows dropped due to NaN values: 53
+2025-05-20 01:24:10,370 - INFO - 
+Final dataset size: 3604
+2025-05-20 01:24:10,370 - INFO - Total rows removed: 1691
+2025-05-20 01:24:10,371 - INFO - 
+Rainfall Statistics After Processing:
+2025-05-20 01:24:10,371 - INFO - Mean: 9.88mm
+2025-05-20 01:24:10,371 - INFO - Median: 1.00mm
+2025-05-20 01:24:10,372 - INFO - Std Dev: 17.50mm
+2025-05-20 01:24:10,372 - INFO - Max: 100.00mm
+2025-05-20 01:24:10,375 - INFO - 
+No NaN values remain in the dataset.
+2025-05-20 01:24:10,375 - INFO - 
+Final feature list (55 features):
+2025-05-20 01:24:10,375 - INFO - Tn, Tx, Tavg, RH_avg, ss, ff_x, ff_avg, ddd_x, Month, Day, DayOfWeek, Season, Temp_Range, Month_sin, Month_cos, Day_sin, Day_cos, DayOfYear_sin, DayOfYear_cos, Temp_Humidity, Temp_Range_RH, Dew_Point, Heat_Index, Rain_Streak, Dry_Streak, RR_Rolling_Mean_3d, RR_Rolling_Std_3d, Tavg_Rolling_Mean_3d, RH_Rolling_Mean_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tavg_Rolling_Mean_7d, RH_Rolling_Mean_7d, RR_Rolling_Mean_14d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_14d, RH_Rolling_Mean_14d, RR_Lag_1, Tavg_Lag_1, Rain_Binary_Lag_1, RR_Lag_2, Tavg_Lag_2, Rain_Binary_Lag_2, RR_Lag_3, Tavg_Lag_3, Rain_Binary_Lag_3, RR_Lag_5, Tavg_Lag_5, Rain_Binary_Lag_5, RR_Lag_7, Tavg_Lag_7, Rain_Binary_Lag_7, RR_Lag_14, Tavg_Lag_14, Rain_Binary_Lag_14
+2025-05-20 01:24:10,383 - INFO - 
+Plotting correlations for top 15 features: RR_Rolling_Mean_3d, RR_Rolling_Std_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tx, RR_Rolling_Mean_14d, RH_avg, Tavg, RH_Rolling_Mean_3d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_3d, Tavg_Lag_1, RH_Rolling_Mean_7d, Heat_Index, DayOfYear_cos
+2025-05-20 01:24:12,597 - INFO - Training and evaluating model...
+2025-05-20 01:24:12,599 - INFO - 
+Feature matrix shape: (3604, 55)
+2025-05-20 01:24:12,606 - INFO - 
+Training Gradient Boosting model...
+2025-05-20 01:24:18,333 - INFO - Making predictions...
+2025-05-20 01:24:18,337 - INFO - 
+Model evaluation metrics:
+2025-05-20 01:24:18,337 - INFO - Mean Squared Error (MSE): 5.6175
+2025-05-20 01:24:18,338 - INFO - Root Mean Squared Error (RMSE): 2.3701
+2025-05-20 01:24:18,338 - INFO - Mean Absolute Error (MAE): 1.0219
+2025-05-20 01:24:18,338 - INFO - R-squared (R²): 0.9726
+2025-05-20 01:24:18,492 - INFO - Computing permutation importance (this may take a while)...
+2025-05-20 01:24:21,780 - INFO - 
+Feature Importance (top 10):
+2025-05-20 01:24:21,781 - INFO - RR_Rolling_Mean_3d: 3.1787
+2025-05-20 01:24:21,781 - INFO - RR_Lag_2: 0.6252
+2025-05-20 01:24:21,781 - INFO - RR_Lag_1: 0.5478
+2025-05-20 01:24:21,781 - INFO - RR_Rolling_Std_3d: 0.0833
+2025-05-20 01:24:21,782 - INFO - Tx: 0.0134
+2025-05-20 01:24:21,782 - INFO - Rain_Streak: 0.0037
+2025-05-20 01:24:21,782 - INFO - Dry_Streak: 0.0034
+2025-05-20 01:24:21,782 - INFO - Tn: 0.0022
+2025-05-20 01:24:21,782 - INFO - RR_Rolling_Std_7d: 0.0021
+2025-05-20 01:24:21,783 - INFO - Tavg_Lag_2: 0.0020
+2025-05-20 01:24:21,986 - INFO - 
+Preparing multi-day forecasting dataset...
+2025-05-20 01:24:21,991 - INFO - 
+Initial data shape: (3604, 61)
+2025-05-20 01:24:21,992 - INFO - Initial NaN counts:
+Tanggal               0
+Tn                    0
+Tx                    0
+Tavg                  0
+RH_avg                0
+                     ..
+Tavg_Lag_14           0
+Rain_Binary_Lag_14    0
+RainToday             0
+Rain_Streak           0
+Dry_Streak            0
+Length: 61, dtype: int64
+2025-05-20 01:24:22,064 - INFO - 
+After adding all features - shape: (3604, 352)
+2025-05-20 01:24:22,071 - INFO - NaN counts after features:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          6
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 01:24:22,167 - INFO - 
+After handling missing values - shape: (3604, 352)
+2025-05-20 01:24:22,176 - INFO - NaN counts after handling missing values:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          0
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 01:24:22,238 - INFO - 
+Day 1 dataset - shape: 3603
+2025-05-20 01:24:22,241 - INFO - Number of NaN values in day 1 dataset: 0
+2025-05-20 01:24:22,241 - INFO - Final size of day 1 dataset: 3603
+2025-05-20 01:24:22,267 - INFO - 
+Day 2 dataset - shape: 3602
+2025-05-20 01:24:22,269 - INFO - Number of NaN values in day 2 dataset: 0
+2025-05-20 01:24:22,270 - INFO - Final size of day 2 dataset: 3602
+2025-05-20 01:24:22,294 - INFO - 
+Day 3 dataset - shape: 3601
+2025-05-20 01:24:22,296 - INFO - Number of NaN values in day 3 dataset: 0
+2025-05-20 01:24:22,296 - INFO - Final size of day 3 dataset: 3601
+2025-05-20 01:24:22,325 - INFO - 
+Day 4 dataset - shape: 3600
+2025-05-20 01:24:22,326 - INFO - Number of NaN values in day 4 dataset: 0
+2025-05-20 01:24:22,327 - INFO - Final size of day 4 dataset: 3600
+2025-05-20 01:24:22,352 - INFO - 
+Day 5 dataset - shape: 3599
+2025-05-20 01:24:22,355 - INFO - Number of NaN values in day 5 dataset: 0
+2025-05-20 01:24:22,355 - INFO - Final size of day 5 dataset: 3599
+2025-05-20 01:24:22,357 - INFO - 
+Training multi-day forecasting models...
+2025-05-20 01:24:22,357 - INFO - 
+--- Training models for 0-day ahead prediction ---
+2025-05-20 01:24:22,411 - INFO - Selected 100 most correlated features from 346 total
+2025-05-20 01:24:22,411 - INFO - Using 100 features for day 0 prediction
+2025-05-20 01:24:22,422 - INFO - Training models with 3-fold CV...
+2025-05-20 01:24:22,423 - INFO - Training gbm model...
+2025-05-20 01:24:22,423 - INFO -   Processing fold 1/3...
+2025-05-20 01:24:23,497 - INFO -     Fold R²: 0.9748 (took 1.1s)
+2025-05-20 01:24:23,497 - INFO -   Processing fold 2/3...
+2025-05-20 01:24:24,628 - INFO -     Fold R²: 0.9678 (took 1.1s)
+2025-05-20 01:24:24,628 - INFO -   Processing fold 3/3...
+2025-05-20 01:24:25,740 - INFO -     Fold R²: 0.9758 (took 1.1s)
+2025-05-20 01:24:25,740 - INFO - gbm CV R² scores: 0.9728 ± 0.0036
+2025-05-20 01:24:25,741 - INFO - Training rf model...
+2025-05-20 01:24:25,741 - INFO -   Processing fold 1/3...
+2025-05-20 01:24:26,359 - INFO -     Fold R²: 0.9641 (took 0.6s)
+2025-05-20 01:24:26,360 - INFO -   Processing fold 2/3...
+2025-05-20 01:24:26,940 - INFO -     Fold R²: 0.9552 (took 0.6s)
+2025-05-20 01:24:26,941 - INFO -   Processing fold 3/3...
+2025-05-20 01:24:27,516 - INFO -     Fold R²: 0.9555 (took 0.6s)
+2025-05-20 01:24:27,516 - INFO - rf CV R² scores: 0.9582 ± 0.0041
+2025-05-20 01:24:27,516 - INFO - Training ridge model...
+2025-05-20 01:24:27,518 - INFO -   Processing fold 1/3...
+2025-05-20 01:24:27,522 - INFO -     Fold R²: 0.9893 (took 0.0s)
+2025-05-20 01:24:27,523 - INFO -   Processing fold 2/3...
+2025-05-20 01:24:27,526 - INFO -     Fold R²: 0.9869 (took 0.0s)
+2025-05-20 01:24:27,526 - INFO -   Processing fold 3/3...
+2025-05-20 01:24:27,531 - INFO -     Fold R²: 0.9921 (took 0.0s)
+2025-05-20 01:24:27,531 - INFO - ridge CV R² scores: 0.9895 ± 0.0021
+2025-05-20 01:24:27,532 - INFO - Ensemble metrics - R²: 0.9950, RMSE: 1.0068
+2025-05-20 01:24:28,556 - INFO - 
+--- Training models for 1-day ahead prediction ---
+2025-05-20 01:24:28,575 - INFO - Selected 100 most correlated features from 225 total
+2025-05-20 01:24:28,575 - INFO - Using 100 features for day 1 prediction
+2025-05-20 01:24:28,588 - INFO - Training models with 2-fold CV...
+2025-05-20 01:24:28,589 - INFO - Training gbm model...
+2025-05-20 01:24:28,590 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:29,292 - INFO -     Fold R²: 0.2723 (took 0.7s)
+2025-05-20 01:24:29,293 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:30,008 - INFO -     Fold R²: 0.3312 (took 0.7s)
+2025-05-20 01:24:30,009 - INFO - gbm CV R² scores: 0.3017 ± 0.0295
+2025-05-20 01:24:30,009 - INFO - Training rf model...
+2025-05-20 01:24:30,010 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:30,520 - INFO -     Fold R²: 0.3114 (took 0.5s)
+2025-05-20 01:24:30,520 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:31,042 - INFO -     Fold R²: 0.3372 (took 0.5s)
+2025-05-20 01:24:31,044 - INFO - rf CV R² scores: 0.3243 ± 0.0129
+2025-05-20 01:24:31,044 - INFO - Training ridge model...
+2025-05-20 01:24:31,044 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:31,049 - INFO -     Fold R²: 0.3048 (took 0.0s)
+2025-05-20 01:24:31,049 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:31,053 - INFO -     Fold R²: 0.3015 (took 0.0s)
+2025-05-20 01:24:31,053 - INFO - ridge CV R² scores: 0.3032 ± 0.0016
+2025-05-20 01:24:31,055 - INFO - Ensemble metrics - R²: 0.3935, RMSE: 11.1409
+2025-05-20 01:24:32,139 - INFO - 
+--- Training models for 2-day ahead prediction ---
+2025-05-20 01:24:32,163 - INFO - Selected 100 most correlated features from 225 total
+2025-05-20 01:24:32,163 - INFO - Using 100 features for day 2 prediction
+2025-05-20 01:24:32,171 - INFO - Training models with 2-fold CV...
+2025-05-20 01:24:32,172 - INFO - Training gbm model...
+2025-05-20 01:24:32,172 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:32,866 - INFO -     Fold R²: 0.1450 (took 0.7s)
+2025-05-20 01:24:32,866 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:33,562 - INFO -     Fold R²: 0.1818 (took 0.7s)
+2025-05-20 01:24:33,563 - INFO - gbm CV R² scores: 0.1634 ± 0.0184
+2025-05-20 01:24:33,563 - INFO - Training rf model...
+2025-05-20 01:24:33,564 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:34,082 - INFO -     Fold R²: 0.1939 (took 0.5s)
+2025-05-20 01:24:34,084 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:34,582 - INFO -     Fold R²: 0.2179 (took 0.5s)
+2025-05-20 01:24:34,583 - INFO - rf CV R² scores: 0.2059 ± 0.0120
+2025-05-20 01:24:34,583 - INFO - Training ridge model...
+2025-05-20 01:24:34,583 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:34,588 - INFO -     Fold R²: 0.1398 (took 0.0s)
+2025-05-20 01:24:34,589 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:34,592 - INFO -     Fold R²: 0.1462 (took 0.0s)
+2025-05-20 01:24:34,593 - INFO - ridge CV R² scores: 0.1430 ± 0.0032
+2025-05-20 01:24:34,595 - INFO - Ensemble metrics - R²: 0.2174, RMSE: 12.6557
+2025-05-20 01:24:35,605 - INFO - 
+--- Training models for 3-day ahead prediction ---
+2025-05-20 01:24:35,617 - INFO - Selected 100 most correlated features from 121 total
+2025-05-20 01:24:35,618 - INFO - Using 100 features for day 3 prediction
+2025-05-20 01:24:35,628 - INFO - Training models with 2-fold CV...
+2025-05-20 01:24:35,628 - INFO - Training gbm model...
+2025-05-20 01:24:35,629 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:36,395 - INFO -     Fold R²: 0.1275 (took 0.8s)
+2025-05-20 01:24:36,397 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:37,223 - INFO -     Fold R²: 0.1776 (took 0.8s)
+2025-05-20 01:24:37,224 - INFO - gbm CV R² scores: 0.1525 ± 0.0251
+2025-05-20 01:24:37,224 - INFO - Training rf model...
+2025-05-20 01:24:37,225 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:37,752 - INFO -     Fold R²: 0.1852 (took 0.5s)
+2025-05-20 01:24:37,752 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:38,279 - INFO -     Fold R²: 0.2040 (took 0.5s)
+2025-05-20 01:24:38,280 - INFO - rf CV R² scores: 0.1946 ± 0.0094
+2025-05-20 01:24:38,280 - INFO - Training ridge model...
+2025-05-20 01:24:38,281 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:38,285 - INFO -     Fold R²: 0.1462 (took 0.0s)
+2025-05-20 01:24:38,285 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:38,289 - INFO -     Fold R²: 0.1745 (took 0.0s)
+2025-05-20 01:24:38,289 - INFO - ridge CV R² scores: 0.1604 ± 0.0141
+2025-05-20 01:24:38,290 - INFO - Ensemble metrics - R²: 0.1760, RMSE: 12.9859
+2025-05-20 01:24:39,367 - INFO - 
+--- Training models for 4-day ahead prediction ---
+2025-05-20 01:24:39,380 - INFO - Selected 100 most correlated features from 121 total
+2025-05-20 01:24:39,380 - INFO - Using 100 features for day 4 prediction
+2025-05-20 01:24:39,390 - INFO - Training models with 2-fold CV...
+2025-05-20 01:24:39,390 - INFO - Training gbm model...
+2025-05-20 01:24:39,391 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:40,161 - INFO -     Fold R²: 0.1377 (took 0.8s)
+2025-05-20 01:24:40,162 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:40,922 - INFO -     Fold R²: 0.1898 (took 0.8s)
+2025-05-20 01:24:40,923 - INFO - gbm CV R² scores: 0.1637 ± 0.0261
+2025-05-20 01:24:40,923 - INFO - Training rf model...
+2025-05-20 01:24:40,924 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:41,488 - INFO -     Fold R²: 0.1791 (took 0.6s)
+2025-05-20 01:24:41,488 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:42,021 - INFO -     Fold R²: 0.2257 (took 0.5s)
+2025-05-20 01:24:42,022 - INFO - rf CV R² scores: 0.2024 ± 0.0233
+2025-05-20 01:24:42,022 - INFO - Training ridge model...
+2025-05-20 01:24:42,023 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:42,028 - INFO -     Fold R²: 0.1430 (took 0.0s)
+2025-05-20 01:24:42,028 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:42,035 - INFO -     Fold R²: 0.1740 (took 0.0s)
+2025-05-20 01:24:42,035 - INFO - ridge CV R² scores: 0.1585 ± 0.0155
+2025-05-20 01:24:42,036 - INFO - Ensemble metrics - R²: 0.1727, RMSE: 13.0186
+2025-05-20 01:24:43,029 - INFO - 
+--- Training models for 5-day ahead prediction ---
+2025-05-20 01:24:43,044 - INFO - Selected 100 most correlated features from 121 total
+2025-05-20 01:24:43,044 - INFO - Using 100 features for day 5 prediction
+2025-05-20 01:24:43,055 - INFO - Training models with 2-fold CV...
+2025-05-20 01:24:43,055 - INFO - Training gbm model...
+2025-05-20 01:24:43,056 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:43,812 - INFO -     Fold R²: 0.1118 (took 0.8s)
+2025-05-20 01:24:43,813 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:44,589 - INFO -     Fold R²: 0.2263 (took 0.8s)
+2025-05-20 01:24:44,590 - INFO - gbm CV R² scores: 0.1690 ± 0.0572
+2025-05-20 01:24:44,590 - INFO - Training rf model...
+2025-05-20 01:24:44,591 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:45,113 - INFO -     Fold R²: 0.1726 (took 0.5s)
+2025-05-20 01:24:45,114 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:45,623 - INFO -     Fold R²: 0.2393 (took 0.5s)
+2025-05-20 01:24:45,623 - INFO - rf CV R² scores: 0.2059 ± 0.0333
+2025-05-20 01:24:45,625 - INFO - Training ridge model...
+2025-05-20 01:24:45,625 - INFO -   Processing fold 1/2...
+2025-05-20 01:24:45,629 - INFO -     Fold R²: 0.1048 (took 0.0s)
+2025-05-20 01:24:45,629 - INFO -   Processing fold 2/2...
+2025-05-20 01:24:45,634 - INFO -     Fold R²: 0.1851 (took 0.0s)
+2025-05-20 01:24:45,634 - INFO - ridge CV R² scores: 0.1449 ± 0.0402
+2025-05-20 01:24:45,637 - INFO - Ensemble metrics - R²: 0.1538, RMSE: 13.1661
+2025-05-20 01:24:48,282 - ERROR - Error in model training and evaluation: 'model'
+2025-05-20 01:24:48,282 - ERROR - Error in main process: 'model'
+2025-05-20 01:26:33,570 - INFO - Loading dataset...
+2025-05-20 01:26:33,579 - INFO - Preprocessing data...
+2025-05-20 01:26:33,580 - INFO - Initial dataset size: 5295
+2025-05-20 01:26:33,827 - INFO - 
+Outliers removed: 52 rows
+2025-05-20 01:26:33,828 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-20 01:26:33,828 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-20 01:26:33,829 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-20 01:26:33,829 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-20 01:26:33,829 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-20 01:26:33,830 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-20 01:26:33,830 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-20 01:26:33,831 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-20 01:26:33,831 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-20 01:26:33,831 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-20 01:26:33,832 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-20 01:26:33,832 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-20 01:26:33,832 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-20 01:26:33,832 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 01:26:33,833 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-20 01:26:33,834 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-20 01:26:33,835 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-20 01:26:33,835 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 01:26:33,835 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-20 01:26:33,835 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-20 01:26:33,836 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-20 01:26:33,836 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-20 01:26:33,836 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-20 01:26:33,836 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-20 01:26:33,837 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-20 01:26:33,837 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-20 01:26:33,837 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-20 01:26:33,838 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-20 01:26:33,838 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-20 01:26:33,839 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-20 01:26:33,839 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-20 01:26:33,839 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-20 01:26:33,839 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-20 01:26:33,840 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-20 01:26:33,840 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-20 01:26:33,840 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-20 01:26:33,841 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-20 01:26:33,841 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-20 01:26:33,841 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-20 01:26:33,841 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-20 01:26:33,842 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-20 01:26:33,842 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-20 01:26:33,842 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-20 01:26:33,842 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-20 01:26:33,843 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-20 01:26:33,843 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-20 01:26:33,843 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-20 01:26:33,844 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-20 01:26:33,844 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-20 01:26:33,844 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-20 01:26:33,844 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-20 01:26:33,845 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-20 01:26:33,845 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-20 01:26:35,331 - INFO - 
+Rows dropped due to NaN values: 53
+2025-05-20 01:26:35,333 - INFO - 
+Final dataset size: 3604
+2025-05-20 01:26:35,334 - INFO - Total rows removed: 1691
+2025-05-20 01:26:35,334 - INFO - 
+Rainfall Statistics After Processing:
+2025-05-20 01:26:35,334 - INFO - Mean: 9.88mm
+2025-05-20 01:26:35,334 - INFO - Median: 1.00mm
+2025-05-20 01:26:35,335 - INFO - Std Dev: 17.50mm
+2025-05-20 01:26:35,335 - INFO - Max: 100.00mm
+2025-05-20 01:26:35,337 - INFO - 
+No NaN values remain in the dataset.
+2025-05-20 01:26:35,338 - INFO - 
+Final feature list (55 features):
+2025-05-20 01:26:35,338 - INFO - Tn, Tx, Tavg, RH_avg, ss, ff_x, ff_avg, ddd_x, Month, Day, DayOfWeek, Season, Temp_Range, Month_sin, Month_cos, Day_sin, Day_cos, DayOfYear_sin, DayOfYear_cos, Temp_Humidity, Temp_Range_RH, Dew_Point, Heat_Index, Rain_Streak, Dry_Streak, RR_Rolling_Mean_3d, RR_Rolling_Std_3d, Tavg_Rolling_Mean_3d, RH_Rolling_Mean_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tavg_Rolling_Mean_7d, RH_Rolling_Mean_7d, RR_Rolling_Mean_14d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_14d, RH_Rolling_Mean_14d, RR_Lag_1, Tavg_Lag_1, Rain_Binary_Lag_1, RR_Lag_2, Tavg_Lag_2, Rain_Binary_Lag_2, RR_Lag_3, Tavg_Lag_3, Rain_Binary_Lag_3, RR_Lag_5, Tavg_Lag_5, Rain_Binary_Lag_5, RR_Lag_7, Tavg_Lag_7, Rain_Binary_Lag_7, RR_Lag_14, Tavg_Lag_14, Rain_Binary_Lag_14
+2025-05-20 01:26:35,343 - INFO - 
+Plotting correlations for top 15 features: RR_Rolling_Mean_3d, RR_Rolling_Std_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tx, RR_Rolling_Mean_14d, RH_avg, Tavg, RH_Rolling_Mean_3d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_3d, Tavg_Lag_1, RH_Rolling_Mean_7d, Heat_Index, DayOfYear_cos
+2025-05-20 01:26:37,563 - INFO - Training and evaluating model...
+2025-05-20 01:26:37,565 - INFO - 
+Feature matrix shape: (3604, 55)
+2025-05-20 01:26:37,571 - INFO - 
+Training Gradient Boosting model...
+2025-05-20 01:26:43,295 - INFO - Making predictions...
+2025-05-20 01:26:43,299 - INFO - 
+Model evaluation metrics:
+2025-05-20 01:26:43,299 - INFO - Mean Squared Error (MSE): 5.6175
+2025-05-20 01:26:43,300 - INFO - Root Mean Squared Error (RMSE): 2.3701
+2025-05-20 01:26:43,300 - INFO - Mean Absolute Error (MAE): 1.0219
+2025-05-20 01:26:43,300 - INFO - R-squared (R²): 0.9726
+2025-05-20 01:26:43,480 - INFO - Computing permutation importance (this may take a while)...
+2025-05-20 01:26:47,067 - INFO - 
+Feature Importance (top 10):
+2025-05-20 01:26:47,067 - INFO - RR_Rolling_Mean_3d: 3.1787
+2025-05-20 01:26:47,067 - INFO - RR_Lag_2: 0.6252
+2025-05-20 01:26:47,067 - INFO - RR_Lag_1: 0.5478
+2025-05-20 01:26:47,067 - INFO - RR_Rolling_Std_3d: 0.0833
+2025-05-20 01:26:47,068 - INFO - Tx: 0.0134
+2025-05-20 01:26:47,068 - INFO - Rain_Streak: 0.0037
+2025-05-20 01:26:47,068 - INFO - Dry_Streak: 0.0034
+2025-05-20 01:26:47,068 - INFO - Tn: 0.0022
+2025-05-20 01:26:47,068 - INFO - RR_Rolling_Std_7d: 0.0021
+2025-05-20 01:26:47,068 - INFO - Tavg_Lag_2: 0.0020
+2025-05-20 01:26:47,309 - INFO - 
+Preparing multi-day forecasting dataset...
+2025-05-20 01:26:47,313 - INFO - 
+Initial data shape: (3604, 61)
+2025-05-20 01:26:47,316 - INFO - Initial NaN counts:
+Tanggal               0
+Tn                    0
+Tx                    0
+Tavg                  0
+RH_avg                0
+                     ..
+Tavg_Lag_14           0
+Rain_Binary_Lag_14    0
+RainToday             0
+Rain_Streak           0
+Dry_Streak            0
+Length: 61, dtype: int64
+2025-05-20 01:26:47,393 - INFO - 
+After adding all features - shape: (3604, 352)
+2025-05-20 01:26:47,402 - INFO - NaN counts after features:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          6
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 01:26:47,510 - INFO - 
+After handling missing values - shape: (3604, 352)
+2025-05-20 01:26:47,523 - INFO - NaN counts after handling missing values:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          0
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 01:26:47,586 - INFO - 
+Day 1 dataset - shape: 3603
+2025-05-20 01:26:47,588 - INFO - Number of NaN values in day 1 dataset: 0
+2025-05-20 01:26:47,588 - INFO - Final size of day 1 dataset: 3603
+2025-05-20 01:26:47,616 - INFO - 
+Day 2 dataset - shape: 3602
+2025-05-20 01:26:47,619 - INFO - Number of NaN values in day 2 dataset: 0
+2025-05-20 01:26:47,619 - INFO - Final size of day 2 dataset: 3602
+2025-05-20 01:26:47,652 - INFO - 
+Day 3 dataset - shape: 3601
+2025-05-20 01:26:47,655 - INFO - Number of NaN values in day 3 dataset: 0
+2025-05-20 01:26:47,655 - INFO - Final size of day 3 dataset: 3601
+2025-05-20 01:26:47,680 - INFO - 
+Day 4 dataset - shape: 3600
+2025-05-20 01:26:47,683 - INFO - Number of NaN values in day 4 dataset: 0
+2025-05-20 01:26:47,683 - INFO - Final size of day 4 dataset: 3600
+2025-05-20 01:26:47,709 - INFO - 
+Day 5 dataset - shape: 3599
+2025-05-20 01:26:47,711 - INFO - Number of NaN values in day 5 dataset: 0
+2025-05-20 01:26:47,712 - INFO - Final size of day 5 dataset: 3599
+2025-05-20 01:26:47,714 - INFO - 
+Training multi-day forecasting models...
+2025-05-20 01:26:47,714 - INFO - 
+--- Training models for 0-day ahead prediction ---
+2025-05-20 01:26:47,799 - INFO - Selected 100 most correlated features from 346 total
+2025-05-20 01:26:47,799 - INFO - Using 100 features for day 0 prediction
+2025-05-20 01:26:47,811 - INFO - Training models with 3-fold CV...
+2025-05-20 01:26:47,811 - INFO - Training gbm model...
+2025-05-20 01:26:47,812 - INFO -   Processing fold 1/3...
+2025-05-20 01:26:48,952 - INFO -     Fold R²: 0.9748 (took 1.1s)
+2025-05-20 01:26:48,953 - INFO -   Processing fold 2/3...
+2025-05-20 01:26:50,121 - INFO -     Fold R²: 0.9678 (took 1.2s)
+2025-05-20 01:26:50,121 - INFO -   Processing fold 3/3...
+2025-05-20 01:26:51,409 - INFO -     Fold R²: 0.9758 (took 1.3s)
+2025-05-20 01:26:51,410 - INFO - gbm CV R² scores: 0.9728 ± 0.0036
+2025-05-20 01:26:51,410 - INFO - Training rf model...
+2025-05-20 01:26:51,411 - INFO -   Processing fold 1/3...
+2025-05-20 01:26:52,130 - INFO -     Fold R²: 0.9641 (took 0.7s)
+2025-05-20 01:26:52,130 - INFO -   Processing fold 2/3...
+2025-05-20 01:26:52,778 - INFO -     Fold R²: 0.9552 (took 0.6s)
+2025-05-20 01:26:52,779 - INFO -   Processing fold 3/3...
+2025-05-20 01:26:53,434 - INFO -     Fold R²: 0.9555 (took 0.7s)
+2025-05-20 01:26:53,436 - INFO - rf CV R² scores: 0.9582 ± 0.0041
+2025-05-20 01:26:53,436 - INFO - Training ridge model...
+2025-05-20 01:26:53,436 - INFO -   Processing fold 1/3...
+2025-05-20 01:26:53,441 - INFO -     Fold R²: 0.9893 (took 0.0s)
+2025-05-20 01:26:53,441 - INFO -   Processing fold 2/3...
+2025-05-20 01:26:53,446 - INFO -     Fold R²: 0.9869 (took 0.0s)
+2025-05-20 01:26:53,447 - INFO -   Processing fold 3/3...
+2025-05-20 01:26:53,453 - INFO -     Fold R²: 0.9921 (took 0.0s)
+2025-05-20 01:26:53,453 - INFO - ridge CV R² scores: 0.9895 ± 0.0021
+2025-05-20 01:26:53,455 - INFO - Ensemble metrics - R²: 0.9950, RMSE: 1.0068
+2025-05-20 01:26:54,643 - INFO - 
+--- Training models for 1-day ahead prediction ---
+2025-05-20 01:26:54,673 - INFO - Selected 100 most correlated features from 225 total
+2025-05-20 01:26:54,673 - INFO - Using 100 features for day 1 prediction
+2025-05-20 01:26:54,686 - INFO - Training models with 2-fold CV...
+2025-05-20 01:26:54,687 - INFO - Training gbm model...
+2025-05-20 01:26:54,687 - INFO -   Processing fold 1/2...
+2025-05-20 01:26:55,593 - INFO -     Fold R²: 0.2723 (took 0.9s)
+2025-05-20 01:26:55,594 - INFO -   Processing fold 2/2...
+2025-05-20 01:26:56,495 - INFO -     Fold R²: 0.3312 (took 0.9s)
+2025-05-20 01:26:56,496 - INFO - gbm CV R² scores: 0.3017 ± 0.0295
+2025-05-20 01:26:56,496 - INFO - Training rf model...
+2025-05-20 01:26:56,498 - INFO -   Processing fold 1/2...
+2025-05-20 01:26:57,166 - INFO -     Fold R²: 0.3114 (took 0.7s)
+2025-05-20 01:26:57,166 - INFO -   Processing fold 2/2...
+2025-05-20 01:26:57,822 - INFO -     Fold R²: 0.3372 (took 0.7s)
+2025-05-20 01:26:57,823 - INFO - rf CV R² scores: 0.3243 ± 0.0129
+2025-05-20 01:26:57,823 - INFO - Training ridge model...
+2025-05-20 01:26:57,824 - INFO -   Processing fold 1/2...
+2025-05-20 01:26:57,830 - INFO -     Fold R²: 0.3048 (took 0.0s)
+2025-05-20 01:26:57,832 - INFO -   Processing fold 2/2...
+2025-05-20 01:26:57,841 - INFO -     Fold R²: 0.3015 (took 0.0s)
+2025-05-20 01:26:57,842 - INFO - ridge CV R² scores: 0.3032 ± 0.0016
+2025-05-20 01:26:57,843 - INFO - Ensemble metrics - R²: 0.3935, RMSE: 11.1409
+2025-05-20 01:26:59,333 - INFO - 
+--- Training models for 2-day ahead prediction ---
+2025-05-20 01:26:59,363 - INFO - Selected 100 most correlated features from 225 total
+2025-05-20 01:26:59,363 - INFO - Using 100 features for day 2 prediction
+2025-05-20 01:26:59,377 - INFO - Training models with 2-fold CV...
+2025-05-20 01:26:59,377 - INFO - Training gbm model...
+2025-05-20 01:26:59,378 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:00,249 - INFO -     Fold R²: 0.1450 (took 0.9s)
+2025-05-20 01:27:00,250 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:01,138 - INFO -     Fold R²: 0.1818 (took 0.9s)
+2025-05-20 01:27:01,139 - INFO - gbm CV R² scores: 0.1634 ± 0.0184
+2025-05-20 01:27:01,140 - INFO - Training rf model...
+2025-05-20 01:27:01,140 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:01,809 - INFO -     Fold R²: 0.1939 (took 0.7s)
+2025-05-20 01:27:01,810 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:02,481 - INFO -     Fold R²: 0.2179 (took 0.7s)
+2025-05-20 01:27:02,481 - INFO - rf CV R² scores: 0.2059 ± 0.0120
+2025-05-20 01:27:02,482 - INFO - Training ridge model...
+2025-05-20 01:27:02,483 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:02,489 - INFO -     Fold R²: 0.1398 (took 0.0s)
+2025-05-20 01:27:02,489 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:02,495 - INFO -     Fold R²: 0.1462 (took 0.0s)
+2025-05-20 01:27:02,496 - INFO - ridge CV R² scores: 0.1430 ± 0.0032
+2025-05-20 01:27:02,498 - INFO - Ensemble metrics - R²: 0.2174, RMSE: 12.6557
+2025-05-20 01:27:03,791 - INFO - 
+--- Training models for 3-day ahead prediction ---
+2025-05-20 01:27:03,806 - INFO - Selected 100 most correlated features from 121 total
+2025-05-20 01:27:03,807 - INFO - Using 100 features for day 3 prediction
+2025-05-20 01:27:03,820 - INFO - Training models with 2-fold CV...
+2025-05-20 01:27:03,820 - INFO - Training gbm model...
+2025-05-20 01:27:03,821 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:04,731 - INFO -     Fold R²: 0.1275 (took 0.9s)
+2025-05-20 01:27:04,732 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:05,655 - INFO -     Fold R²: 0.1776 (took 0.9s)
+2025-05-20 01:27:05,655 - INFO - gbm CV R² scores: 0.1525 ± 0.0251
+2025-05-20 01:27:05,655 - INFO - Training rf model...
+2025-05-20 01:27:05,656 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:06,339 - INFO -     Fold R²: 0.1852 (took 0.7s)
+2025-05-20 01:27:06,339 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:06,953 - INFO -     Fold R²: 0.2040 (took 0.6s)
+2025-05-20 01:27:06,953 - INFO - rf CV R² scores: 0.1946 ± 0.0094
+2025-05-20 01:27:06,953 - INFO - Training ridge model...
+2025-05-20 01:27:06,955 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:06,960 - INFO -     Fold R²: 0.1462 (took 0.0s)
+2025-05-20 01:27:06,961 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:06,968 - INFO -     Fold R²: 0.1745 (took 0.0s)
+2025-05-20 01:27:06,968 - INFO - ridge CV R² scores: 0.1604 ± 0.0141
+2025-05-20 01:27:06,969 - INFO - Ensemble metrics - R²: 0.1760, RMSE: 12.9859
+2025-05-20 01:27:08,278 - INFO - 
+--- Training models for 4-day ahead prediction ---
+2025-05-20 01:27:08,293 - INFO - Selected 100 most correlated features from 121 total
+2025-05-20 01:27:08,293 - INFO - Using 100 features for day 4 prediction
+2025-05-20 01:27:08,308 - INFO - Training models with 2-fold CV...
+2025-05-20 01:27:08,308 - INFO - Training gbm model...
+2025-05-20 01:27:08,309 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:09,265 - INFO -     Fold R²: 0.1377 (took 1.0s)
+2025-05-20 01:27:09,266 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:10,244 - INFO -     Fold R²: 0.1898 (took 1.0s)
+2025-05-20 01:27:10,245 - INFO - gbm CV R² scores: 0.1637 ± 0.0261
+2025-05-20 01:27:10,245 - INFO - Training rf model...
+2025-05-20 01:27:10,246 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:10,927 - INFO -     Fold R²: 0.1791 (took 0.7s)
+2025-05-20 01:27:10,928 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:11,580 - INFO -     Fold R²: 0.2257 (took 0.7s)
+2025-05-20 01:27:11,581 - INFO - rf CV R² scores: 0.2024 ± 0.0233
+2025-05-20 01:27:11,581 - INFO - Training ridge model...
+2025-05-20 01:27:11,582 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:11,589 - INFO -     Fold R²: 0.1430 (took 0.0s)
+2025-05-20 01:27:11,589 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:11,594 - INFO -     Fold R²: 0.1740 (took 0.0s)
+2025-05-20 01:27:11,595 - INFO - ridge CV R² scores: 0.1585 ± 0.0155
+2025-05-20 01:27:11,597 - INFO - Ensemble metrics - R²: 0.1727, RMSE: 13.0186
+2025-05-20 01:27:12,864 - INFO - 
+--- Training models for 5-day ahead prediction ---
+2025-05-20 01:27:12,879 - INFO - Selected 100 most correlated features from 121 total
+2025-05-20 01:27:12,879 - INFO - Using 100 features for day 5 prediction
+2025-05-20 01:27:12,893 - INFO - Training models with 2-fold CV...
+2025-05-20 01:27:12,893 - INFO - Training gbm model...
+2025-05-20 01:27:12,894 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:13,812 - INFO -     Fold R²: 0.1118 (took 0.9s)
+2025-05-20 01:27:13,812 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:14,725 - INFO -     Fold R²: 0.2263 (took 0.9s)
+2025-05-20 01:27:14,726 - INFO - gbm CV R² scores: 0.1690 ± 0.0572
+2025-05-20 01:27:14,726 - INFO - Training rf model...
+2025-05-20 01:27:14,727 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:15,373 - INFO -     Fold R²: 0.1726 (took 0.6s)
+2025-05-20 01:27:15,374 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:16,048 - INFO -     Fold R²: 0.2393 (took 0.7s)
+2025-05-20 01:27:16,048 - INFO - rf CV R² scores: 0.2059 ± 0.0333
+2025-05-20 01:27:16,048 - INFO - Training ridge model...
+2025-05-20 01:27:16,049 - INFO -   Processing fold 1/2...
+2025-05-20 01:27:16,053 - INFO -     Fold R²: 0.1048 (took 0.0s)
+2025-05-20 01:27:16,054 - INFO -   Processing fold 2/2...
+2025-05-20 01:27:16,059 - INFO -     Fold R²: 0.1851 (took 0.0s)
+2025-05-20 01:27:16,059 - INFO - ridge CV R² scores: 0.1449 ± 0.0402
+2025-05-20 01:27:16,059 - INFO - Ensemble metrics - R²: 0.1538, RMSE: 13.1661
+2025-05-20 01:27:19,315 - INFO - Saved ensemble model for 0-day ahead prediction in gbm\models\day_0
+2025-05-20 01:27:19,320 - INFO - Saved ensemble model for 1-day ahead prediction in gbm\models\day_1
+2025-05-20 01:27:19,323 - INFO - Saved ensemble model for 2-day ahead prediction in gbm\models\day_2
+2025-05-20 01:27:19,327 - INFO - Saved ensemble model for 3-day ahead prediction in gbm\models\day_3
+2025-05-20 01:27:19,330 - INFO - Saved ensemble model for 4-day ahead prediction in gbm\models\day_4
+2025-05-20 01:27:19,335 - INFO - Saved ensemble model for 5-day ahead prediction in gbm\models\day_5
+2025-05-20 01:27:19,347 - INFO - 
+Model saved to gbm\models\gbm_model.pkl
+2025-05-20 01:27:19,347 - INFO - Scaler saved to gbm\models\scaler.pkl
+2025-05-20 01:27:19,348 - INFO - Feature list saved to gbm\models\feature_columns.pkl
+2025-05-20 01:27:19,348 - INFO - Process completed successfully.

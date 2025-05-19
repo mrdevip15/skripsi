@@ -6,6 +6,8 @@ import pickle
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.preprocessing import StandardScaler
+import matplotlib
+matplotlib.use('Agg')  # Set non-interactive backend before importing pyplot
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime, timedelta
@@ -13,7 +15,25 @@ from sklearn.inspection import permutation_importance
 import joblib
 from sklearn.linear_model import Lasso, Ridge
 from sklearn.neural_network import MLPRegressor
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, KFold
+from sklearn.base import clone
+import warnings
+from tqdm import tqdm  # For progress bars
+import time
+
+# Configure parallel processing
+import multiprocessing
+N_JOBS = max(1, multiprocessing.cpu_count() // 2)  # Use half of available CPUs for better stability
+
+# Configure numpy for better performance
+os.environ["OMP_NUM_THREADS"] = str(N_JOBS)
+os.environ["OPENBLAS_NUM_THREADS"] = str(N_JOBS)
+os.environ["MKL_NUM_THREADS"] = str(N_JOBS)
+os.environ["VECLIB_MAXIMUM_THREADS"] = str(N_JOBS)
+os.environ["NUMEXPR_NUM_THREADS"] = str(N_JOBS)
+
+# Suppress warnings
+warnings.filterwarnings('ignore')
 
 # Create base directory for all GBM results
 GBM_DIR = 'gbm'
@@ -45,6 +65,7 @@ class GBMWeatherPredictor:
         self.target_column = 'RR'
         self.scaler = StandardScaler()
         self.forecast_days = 5  # Number of days to forecast ahead
+        self.cv_folds = 5  # Number of cross-validation folds
         
         # Save paths
         self.models_dir = MODELS_DIR
@@ -424,26 +445,74 @@ class GBMWeatherPredictor:
             for i in range(1, 6):  # Past 5 days
                 df_copy[f'{feature}_past_{i}d'] = df_copy[feature].shift(i)
         
-        # Log state after creating historical features
-        logging.info(f"\nAfter adding historical features - shape: {df_copy.shape}")
-        logging.info(f"NaN counts after historical features:\n{df_copy.isna().sum()}")
+        # Create specialized weekly patterns
+        # Weekly rainfall patterns (same day of week)
+        for i in range(1, 5):  # Past 4 weeks of same day
+            df_copy[f'RR_SameDay_{i}wk'] = df_copy[self.target_column].shift(i*7)
         
-        # Update feature columns to include historical features
+        # Add rate of change features
+        df_copy['RR_1d_change'] = df_copy[self.target_column].diff()
+        df_copy['RR_3d_change'] = df_copy[self.target_column] - df_copy[self.target_column].shift(3)
+        df_copy['RR_7d_change'] = df_copy[self.target_column] - df_copy[self.target_column].shift(7)
+        
+        # Add volatility indicators
+        df_copy['RR_volatility_3d'] = df_copy[self.target_column].rolling(window=3).std()
+        df_copy['RR_volatility_7d'] = df_copy[self.target_column].rolling(window=7).std()
+        
+        # Add rainfall seasonality features
+        month_avg = df_copy.groupby(df_copy['Tanggal'].dt.month)[self.target_column].transform('mean')
+        df_copy['RR_vs_MonthAvg'] = df_copy[self.target_column] / month_avg
+        
+        # Add cumulative rain features
+        df_copy['RR_cum_3d'] = df_copy[self.target_column].rolling(window=3).sum()
+        df_copy['RR_cum_7d'] = df_copy[self.target_column].rolling(window=7).sum()
+        
+        # Weather pattern indicators
+        # Is it currently in a rainy pattern?
+        df_copy['RainPattern_3d'] = ((df_copy[self.target_column] > 0) & 
+                                   (df_copy[self.target_column].shift(1) > 0) & 
+                                   (df_copy[self.target_column].shift(2) > 0)).astype(int)
+        # Is it currently in a dry pattern?
+        df_copy['DryPattern_3d'] = ((df_copy[self.target_column] == 0) & 
+                                  (df_copy[self.target_column].shift(1) == 0) & 
+                                  (df_copy[self.target_column].shift(2) == 0)).astype(int)
+        
+        # Create more complex interaction features
+        df_copy['RH_Tavg_RR_Lag1'] = df_copy['RH_avg'] * df_copy['Tavg'] * df_copy[f'RR_Lag_1']
+        df_copy['Wind_RH_Lag1'] = df_copy['ff_avg'] * df_copy['RH_avg'] * df_copy[f'RR_Lag_1']
+        
+        # Log state after creating features
+        logging.info(f"\nAfter adding all features - shape: {df_copy.shape}")
+        logging.info(f"NaN counts after features:\n{df_copy.isna().sum()}")
+        
+        # Update feature columns to include all new features
         historical_features = []
         for feature in self.feature_columns:
             historical_features.extend([f'{feature}_past_{i}d' for i in range(1, 6)])
+            
+        # Add new feature names
+        new_features = [
+            'RR_SameDay_1wk', 'RR_SameDay_2wk', 'RR_SameDay_3wk', 'RR_SameDay_4wk',
+            'RR_1d_change', 'RR_3d_change', 'RR_7d_change',
+            'RR_volatility_3d', 'RR_volatility_7d',
+            'RR_vs_MonthAvg', 'RR_cum_3d', 'RR_cum_7d',
+            'RainPattern_3d', 'DryPattern_3d',
+            'RH_Tavg_RR_Lag1', 'Wind_RH_Lag1'
+        ]
         
-        # Combine current and historical features
-        self.extended_features = self.feature_columns + historical_features
+        # Combine current, historical, and new features
+        self.extended_features = self.feature_columns + historical_features + new_features
         
-        # Handle missing values in historical features using forward fill and backward fill
+        # Handle missing values in all features
         for feature in self.extended_features:
-            # First try forward fill
-            df_copy[feature] = df_copy[feature].fillna(method='ffill')
-            # Then backward fill any remaining NaNs
-            df_copy[feature] = df_copy[feature].fillna(method='bfill')
-            # Finally, if any NaNs remain, fill with column median
-            df_copy[feature] = df_copy[feature].fillna(df_copy[feature].median())
+            if feature in df_copy.columns:
+                # First try forward fill
+                df_copy[feature] = df_copy[feature].fillna(method='ffill')
+                # Then backward fill any remaining NaNs
+                df_copy[feature] = df_copy[feature].fillna(method='bfill')
+                # Finally, if any NaNs remain, fill with column median
+                if df_copy[feature].isna().any():
+                    df_copy[feature] = df_copy[feature].fillna(df_copy[feature].median())
         
         # Log state after handling missing values
         logging.info(f"\nAfter handling missing values - shape: {df_copy.shape}")
@@ -467,8 +536,17 @@ class GBMWeatherPredictor:
             # Drop rows with NaN
             day_df = day_df.dropna()
             
+            # Add seasonal stratification for better model training
+            # Create season indicator for model training
+            day_df['Season_Indicator'] = day_df['Tanggal'].dt.month.apply(
+                lambda m: 1 if m in [12, 1, 2] else  # Winter
+                         2 if m in [3, 4, 5] else    # Spring
+                         3 if m in [6, 7, 8] else    # Summer
+                         4                           # Fall
+            )
+            
             # Log info about the dataset for this day
-            logging.info(f"\nDay {day} dataset - shape before dropping NaN: {len(day_df)}")
+            logging.info(f"\nDay {day} dataset - shape: {len(day_df)}")
             logging.info(f"Number of NaN values in day {day} dataset: {day_df.isna().sum().sum()}")
             
             multi_day_data[day] = day_df
@@ -479,82 +557,156 @@ class GBMWeatherPredictor:
         return multi_day_data
 
     def plot_feature_importance_extended(self, feature_importance, day):
-        """Plot feature importance including historical features"""
+        """Plot feature importance showing only top 10 most important features"""
         # Sort features by importance
         indices = np.argsort(feature_importance)[::-1]
         sorted_feature_names = [self.extended_features[i] for i in indices]
         sorted_importance = feature_importance[indices]
         
-        # Group features by type (current vs historical)
-        current_features = []
-        historical_features = []
-        importances_current = []
-        importances_historical = []
+        # Take only top 10 features
+        top_n = 10
+        top_features = sorted_feature_names[:top_n]
+        top_importance = sorted_importance[:top_n]
         
-        for name, importance in zip(sorted_feature_names, sorted_importance):
-            if '_past_' in name:
-                historical_features.append(name)
-                importances_historical.append(importance)
-            else:
-                current_features.append(name)
-                importances_current.append(importance)
-        
-        # Plot separate graphs for current and historical features
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 8))
-        
-        # Current features
-        y_pos = np.arange(len(current_features))
-        ax1.barh(y_pos, importances_current)
-        ax1.set_yticks(y_pos)
-        ax1.set_yticklabels(current_features)
-        ax1.set_title('Current Day Features Importance')
-        
-        # Historical features
-        y_pos = np.arange(len(historical_features))
-        ax2.barh(y_pos, importances_historical)
-        ax2.set_yticks(y_pos)
-        ax2.set_yticklabels(historical_features)
-        ax2.set_title('Historical Features Importance')
-        
+        # Create plot
+        plt.figure(figsize=(12, 8))
+        y_pos = np.arange(len(top_features))
+        plt.barh(y_pos, top_importance)
+        plt.yticks(y_pos, top_features)
+        plt.xlabel('Feature Importance')
+        plt.title(f'Top {top_n} Most Important Features for {day}-Day Ahead Prediction')
         plt.tight_layout()
         plt.savefig(os.path.join(self.run_dir, f'feature_importance_day{day}.png'))
         plt.close()
+        
+        # Log top 10 features
+        logging.info(f"\nTop {top_n} most important features for {day}-day ahead prediction:")
+        for i, (feature, importance) in enumerate(zip(top_features, top_importance)):
+            logging.info(f"{i+1}. {feature}: {importance:.4f}")
 
     def train_multi_day_models(self, multi_day_data):
-        """Train separate models for each forecast day using ensemble approach"""
+        """Train separate advanced models for each forecast day using ensemble approach"""
         results = {}
+        staged_predictions = {}  # Store predictions to use in later days
         
-        # Model types to try for each day
-        model_types = {
-            'gbm': GradientBoostingRegressor(
-                n_estimators=200,
-                learning_rate=0.1,
-                max_depth=5,
-                min_samples_split=5,
-                min_samples_leaf=4,
-                subsample=0.8,
-                random_state=42
-            ),
-            'rf': RandomForestRegressor(
-                n_estimators=200, 
-                max_depth=10,
-                random_state=42,
-                n_jobs=-1
-            ),
-            'ridge': Ridge(alpha=1.0, random_state=42),
-            'mlp': MLPRegressor(
-                hidden_layer_sizes=(100, 50), 
-                activation='relu',
-                solver='adam',
-                alpha=0.0001,
-                max_iter=1000,
-                early_stopping=True,
-                random_state=42
-            )
+        # Configure models differently based on prediction horizon
+        base_model_configs = {
+            # Day 0 models - more regularized to prevent overfitting
+            0: {
+                'gbm': GradientBoostingRegressor(
+                    n_estimators=200,
+                    learning_rate=0.05,
+                    max_depth=4,  # Reduced to prevent overfitting
+                    min_samples_split=10,  # Increased for more regularization
+                    min_samples_leaf=5,
+                    subsample=0.8,
+                    max_features='sqrt',
+                    random_state=42
+                ),
+                'rf': RandomForestRegressor(
+                    n_estimators=200,
+                    max_depth=8,  # Reduced to prevent overfitting
+                    min_samples_split=5,
+                    min_samples_leaf=3,
+                    max_features='sqrt',
+                    bootstrap=True,
+                    random_state=42,
+                    n_jobs=N_JOBS
+                ),
+                'ridge': Ridge(
+                    alpha=5.0,  # Higher alpha for more regularization
+                    solver='auto',
+                    random_state=42
+                )
+            },
+            # Day 1-2 models - optimized for short-term predictions
+            1: {
+                'gbm': GradientBoostingRegressor(
+                    n_estimators=250,
+                    learning_rate=0.03,
+                    max_depth=5,
+                    min_samples_split=4,
+                    min_samples_leaf=2,
+                    subsample=0.85,
+                    max_features='sqrt',
+                    random_state=42
+                ),
+                'rf': RandomForestRegressor(
+                    n_estimators=250,
+                    max_depth=10,
+                    min_samples_split=4,
+                    min_samples_leaf=2,
+                    max_features='sqrt',
+                    bootstrap=True,
+                    random_state=42,
+                    n_jobs=N_JOBS
+                ),
+                'ridge': Ridge(
+                    alpha=1.0,
+                    solver='auto',
+                    random_state=42
+                )
+            },
+            # Day 3-5 models - optimized for longer-term predictions
+            3: {
+                'gbm': GradientBoostingRegressor(
+                    n_estimators=300,
+                    learning_rate=0.02,  # Lower learning rate for more stable predictions
+                    max_depth=6,
+                    min_samples_split=3,
+                    min_samples_leaf=2,
+                    subsample=0.9,
+                    max_features='sqrt',
+                    random_state=42
+                ),
+                'rf': RandomForestRegressor(
+                    n_estimators=300,
+                    max_depth=12,
+                    min_samples_split=3,
+                    min_samples_leaf=2,
+                    max_features='sqrt',
+                    bootstrap=True,
+                    random_state=42,
+                    n_jobs=N_JOBS
+                ),
+                'ridge': Ridge(
+                    alpha=0.5,  # Lower alpha to capture more subtle patterns
+                    solver='auto',
+                    random_state=42
+                )
+            }
         }
         
-        for day, day_df in multi_day_data.items():
+        # Process each forecast day
+        for day in range(self.forecast_days + 1):
             logging.info(f"\n--- Training models for {day}-day ahead prediction ---")
+            
+            # Select appropriate model configuration based on prediction horizon
+            if day == 0:
+                model_config = base_model_configs[0]
+            elif day <= 2:
+                model_config = base_model_configs[1]
+            else:
+                model_config = base_model_configs[3]
+            
+            day_df = multi_day_data[day]
+            
+            # Use fewer features for faster training
+            features_to_use = self._select_features_for_horizon(day, self.extended_features)
+            if len(features_to_use) > 100:  # If too many features, select subset
+                features_to_use = self._select_most_important_features(day_df, features_to_use, 
+                                                                     f'Future_RR_{day}d', 100)
+            
+            # Add previous day prediction as feature for day > 1 (staged forecasting)
+            if day > 1 and day-1 in staged_predictions:
+                prev_day_pred = staged_predictions[day-1]
+                # Add previous day prediction to dataset
+                day_df['prev_day_pred'] = np.nan  # Initialize with NaN
+                day_df.iloc[-len(prev_day_pred):, day_df.columns.get_loc('prev_day_pred')] = prev_day_pred
+                features_to_use.append('prev_day_pred')
+                logging.info(f"Added previous day prediction as feature for day {day}")
+                
+            logging.info(f"Using {len(features_to_use)} features for day {day} prediction")
             
             # Split data
             train_size = int(0.8 * len(day_df))
@@ -563,148 +715,348 @@ class GBMWeatherPredictor:
             train_dates = day_df.iloc[:train_size]['Tanggal']
             test_dates = day_df.iloc[train_size:]['Tanggal']
             
-            # Extract features and target without the date column
-            X_train = day_df.iloc[:train_size].drop(['Tanggal', f'Future_RR_{day}d'], axis=1)
-            y_train = day_df.iloc[:train_size][f'Future_RR_{day}d']
-            X_test = day_df.iloc[train_size:].drop(['Tanggal', f'Future_RR_{day}d'], axis=1)
-            y_test = day_df.iloc[train_size:][f'Future_RR_{day}d']
+            # Extract features and target
+            X_train = day_df.iloc[:train_size][features_to_use].copy()
+            y_train = day_df.iloc[:train_size][f'Future_RR_{day}d'].copy()
+            X_test = day_df.iloc[train_size:][features_to_use].copy()
+            y_test = day_df.iloc[train_size:][f'Future_RR_{day}d'].copy()
+            
+            # Handle any remaining NaN values
+            for col in X_train.columns:
+                if X_train[col].isna().any():
+                    med_val = X_train[col].median()
+                    X_train[col] = X_train[col].fillna(med_val)
+                    X_test[col] = X_test[col].fillna(med_val)
             
             # Scale features
             scaler = StandardScaler()
             X_train_scaled = scaler.fit_transform(X_train)
             X_test_scaled = scaler.transform(X_test)
             
-            # Train and evaluate each model type
-            model_results = {}
-            best_r2 = -float('inf')
-            best_model_name = None
-            best_model = None
-            all_predictions = []
+            # Adjust CV folds based on horizon - more folds for day 0, fewer for later days
+            cv_folds = 5 if day == 0 else 3 if day <= 2 else 2
             
-            for model_name, model in model_types.items():
-                logging.info(f"Training {model_name} model for day {day}...")
-                
-                try:
-                    # Train model
-                    model.fit(X_train_scaled, y_train)
-                    
-                    # Make predictions
-                    y_pred = model.predict(X_test_scaled)
-                    all_predictions.append(y_pred)
-                    
-                    # Calculate metrics
-                    mse = mean_squared_error(y_test, y_pred)
-                    rmse = np.sqrt(mse)
-                    mae = mean_absolute_error(y_test, y_pred)
-                    r2 = r2_score(y_test, y_pred)
-                    
-                    logging.info(f"{model_name} - MSE: {mse:.4f}, RMSE: {rmse:.4f}, MAE: {mae:.4f}, R²: {r2:.4f}")
-                    
-                    # Save model results
-                    model_results[model_name] = {
-                        'model': model,
-                        'metrics': {
-                            'mse': mse,
-                            'rmse': rmse,
-                            'mae': mae,
-                            'r2': r2
-                        },
-                        'predictions': y_pred
-                    }
-                    
-                    # Track best model
-                    if r2 > best_r2:
-                        best_r2 = r2
-                        best_model_name = model_name
-                        best_model = model
-                
-                except Exception as e:
-                    logging.error(f"Error training {model_name} model: {str(e)}")
+            # Initialize cross-validation
+            cv_scores = {model_name: [] for model_name in model_config.keys()}
+            cv_predictions = {model_name: np.zeros(len(X_test)) for model_name in model_config.keys()}
             
-            # Create ensemble prediction (simple average of all models)
-            if all_predictions:
-                ensemble_pred = np.mean(all_predictions, axis=0)
-                ensemble_mse = mean_squared_error(y_test, ensemble_pred)
-                ensemble_rmse = np.sqrt(ensemble_mse)
-                ensemble_mae = mean_absolute_error(y_test, ensemble_pred)
-                ensemble_r2 = r2_score(y_test, ensemble_pred)
-                
-                logging.info(f"Ensemble - MSE: {ensemble_mse:.4f}, RMSE: {ensemble_rmse:.4f}, MAE: {ensemble_mae:.4f}, R²: {ensemble_r2:.4f}")
-                
-                model_results['ensemble'] = {
-                    'model': 'ensemble',
-                    'metrics': {
-                        'mse': ensemble_mse,
-                        'rmse': ensemble_rmse,
-                        'mae': ensemble_mae,
-                        'r2': ensemble_r2
-                    },
-                    'predictions': ensemble_pred
-                }
-                
-                # Check if ensemble is better than individual models
-                if ensemble_r2 > best_r2:
-                    best_r2 = ensemble_r2
-                    best_model_name = 'ensemble'
+            # Train each model
+            logging.info(f"Training models with {cv_folds}-fold CV...")
             
-            logging.info(f"Best model for day {day}: {best_model_name} with R²: {best_r2:.4f}")
-            
-            # Use best model or ensemble for final predictions
-            if best_model_name == 'ensemble':
-                final_pred = ensemble_pred
-                metrics = model_results['ensemble']['metrics']
-                # For ensemble, we use the first model for importance analysis
-                if 'gbm' in model_results:
-                    feature_importance = model_results['gbm']['model'].feature_importances_
+            for model_name, base_model in model_config.items():
+                logging.info(f"Training {model_name} model...")
+                kf = KFold(n_splits=cv_folds, shuffle=True, random_state=42)
+                fold_predictions = []
+                
+                for fold, (train_idx, val_idx) in enumerate(kf.split(X_train_scaled)):
+                    logging.info(f"  Processing fold {fold+1}/{cv_folds}...")
+                    start_time = time.time()
+                    
+                    # Split data for this fold
+                    X_fold_train = X_train_scaled[train_idx]
+                    y_fold_train = y_train.iloc[train_idx]
+                    X_fold_val = X_train_scaled[val_idx]
+                    y_fold_val = y_train.iloc[val_idx]
+                    
+                    try:
+                        # Clone and train model
+                        model = clone(base_model)
+                        model.fit(X_fold_train, y_fold_train)
+                        
+                        # Validate
+                        val_pred = model.predict(X_fold_val)
+                        r2 = r2_score(y_fold_val, val_pred)
+                        cv_scores[model_name].append(r2)
+                        
+                        # Predict on test set
+                        fold_predictions.append(model.predict(X_test_scaled))
+                        
+                        elapsed = time.time() - start_time
+                        logging.info(f"    Fold R²: {r2:.4f} (took {elapsed:.1f}s)")
+                        
+                    except Exception as e:
+                        logging.error(f"Error in fold {fold+1}: {str(e)}")
+                        # Use average of previous folds or 0 if no previous folds
+                        if fold_predictions:
+                            fold_predictions.append(np.mean(fold_predictions, axis=0))
+                        else:
+                            fold_predictions.append(np.zeros(len(X_test_scaled)))
+                        cv_scores[model_name].append(0.0)
+                
+                # Average predictions across folds
+                if fold_predictions:
+                    cv_predictions[model_name] = np.mean(fold_predictions, axis=0)
+                    logging.info(f"{model_name} CV R² scores: {np.mean(cv_scores[model_name]):.4f} ± {np.std(cv_scores[model_name]):.4f}")
                 else:
-                    # If GBM not available, use dummy feature importance
-                    feature_importance = np.ones(len(self.extended_features)) / len(self.extended_features)
-            else:
-                final_pred = model_results[best_model_name]['predictions']
-                metrics = model_results[best_model_name]['metrics']
-                # Get feature importance if available
-                if hasattr(best_model, 'feature_importances_'):
-                    feature_importance = best_model.feature_importances_
-                else:
-                    # For models without direct feature importance, use permutation importance
-                    perm_imp = permutation_importance(best_model, X_test_scaled, y_test, n_repeats=10, random_state=42)
-                    feature_importance = perm_imp.importances_mean
+                    logging.warning(f"No valid predictions for {model_name}, using zeros")
+                    cv_predictions[model_name] = np.zeros(len(X_test))
             
-            # Plot feature importance
-            self.plot_feature_importance_extended(feature_importance, day)
+            # Calculate ensemble weights based on CV performance
+            weights = self._calculate_ensemble_weights(cv_scores)
             
-            # Log top important features
-            feature_importance_list = list(zip(self.extended_features, feature_importance))
-            feature_importance_list.sort(key=lambda x: x[1], reverse=True)
-            logging.info(f"\nTop 10 most important features for {day}-day ahead prediction:")
-            for feature, importance in feature_importance_list[:10]:
-                logging.info(f"{feature}: {importance:.4f}")
+            # Create weighted ensemble prediction
+            ensemble_pred = np.zeros(len(X_test))
+            for model_name in model_config.keys():
+                if model_name in weights:  # Check if model has a weight
+                    ensemble_pred += weights[model_name] * cv_predictions[model_name]
             
-            # Estimate prediction intervals
-            pred_std = np.std(y_test - final_pred)
+            # Store predictions for use in later days (staged forecasting)
+            staged_predictions[day] = ensemble_pred
             
-            # Store final results
+            # Calculate prediction standard deviation for uncertainty estimation
+            pred_std = np.std([cv_predictions[model_name] for model_name in model_config.keys() 
+                            if model_name in cv_predictions], axis=0)
+            
+            # Calculate final metrics
+            ensemble_metrics = {
+                'mse': mean_squared_error(y_test, ensemble_pred),
+                'rmse': np.sqrt(mean_squared_error(y_test, ensemble_pred)),
+                'mae': mean_absolute_error(y_test, ensemble_pred),
+                'r2': r2_score(y_test, ensemble_pred)
+            }
+            
+            logging.info(f"Ensemble metrics - R²: {ensemble_metrics['r2']:.4f}, RMSE: {ensemble_metrics['rmse']:.4f}")
+            
+            # Store results
             results[day] = {
-                'model': best_model_name,
-                'scaler': scaler,
-                'metrics': metrics,
                 'test_dates': test_dates,
                 'y_test': y_test,
-                'y_pred': final_pred,
+                'y_pred': ensemble_pred,
                 'pred_std': pred_std,
-                'feature_importance': feature_importance
+                'metrics': ensemble_metrics,
+                'features_used': features_to_use
             }
             
-            # Save the best model and scaler
+            # Save model data
             self.multi_day_models[day] = {
-                'model_name': best_model_name,
-                'model': best_model,
+                'model_name': 'ensemble',
+                'models': model_config,
+                'weights': weights,
                 'scaler': scaler,
-                'pred_std': pred_std,
-                'feature_importance': feature_importance
+                'features_used': features_to_use,
+                'pred_std': pred_std
             }
+            
+            # Plot results
+            self._plot_prediction_with_error_bars(test_dates, y_test, ensemble_pred, 
+                                                ensemble_pred - 1.96 * pred_std,
+                                                ensemble_pred + 1.96 * pred_std,
+                                                day, ensemble_metrics)
+            
+            # For n-day ahead predictions, analyze errors specifically
+            if day > 0:
+                self._analyze_forecast_errors(test_dates, y_test, ensemble_pred, day)
         
         return results
+
+    def _analyze_forecast_errors(self, dates, actual, predicted, day):
+        """Analyze forecast errors for n-day ahead predictions to identify patterns"""
+        errors = actual - predicted
+        abs_errors = np.abs(errors)
+        
+        # Find months with highest errors
+        # Convert dates to month if they're datetime objects
+        if isinstance(dates.iloc[0], (datetime, pd.Timestamp)):
+            months = [d.month for d in dates]
+        else:
+            # Try to parse dates if they're strings
+            try:
+                months = [pd.to_datetime(d).month for d in dates]
+            except:
+                months = [0] * len(dates)  # Default if parsing fails
+        
+        # Group errors by month
+        month_errors = {}
+        for m, e in zip(months, abs_errors):
+            if m not in month_errors:
+                month_errors[m] = []
+            month_errors[m].append(e)
+        
+        # Calculate average error by month
+        avg_month_errors = {m: np.mean(e) for m, e in month_errors.items() if len(e) > 0}
+        
+        # Identify months with highest errors
+        if avg_month_errors:
+            worst_months = sorted(avg_month_errors.items(), key=lambda x: x[1], reverse=True)[:3]
+            month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            
+            logging.info(f"\nMonths with highest errors for {day}-day ahead predictions:")
+            for month_num, error in worst_months:
+                if 1 <= month_num <= 12:
+                    logging.info(f"  {month_names[month_num-1]}: MAE = {error:.2f}")
+        
+        # Analyze error distribution
+        plt.figure(figsize=(12, 8))
+        
+        # Error histogram
+        plt.subplot(2, 2, 1)
+        plt.hist(errors, bins=20)
+        plt.title(f'Error Distribution for {day}-Day Ahead')
+        plt.xlabel('Error (Actual - Predicted)')
+        plt.ylabel('Frequency')
+        
+        # Error by prediction magnitude
+        plt.subplot(2, 2, 2)
+        plt.scatter(predicted, abs_errors, alpha=0.5)
+        plt.title('Error vs Prediction Magnitude')
+        plt.xlabel('Predicted Value')
+        plt.ylabel('Absolute Error')
+        
+        # Error by actual value
+        plt.subplot(2, 2, 3)
+        plt.scatter(actual, abs_errors, alpha=0.5)
+        plt.title('Error vs Actual Value')
+        plt.xlabel('Actual Value')
+        plt.ylabel('Absolute Error')
+        
+        # Monthly error pattern
+        if 1 <= min(months) <= 12 and 1 <= max(months) <= 12:
+            avg_errors_by_month = [0] * 12
+            count_by_month = [0] * 12
+            
+            for m, e in zip(months, abs_errors):
+                if 1 <= m <= 12:
+                    avg_errors_by_month[m-1] += e
+                    count_by_month[m-1] += 1
+            
+            for i in range(12):
+                if count_by_month[i] > 0:
+                    avg_errors_by_month[i] /= count_by_month[i]
+            
+            plt.subplot(2, 2, 4)
+            plt.bar(range(1, 13), avg_errors_by_month)
+            plt.title('Average Error by Month')
+            plt.xlabel('Month')
+            plt.ylabel('Average Absolute Error')
+            plt.xticks(range(1, 13), ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+            plt.xticks(rotation=45)
+        
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.run_dir, f'error_analysis_day{day}.png'))
+        plt.close()
+
+    def _select_features_for_horizon(self, day, all_features):
+        """Select appropriate features based on forecast horizon"""
+        if day == 0:  # Today's prediction
+            return all_features
+        
+        # Base features that are always included
+        base_features = [f for f in self.feature_columns]
+        
+        # Features specific to short-term prediction (1-2 days)
+        short_term_patterns = ['_past_1d', '_past_2d', 'Lag_1', 'Lag_2', 'Rolling_Mean_3d',
+                             'RainPattern', 'Temp_', 'RH_', 'Rain_Streak', 'DryPattern', 
+                             'volatility_3d', 'RR_1d_change']
+        
+        # Features specific to medium-term prediction (3-5 days)
+        medium_term_patterns = ['Month', 'Season', 'DayOfYear', 'Rolling_Mean_7d',
+                              'Rolling_Mean_14d', 'SameDay', 'cum_7d', 'volatility_7d',
+                              'RR_vs_MonthAvg', 'RR_7d_change', 'SameDay_1wk', 'SameDay_2wk']
+        
+        if day <= 2:
+            # Short-term prediction: focus on recent patterns and meteorological features
+            specific_features = [f for f in all_features if 
+                               any(pattern in f for pattern in short_term_patterns)]
+            
+            # Add special focus on rapid change indicators for short-term
+            for feature in all_features:
+                if ('change' in feature or 'streak' in feature or 'pattern' in feature) and feature not in specific_features:
+                    specific_features.append(feature)
+        else:
+            # Medium-term prediction: focus on seasonal/cyclic patterns and longer trends
+            specific_features = [f for f in all_features if 
+                               any(pattern in f for pattern in medium_term_patterns)]
+            
+            # Add special focus on seasonal indicators for medium-term
+            for feature in all_features:
+                if ('season' in feature.lower() or 'month' in feature.lower() or 'annual' in feature.lower()):
+                    if feature not in specific_features:
+                        specific_features.append(feature)
+        
+        return list(set(base_features + specific_features))
+
+    def _calculate_ensemble_weights(self, cv_scores):
+        """Calculate weights for ensemble based on cross-validation performance"""
+        mean_scores = {model: np.mean(scores) for model, scores in cv_scores.items()}
+        min_score = min(mean_scores.values())
+        max_score = max(mean_scores.values())
+        
+        # Normalize scores to [0.1, 1] range
+        if max_score > min_score:
+            weights = {model: 0.1 + 0.9 * (score - min_score) / (max_score - min_score)
+                      for model, score in mean_scores.items()}
+        else:
+            # If all scores are equal, use equal weights
+            weights = {model: 1.0 / len(cv_scores) for model in cv_scores.keys()}
+        
+        # Normalize weights to sum to 1
+        total_weight = sum(weights.values())
+        weights = {model: w / total_weight for model, w in weights.items()}
+        
+        return weights
+
+    def _plot_prediction_with_error_bars(self, dates, actual, predicted, lower, upper, day, metrics):
+        """Create detailed plot of predictions with error bars and metrics"""
+        plt.figure(figsize=(15, 8))
+        
+        # Plot actual values
+        plt.plot(dates, actual, 'o-', color='blue', label='Actual', alpha=0.7, markersize=4)
+        
+        # Plot predicted values
+        plt.plot(dates, predicted, 'x-', color='red', label='Predicted', alpha=0.7, markersize=4)
+        
+        # Add prediction intervals
+        plt.fill_between(dates, lower, upper, color='red', alpha=0.2, label='95% Confidence Interval')
+        
+        # Add metrics as text
+        metrics_text = (f"RMSE: {metrics['rmse']:.2f}\n"
+                       f"MAE: {metrics['mae']:.2f}\n"
+                       f"R²: {metrics['r2']:.2f}")
+        plt.annotate(metrics_text, xy=(0.02, 0.95), xycoords='axes fraction',
+                    fontsize=10, bbox=dict(boxstyle="round,pad=0.5", 
+                    facecolor='white', alpha=0.8),
+                    verticalalignment='top')
+        
+        # Identify days with large errors
+        errors = np.abs(actual - predicted)
+        large_error_threshold = np.percentile(errors, 90)  # Top 10% of errors
+        large_error_indices = errors > large_error_threshold
+        
+        if np.any(large_error_indices):
+            plt.scatter(dates[large_error_indices], actual[large_error_indices],
+                      color='purple', s=100, marker='o', alpha=0.7,
+                      label='Large Error Points')
+            
+            # Add annotations for large errors
+            for date, act, pred in zip(dates[large_error_indices], 
+                                     actual[large_error_indices], 
+                                     predicted[large_error_indices]):
+                error = abs(act - pred)
+                plt.annotate(f'Error: {error:.1f}mm',
+                           xy=(date, max(act, pred)),
+                           xytext=(10, 10), textcoords='offset points',
+                           fontsize=8, alpha=0.7,
+                           bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=0.3))
+        
+        # Customize plot
+        day_label = "Today" if day == 0 else f"{day}-Day Ahead"
+        plt.title(f'{day_label} Rainfall Prediction with Confidence Intervals')
+        plt.xlabel('Date')
+        plt.ylabel('Rainfall (mm)')
+        plt.legend(loc='upper right')
+        plt.grid(True, alpha=0.3)
+        
+        # Rotate x-axis labels for better readability
+        plt.xticks(rotation=45, ha='right')
+        
+        # Adjust layout to prevent label cutoff
+        plt.tight_layout()
+        
+        # Save the plot
+        plt.savefig(os.path.join(self.run_dir, f'detailed_prediction_day{day}.png'), 
+                   bbox_inches='tight', dpi=300)
+        plt.close()
 
     def plot_multi_day_predictions(self, results):
         """Plot predictions for multiple forecast horizons with metrics"""
@@ -790,23 +1142,73 @@ class GBMWeatherPredictor:
     def save_multi_day_models(self):
         """Save multi-day models to disk"""
         for day, model_data in self.multi_day_models.items():
-            model_path = os.path.join(self.models_dir, f'gbm_model_day{day}.pkl')
-            scaler_path = os.path.join(self.models_dir, f'scaler_day{day}.pkl')
-            imp_path = os.path.join(self.models_dir, f'feature_importance_day{day}.pkl')
-            std_path = os.path.join(self.models_dir, f'pred_std_day{day}.pkl')
+            model_dir = os.path.join(self.models_dir, f'day_{day}')
+            os.makedirs(model_dir, exist_ok=True)
             
-            # Save model and scaler
-            joblib.dump(model_data['model'], model_path)
+            # Save ensemble information
+            ensemble_path = os.path.join(model_dir, 'ensemble_info.pkl')
+            with open(ensemble_path, 'wb') as f:
+                pickle.dump({
+                    'weights': model_data['weights'],
+                    'features_used': model_data['features_used'],
+                    'pred_std': model_data['pred_std']
+                }, f)
+            
+            # Save individual models
+            for model_name, model in model_data['models'].items():
+                model_path = os.path.join(model_dir, f'{model_name}_model.pkl')
+                joblib.dump(model, model_path)
+            
+            # Save scaler
+            scaler_path = os.path.join(model_dir, 'scaler.pkl')
             joblib.dump(model_data['scaler'], scaler_path)
             
-            # Save feature importance and prediction std
-            with open(imp_path, 'wb') as f:
-                pickle.dump(model_data['feature_importance'], f)
-                
-            with open(std_path, 'wb') as f:
-                pickle.dump(model_data['pred_std'], f)
+            logging.info(f"Saved ensemble model for {day}-day ahead prediction in {model_dir}")
             
-            logging.info(f"Saved model for {day}-day ahead prediction")
+    def load_multi_day_models(self):
+        """Load saved multi-day models from disk"""
+        self.multi_day_models = {}
+        
+        # Check each day directory
+        for day in range(self.forecast_days + 1):  # Include day 0
+            model_dir = os.path.join(self.models_dir, f'day_{day}')
+            if not os.path.exists(model_dir):
+                logging.warning(f"No saved model found for day {day}")
+                continue
+                
+            # Load ensemble information
+            ensemble_path = os.path.join(model_dir, 'ensemble_info.pkl')
+            if not os.path.exists(ensemble_path):
+                logging.warning(f"No ensemble info found for day {day}")
+                continue
+                
+            with open(ensemble_path, 'rb') as f:
+                ensemble_info = pickle.load(f)
+            
+            # Initialize model data structure
+            self.multi_day_models[day] = {
+                'model_name': 'ensemble',
+                'models': {},
+                'weights': ensemble_info['weights'],
+                'features_used': ensemble_info['features_used'],
+                'pred_std': ensemble_info['pred_std'],
+                'scaler': None
+            }
+            
+            # Load scaler
+            scaler_path = os.path.join(model_dir, 'scaler.pkl')
+            if os.path.exists(scaler_path):
+                self.multi_day_models[day]['scaler'] = joblib.load(scaler_path)
+            
+            # Load individual models
+            for model_name in ['gbm', 'rf', 'ridge']:
+                model_path = os.path.join(model_dir, f'{model_name}_model.pkl')
+                if os.path.exists(model_path):
+                    self.multi_day_models[day]['models'][model_name] = joblib.load(model_path)
+            
+            logging.info(f"Loaded ensemble model for {day}-day ahead prediction")
+            
+        return len(self.multi_day_models) > 0
 
     def train_and_evaluate(self, df):
         """Train and evaluate the GBM model on the processed dataset"""
@@ -925,6 +1327,22 @@ class GBMWeatherPredictor:
         logging.info(f"Scaler saved to {scaler_path}")
         logging.info(f"Feature list saved to {features_path}")
 
+    def _select_most_important_features(self, df, features, target_col, max_features=100):
+        """Select the most important features based on correlation with target"""
+        correlations = []
+        for feature in features:
+            if feature in df.columns:
+                corr = abs(np.corrcoef(df[feature].values, df[target_col].values)[0, 1])
+                if not np.isnan(corr):
+                    correlations.append((feature, corr))
+        
+        # Sort by correlation and take top features
+        correlations.sort(key=lambda x: x[1], reverse=True)
+        selected = [f[0] for f in correlations[:max_features]]
+        
+        logging.info(f"Selected {len(selected)} most correlated features from {len(features)} total")
+        return selected
+
 def main():
     try:
         # Load dataset
@@ -952,9 +1370,14 @@ def main():
         
         logging.info("Process completed successfully.")
         
+    except KeyboardInterrupt:
+        logging.warning("\nProcess interrupted by user. Cleaning up...")
     except Exception as e:
         logging.error(f"Error in main process: {str(e)}")
         raise
+    finally:
+        # Clean up matplotlib resources
+        plt.close('all')
 
 if __name__ == "__main__":
     main() 
