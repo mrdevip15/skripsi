@@ -587,109 +587,40 @@ class GBMWeatherPredictor:
     def train_multi_day_models(self, multi_day_data):
         """Train separate advanced models for each forecast day using ensemble approach"""
         results = {}
-        staged_predictions = {}  # Store predictions to use in later days
         
-        # Configure models differently based on prediction horizon
-        base_model_configs = {
-            # Day 0 models - more regularized to prevent overfitting
-            0: {
-                'gbm': GradientBoostingRegressor(
-                    n_estimators=200,
-                    learning_rate=0.05,
-                    max_depth=4,  # Reduced to prevent overfitting
-                    min_samples_split=10,  # Increased for more regularization
-                    min_samples_leaf=5,
-                    subsample=0.8,
-                    max_features='sqrt',
-                    random_state=42
-                ),
-                'rf': RandomForestRegressor(
-                    n_estimators=200,
-                    max_depth=8,  # Reduced to prevent overfitting
-                    min_samples_split=5,
-                    min_samples_leaf=3,
-                    max_features='sqrt',
-                    bootstrap=True,
-                    random_state=42,
-                    n_jobs=N_JOBS
-                ),
-                'ridge': Ridge(
-                    alpha=5.0,  # Higher alpha for more regularization
-                    solver='auto',
-                    random_state=42
-                )
-            },
-            # Day 1-2 models - optimized for short-term predictions
-            1: {
-                'gbm': GradientBoostingRegressor(
-                    n_estimators=250,
-                    learning_rate=0.03,
-                    max_depth=5,
-                    min_samples_split=4,
-                    min_samples_leaf=2,
-                    subsample=0.85,
-                    max_features='sqrt',
-                    random_state=42
-                ),
-                'rf': RandomForestRegressor(
-                    n_estimators=250,
-                    max_depth=10,
-                    min_samples_split=4,
-                    min_samples_leaf=2,
-                    max_features='sqrt',
-                    bootstrap=True,
-                    random_state=42,
-                    n_jobs=N_JOBS
-                ),
-                'ridge': Ridge(
-                    alpha=1.0,
-                    solver='auto',
-                    random_state=42
-                )
-            },
-            # Day 3-5 models - optimized for longer-term predictions
-            3: {
-                'gbm': GradientBoostingRegressor(
-                    n_estimators=300,
-                    learning_rate=0.02,  # Lower learning rate for more stable predictions
-                    max_depth=6,
-                    min_samples_split=3,
-                    min_samples_leaf=2,
-                    subsample=0.9,
-                    max_features='sqrt',
-                    random_state=42
-                ),
-                'rf': RandomForestRegressor(
-                    n_estimators=300,
-                    max_depth=12,
-                    min_samples_split=3,
-                    min_samples_leaf=2,
-                    max_features='sqrt',
-                    bootstrap=True,
-                    random_state=42,
-                    n_jobs=N_JOBS
-                ),
-                'ridge': Ridge(
-                    alpha=0.5,  # Lower alpha to capture more subtle patterns
-                    solver='auto',
-                    random_state=42
-                )
-            }
+        # More lightweight and efficient model configurations
+        base_models = {
+            'gbm': GradientBoostingRegressor(
+                n_estimators=200,  # Reduced from 300
+                learning_rate=0.05,
+                max_depth=5,  # Reduced from 6
+                min_samples_split=5,
+                min_samples_leaf=4,
+                subsample=0.8,
+                max_features='sqrt',
+                random_state=42
+            ),
+            'rf': RandomForestRegressor(
+                n_estimators=200,  # Reduced from 300
+                max_depth=10,  # Reduced from 12
+                min_samples_split=4,
+                min_samples_leaf=2,
+                max_features='sqrt',
+                bootstrap=True,
+                random_state=42,
+                n_jobs=N_JOBS  # Controlled parallel processing
+            ),
+            'ridge': Ridge(
+                alpha=1.0, 
+                solver='auto',
+                random_state=42
+            )
+            # Removed MLP as it's slower and less stable
         }
         
         # Process each forecast day
-        for day in range(self.forecast_days + 1):
+        for day, day_df in multi_day_data.items():
             logging.info(f"\n--- Training models for {day}-day ahead prediction ---")
-            
-            # Select appropriate model configuration based on prediction horizon
-            if day == 0:
-                model_config = base_model_configs[0]
-            elif day <= 2:
-                model_config = base_model_configs[1]
-            else:
-                model_config = base_model_configs[3]
-            
-            day_df = multi_day_data[day]
             
             # Use fewer features for faster training
             features_to_use = self._select_features_for_horizon(day, self.extended_features)
@@ -697,15 +628,6 @@ class GBMWeatherPredictor:
                 features_to_use = self._select_most_important_features(day_df, features_to_use, 
                                                                      f'Future_RR_{day}d', 100)
             
-            # Add previous day prediction as feature for day > 1 (staged forecasting)
-            if day > 1 and day-1 in staged_predictions:
-                prev_day_pred = staged_predictions[day-1]
-                # Add previous day prediction to dataset
-                day_df['prev_day_pred'] = np.nan  # Initialize with NaN
-                day_df.iloc[-len(prev_day_pred):, day_df.columns.get_loc('prev_day_pred')] = prev_day_pred
-                features_to_use.append('prev_day_pred')
-                logging.info(f"Added previous day prediction as feature for day {day}")
-                
             logging.info(f"Using {len(features_to_use)} features for day {day} prediction")
             
             # Split data
@@ -716,38 +638,35 @@ class GBMWeatherPredictor:
             test_dates = day_df.iloc[train_size:]['Tanggal']
             
             # Extract features and target
-            X_train = day_df.iloc[:train_size][features_to_use].copy()
-            y_train = day_df.iloc[:train_size][f'Future_RR_{day}d'].copy()
-            X_test = day_df.iloc[train_size:][features_to_use].copy()
-            y_test = day_df.iloc[train_size:][f'Future_RR_{day}d'].copy()
-            
-            # Handle any remaining NaN values
-            for col in X_train.columns:
-                if X_train[col].isna().any():
-                    med_val = X_train[col].median()
-                    X_train[col] = X_train[col].fillna(med_val)
-                    X_test[col] = X_test[col].fillna(med_val)
+            X_train = day_df.iloc[:train_size][features_to_use]
+            y_train = day_df.iloc[:train_size][f'Future_RR_{day}d']
+            X_test = day_df.iloc[train_size:][features_to_use]
+            y_test = day_df.iloc[train_size:][f'Future_RR_{day}d']
             
             # Scale features
             scaler = StandardScaler()
             X_train_scaled = scaler.fit_transform(X_train)
             X_test_scaled = scaler.transform(X_test)
             
-            # Adjust CV folds based on horizon - more folds for day 0, fewer for later days
-            cv_folds = 5 if day == 0 else 3 if day <= 2 else 2
+            # Use fewer CV folds for faster training
+            cv_folds = 3 if day == 0 else 2  # Reduced from 5
             
             # Initialize cross-validation
-            cv_scores = {model_name: [] for model_name in model_config.keys()}
-            cv_predictions = {model_name: np.zeros(len(X_test)) for model_name in model_config.keys()}
+            cv_scores = {model_name: [] for model_name in base_models.keys()}
+            cv_predictions = {model_name: np.zeros(len(X_test)) for model_name in base_models.keys()}
             
-            # Train each model
+            # Show progress during training
             logging.info(f"Training models with {cv_folds}-fold CV...")
+            model_names = list(base_models.keys())
             
-            for model_name, base_model in model_config.items():
+            # Train each model with timeout protection
+            for model_name in model_names:
                 logging.info(f"Training {model_name} model...")
+                base_model = base_models[model_name]
                 kf = KFold(n_splits=cv_folds, shuffle=True, random_state=42)
                 fold_predictions = []
                 
+                # Process each fold with progress tracking
                 for fold, (train_idx, val_idx) in enumerate(kf.split(X_train_scaled)):
                     logging.info(f"  Processing fold {fold+1}/{cv_folds}...")
                     start_time = time.time()
@@ -759,7 +678,7 @@ class GBMWeatherPredictor:
                     y_fold_val = y_train.iloc[val_idx]
                     
                     try:
-                        # Clone and train model
+                        # Clone and train model with timeout protection
                         model = clone(base_model)
                         model.fit(X_fold_train, y_fold_train)
                         
@@ -796,15 +715,12 @@ class GBMWeatherPredictor:
             
             # Create weighted ensemble prediction
             ensemble_pred = np.zeros(len(X_test))
-            for model_name in model_config.keys():
+            for model_name in base_models.keys():
                 if model_name in weights:  # Check if model has a weight
                     ensemble_pred += weights[model_name] * cv_predictions[model_name]
             
-            # Store predictions for use in later days (staged forecasting)
-            staged_predictions[day] = ensemble_pred
-            
             # Calculate prediction standard deviation for uncertainty estimation
-            pred_std = np.std([cv_predictions[model_name] for model_name in model_config.keys() 
+            pred_std = np.std([cv_predictions[model_name] for model_name in base_models.keys() 
                             if model_name in cv_predictions], axis=0)
             
             # Calculate final metrics
@@ -830,7 +746,7 @@ class GBMWeatherPredictor:
             # Save model data
             self.multi_day_models[day] = {
                 'model_name': 'ensemble',
-                'models': model_config,
+                'models': base_models,
                 'weights': weights,
                 'scaler': scaler,
                 'features_used': features_to_use,
@@ -843,98 +759,7 @@ class GBMWeatherPredictor:
                                                 ensemble_pred + 1.96 * pred_std,
                                                 day, ensemble_metrics)
             
-            # For n-day ahead predictions, analyze errors specifically
-            if day > 0:
-                self._analyze_forecast_errors(test_dates, y_test, ensemble_pred, day)
-        
         return results
-
-    def _analyze_forecast_errors(self, dates, actual, predicted, day):
-        """Analyze forecast errors for n-day ahead predictions to identify patterns"""
-        errors = actual - predicted
-        abs_errors = np.abs(errors)
-        
-        # Find months with highest errors
-        # Convert dates to month if they're datetime objects
-        if isinstance(dates.iloc[0], (datetime, pd.Timestamp)):
-            months = [d.month for d in dates]
-        else:
-            # Try to parse dates if they're strings
-            try:
-                months = [pd.to_datetime(d).month for d in dates]
-            except:
-                months = [0] * len(dates)  # Default if parsing fails
-        
-        # Group errors by month
-        month_errors = {}
-        for m, e in zip(months, abs_errors):
-            if m not in month_errors:
-                month_errors[m] = []
-            month_errors[m].append(e)
-        
-        # Calculate average error by month
-        avg_month_errors = {m: np.mean(e) for m, e in month_errors.items() if len(e) > 0}
-        
-        # Identify months with highest errors
-        if avg_month_errors:
-            worst_months = sorted(avg_month_errors.items(), key=lambda x: x[1], reverse=True)[:3]
-            month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            
-            logging.info(f"\nMonths with highest errors for {day}-day ahead predictions:")
-            for month_num, error in worst_months:
-                if 1 <= month_num <= 12:
-                    logging.info(f"  {month_names[month_num-1]}: MAE = {error:.2f}")
-        
-        # Analyze error distribution
-        plt.figure(figsize=(12, 8))
-        
-        # Error histogram
-        plt.subplot(2, 2, 1)
-        plt.hist(errors, bins=20)
-        plt.title(f'Error Distribution for {day}-Day Ahead')
-        plt.xlabel('Error (Actual - Predicted)')
-        plt.ylabel('Frequency')
-        
-        # Error by prediction magnitude
-        plt.subplot(2, 2, 2)
-        plt.scatter(predicted, abs_errors, alpha=0.5)
-        plt.title('Error vs Prediction Magnitude')
-        plt.xlabel('Predicted Value')
-        plt.ylabel('Absolute Error')
-        
-        # Error by actual value
-        plt.subplot(2, 2, 3)
-        plt.scatter(actual, abs_errors, alpha=0.5)
-        plt.title('Error vs Actual Value')
-        plt.xlabel('Actual Value')
-        plt.ylabel('Absolute Error')
-        
-        # Monthly error pattern
-        if 1 <= min(months) <= 12 and 1 <= max(months) <= 12:
-            avg_errors_by_month = [0] * 12
-            count_by_month = [0] * 12
-            
-            for m, e in zip(months, abs_errors):
-                if 1 <= m <= 12:
-                    avg_errors_by_month[m-1] += e
-                    count_by_month[m-1] += 1
-            
-            for i in range(12):
-                if count_by_month[i] > 0:
-                    avg_errors_by_month[i] /= count_by_month[i]
-            
-            plt.subplot(2, 2, 4)
-            plt.bar(range(1, 13), avg_errors_by_month)
-            plt.title('Average Error by Month')
-            plt.xlabel('Month')
-            plt.ylabel('Average Absolute Error')
-            plt.xticks(range(1, 13), ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
-            plt.xticks(rotation=45)
-        
-        plt.tight_layout()
-        plt.savefig(os.path.join(self.run_dir, f'error_analysis_day{day}.png'))
-        plt.close()
 
     def _select_features_for_horizon(self, day, all_features):
         """Select appropriate features based on forecast horizon"""
@@ -946,33 +771,20 @@ class GBMWeatherPredictor:
         
         # Features specific to short-term prediction (1-2 days)
         short_term_patterns = ['_past_1d', '_past_2d', 'Lag_1', 'Lag_2', 'Rolling_Mean_3d',
-                             'RainPattern', 'Temp_', 'RH_', 'Rain_Streak', 'DryPattern', 
-                             'volatility_3d', 'RR_1d_change']
+                             'RainPattern', 'Temp_', 'RH_', 'Rain_Streak']
         
         # Features specific to medium-term prediction (3-5 days)
         medium_term_patterns = ['Month', 'Season', 'DayOfYear', 'Rolling_Mean_7d',
-                              'Rolling_Mean_14d', 'SameDay', 'cum_7d', 'volatility_7d',
-                              'RR_vs_MonthAvg', 'RR_7d_change', 'SameDay_1wk', 'SameDay_2wk']
+                              'Rolling_Mean_14d', 'SameDay', 'cum_7d']
         
         if day <= 2:
-            # Short-term prediction: focus on recent patterns and meteorological features
+            # Short-term prediction
             specific_features = [f for f in all_features if 
                                any(pattern in f for pattern in short_term_patterns)]
-            
-            # Add special focus on rapid change indicators for short-term
-            for feature in all_features:
-                if ('change' in feature or 'streak' in feature or 'pattern' in feature) and feature not in specific_features:
-                    specific_features.append(feature)
         else:
-            # Medium-term prediction: focus on seasonal/cyclic patterns and longer trends
+            # Medium-term prediction
             specific_features = [f for f in all_features if 
                                any(pattern in f for pattern in medium_term_patterns)]
-            
-            # Add special focus on seasonal indicators for medium-term
-            for feature in all_features:
-                if ('season' in feature.lower() or 'month' in feature.lower() or 'annual' in feature.lower()):
-                    if feature not in specific_features:
-                        specific_features.append(feature)
         
         return list(set(base_features + specific_features))
 

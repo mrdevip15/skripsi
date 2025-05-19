@@ -3020,3 +3020,739 @@ Model saved to gbm\models\gbm_model.pkl
 2025-05-20 01:27:19,347 - INFO - Scaler saved to gbm\models\scaler.pkl
 2025-05-20 01:27:19,348 - INFO - Feature list saved to gbm\models\feature_columns.pkl
 2025-05-20 01:27:19,348 - INFO - Process completed successfully.
+2025-05-20 01:34:13,498 - INFO - Loading dataset...
+2025-05-20 01:34:13,508 - INFO - Preprocessing data...
+2025-05-20 01:34:13,509 - INFO - Initial dataset size: 5295
+2025-05-20 01:34:13,752 - INFO - 
+Outliers removed: 52 rows
+2025-05-20 01:34:13,753 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-20 01:34:13,753 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-20 01:34:13,754 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-20 01:34:13,754 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-20 01:34:13,754 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-20 01:34:13,754 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-20 01:34:13,755 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-20 01:34:13,755 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-20 01:34:13,755 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-20 01:34:13,755 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-20 01:34:13,755 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-20 01:34:13,756 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-20 01:34:13,756 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-20 01:34:13,756 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 01:34:13,756 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-20 01:34:13,757 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-20 01:34:13,757 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-20 01:34:13,757 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 01:34:13,757 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-20 01:34:13,758 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-20 01:34:13,758 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-20 01:34:13,759 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-20 01:34:13,759 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-20 01:34:13,759 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-20 01:34:13,760 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-20 01:34:13,760 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-20 01:34:13,760 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-20 01:34:13,761 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-20 01:34:13,761 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-20 01:34:13,761 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-20 01:34:13,762 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-20 01:34:13,762 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-20 01:34:13,762 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-20 01:34:13,762 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-20 01:34:13,763 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-20 01:34:13,763 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-20 01:34:13,763 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-20 01:34:13,764 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-20 01:34:13,764 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-20 01:34:13,764 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-20 01:34:13,765 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-20 01:34:13,765 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-20 01:34:13,765 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-20 01:34:13,765 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-20 01:34:13,765 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-20 01:34:13,765 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-20 01:34:13,766 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-20 01:34:13,766 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-20 01:34:13,766 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-20 01:34:13,767 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-20 01:34:13,767 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-20 01:34:13,767 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-20 01:34:13,768 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-20 01:34:15,335 - INFO - 
+Rows dropped due to NaN values: 53
+2025-05-20 01:34:15,336 - INFO - 
+Final dataset size: 3604
+2025-05-20 01:34:15,337 - INFO - Total rows removed: 1691
+2025-05-20 01:34:15,337 - INFO - 
+Rainfall Statistics After Processing:
+2025-05-20 01:34:15,337 - INFO - Mean: 9.88mm
+2025-05-20 01:34:15,337 - INFO - Median: 1.00mm
+2025-05-20 01:34:15,338 - INFO - Std Dev: 17.50mm
+2025-05-20 01:34:15,338 - INFO - Max: 100.00mm
+2025-05-20 01:34:15,341 - INFO - 
+No NaN values remain in the dataset.
+2025-05-20 01:34:15,341 - INFO - 
+Final feature list (55 features):
+2025-05-20 01:34:15,341 - INFO - Tn, Tx, Tavg, RH_avg, ss, ff_x, ff_avg, ddd_x, Month, Day, DayOfWeek, Season, Temp_Range, Month_sin, Month_cos, Day_sin, Day_cos, DayOfYear_sin, DayOfYear_cos, Temp_Humidity, Temp_Range_RH, Dew_Point, Heat_Index, Rain_Streak, Dry_Streak, RR_Rolling_Mean_3d, RR_Rolling_Std_3d, Tavg_Rolling_Mean_3d, RH_Rolling_Mean_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tavg_Rolling_Mean_7d, RH_Rolling_Mean_7d, RR_Rolling_Mean_14d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_14d, RH_Rolling_Mean_14d, RR_Lag_1, Tavg_Lag_1, Rain_Binary_Lag_1, RR_Lag_2, Tavg_Lag_2, Rain_Binary_Lag_2, RR_Lag_3, Tavg_Lag_3, Rain_Binary_Lag_3, RR_Lag_5, Tavg_Lag_5, Rain_Binary_Lag_5, RR_Lag_7, Tavg_Lag_7, Rain_Binary_Lag_7, RR_Lag_14, Tavg_Lag_14, Rain_Binary_Lag_14
+2025-05-20 01:34:15,347 - INFO - 
+Plotting correlations for top 15 features: RR_Rolling_Mean_3d, RR_Rolling_Std_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tx, RR_Rolling_Mean_14d, RH_avg, Tavg, RH_Rolling_Mean_3d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_3d, Tavg_Lag_1, RH_Rolling_Mean_7d, Heat_Index, DayOfYear_cos
+2025-05-20 01:34:17,687 - INFO - Training and evaluating model...
+2025-05-20 01:34:17,689 - INFO - 
+Feature matrix shape: (3604, 55)
+2025-05-20 01:34:17,696 - INFO - 
+Training Gradient Boosting model...
+2025-05-20 01:34:23,565 - INFO - Making predictions...
+2025-05-20 01:34:23,568 - INFO - 
+Model evaluation metrics:
+2025-05-20 01:34:23,569 - INFO - Mean Squared Error (MSE): 5.6175
+2025-05-20 01:34:23,569 - INFO - Root Mean Squared Error (RMSE): 2.3701
+2025-05-20 01:34:23,569 - INFO - Mean Absolute Error (MAE): 1.0219
+2025-05-20 01:34:23,569 - INFO - R-squared (R²): 0.9726
+2025-05-20 01:34:23,735 - INFO - Computing permutation importance (this may take a while)...
+2025-05-20 01:34:27,192 - INFO - 
+Feature Importance (top 10):
+2025-05-20 01:34:27,192 - INFO - RR_Rolling_Mean_3d: 3.1787
+2025-05-20 01:34:27,192 - INFO - RR_Lag_2: 0.6252
+2025-05-20 01:34:27,193 - INFO - RR_Lag_1: 0.5478
+2025-05-20 01:34:27,193 - INFO - RR_Rolling_Std_3d: 0.0833
+2025-05-20 01:34:27,193 - INFO - Tx: 0.0134
+2025-05-20 01:34:27,193 - INFO - Rain_Streak: 0.0037
+2025-05-20 01:34:27,193 - INFO - Dry_Streak: 0.0034
+2025-05-20 01:34:27,194 - INFO - Tn: 0.0022
+2025-05-20 01:34:27,194 - INFO - RR_Rolling_Std_7d: 0.0021
+2025-05-20 01:34:27,194 - INFO - Tavg_Lag_2: 0.0020
+2025-05-20 01:34:27,391 - INFO - 
+Preparing multi-day forecasting dataset...
+2025-05-20 01:34:27,396 - INFO - 
+Initial data shape: (3604, 61)
+2025-05-20 01:34:27,399 - INFO - Initial NaN counts:
+Tanggal               0
+Tn                    0
+Tx                    0
+Tavg                  0
+RH_avg                0
+                     ..
+Tavg_Lag_14           0
+Rain_Binary_Lag_14    0
+RainToday             0
+Rain_Streak           0
+Dry_Streak            0
+Length: 61, dtype: int64
+2025-05-20 01:34:27,478 - INFO - 
+After adding all features - shape: (3604, 352)
+2025-05-20 01:34:27,485 - INFO - NaN counts after features:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          6
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 01:34:27,589 - INFO - 
+After handling missing values - shape: (3604, 352)
+2025-05-20 01:34:27,598 - INFO - NaN counts after handling missing values:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          0
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 01:34:27,660 - INFO - 
+Day 1 dataset - shape: 3603
+2025-05-20 01:34:27,662 - INFO - Number of NaN values in day 1 dataset: 0
+2025-05-20 01:34:27,662 - INFO - Final size of day 1 dataset: 3603
+2025-05-20 01:34:27,687 - INFO - 
+Day 2 dataset - shape: 3602
+2025-05-20 01:34:27,690 - INFO - Number of NaN values in day 2 dataset: 0
+2025-05-20 01:34:27,690 - INFO - Final size of day 2 dataset: 3602
+2025-05-20 01:34:27,713 - INFO - 
+Day 3 dataset - shape: 3601
+2025-05-20 01:34:27,716 - INFO - Number of NaN values in day 3 dataset: 0
+2025-05-20 01:34:27,716 - INFO - Final size of day 3 dataset: 3601
+2025-05-20 01:34:27,777 - INFO - 
+Day 4 dataset - shape: 3600
+2025-05-20 01:34:27,780 - INFO - Number of NaN values in day 4 dataset: 0
+2025-05-20 01:34:27,781 - INFO - Final size of day 4 dataset: 3600
+2025-05-20 01:34:27,813 - INFO - 
+Day 5 dataset - shape: 3599
+2025-05-20 01:34:27,816 - INFO - Number of NaN values in day 5 dataset: 0
+2025-05-20 01:34:27,816 - INFO - Final size of day 5 dataset: 3599
+2025-05-20 01:34:27,819 - INFO - 
+Training multi-day forecasting models...
+2025-05-20 01:34:27,819 - INFO - 
+--- Training models for 0-day ahead prediction ---
+2025-05-20 01:34:27,939 - INFO - Selected 100 most correlated features from 346 total
+2025-05-20 01:34:27,939 - INFO - Using 100 features for day 0 prediction
+2025-05-20 01:34:27,955 - INFO - Training models with 5-fold CV...
+2025-05-20 01:34:27,956 - INFO - Training gbm model...
+2025-05-20 01:34:27,956 - INFO -   Processing fold 1/5...
+2025-05-20 01:34:29,151 - INFO -     Fold R²: 0.9801 (took 1.2s)
+2025-05-20 01:34:29,151 - INFO -   Processing fold 2/5...
+2025-05-20 01:34:30,517 - INFO -     Fold R²: 0.9796 (took 1.4s)
+2025-05-20 01:34:30,517 - INFO -   Processing fold 3/5...
+2025-05-20 01:34:31,838 - INFO -     Fold R²: 0.9646 (took 1.3s)
+2025-05-20 01:34:31,838 - INFO -   Processing fold 4/5...
+2025-05-20 01:34:33,185 - INFO -     Fold R²: 0.9714 (took 1.3s)
+2025-05-20 01:34:33,186 - INFO -   Processing fold 5/5...
+2025-05-20 01:34:34,560 - INFO -     Fold R²: 0.9780 (took 1.4s)
+2025-05-20 01:34:34,561 - INFO - gbm CV R² scores: 0.9747 ± 0.0060
+2025-05-20 01:34:34,561 - INFO - Training rf model...
+2025-05-20 01:34:34,562 - INFO -   Processing fold 1/5...
+2025-05-20 01:34:35,283 - INFO -     Fold R²: 0.9659 (took 0.7s)
+2025-05-20 01:34:35,284 - INFO -   Processing fold 2/5...
+2025-05-20 01:34:35,951 - INFO -     Fold R²: 0.9594 (took 0.7s)
+2025-05-20 01:34:35,951 - INFO -   Processing fold 3/5...
+2025-05-20 01:34:36,629 - INFO -     Fold R²: 0.9449 (took 0.7s)
+2025-05-20 01:34:36,629 - INFO -   Processing fold 4/5...
+2025-05-20 01:34:37,313 - INFO -     Fold R²: 0.9481 (took 0.7s)
+2025-05-20 01:34:37,313 - INFO -   Processing fold 5/5...
+2025-05-20 01:34:37,990 - INFO -     Fold R²: 0.9606 (took 0.7s)
+2025-05-20 01:34:37,991 - INFO - rf CV R² scores: 0.9558 ± 0.0079
+2025-05-20 01:34:37,991 - INFO - Training ridge model...
+2025-05-20 01:34:37,992 - INFO -   Processing fold 1/5...
+2025-05-20 01:34:37,998 - INFO -     Fold R²: 0.9944 (took 0.0s)
+2025-05-20 01:34:37,999 - INFO -   Processing fold 2/5...
+2025-05-20 01:34:38,011 - INFO -     Fold R²: 0.9809 (took 0.0s)
+2025-05-20 01:34:38,012 - INFO -   Processing fold 3/5...
+2025-05-20 01:34:38,020 - INFO -     Fold R²: 0.9955 (took 0.0s)
+2025-05-20 01:34:38,020 - INFO -   Processing fold 4/5...
+2025-05-20 01:34:38,025 - INFO -     Fold R²: 0.9952 (took 0.0s)
+2025-05-20 01:34:38,025 - INFO -   Processing fold 5/5...
+2025-05-20 01:34:38,030 - INFO -     Fold R²: 0.9949 (took 0.0s)
+2025-05-20 01:34:38,030 - INFO - ridge CV R² scores: 0.9922 ± 0.0057
+2025-05-20 01:34:38,032 - INFO - Ensemble metrics - R²: 0.9945, RMSE: 1.0588
+2025-05-20 01:34:39,328 - INFO - 
+--- Training models for 1-day ahead prediction ---
+2025-05-20 01:34:39,361 - INFO - Selected 100 most correlated features from 230 total
+2025-05-20 01:34:39,361 - INFO - Using 100 features for day 1 prediction
+2025-05-20 01:34:39,381 - INFO - Training models with 3-fold CV...
+2025-05-20 01:34:39,381 - INFO - Training gbm model...
+2025-05-20 01:34:39,382 - INFO -   Processing fold 1/3...
+2025-05-20 01:34:40,715 - INFO -     Fold R²: 0.2887 (took 1.3s)
+2025-05-20 01:34:40,715 - INFO -   Processing fold 2/3...
+2025-05-20 01:34:42,143 - INFO -     Fold R²: 0.3748 (took 1.4s)
+2025-05-20 01:34:42,143 - INFO -   Processing fold 3/3...
+2025-05-20 01:34:43,478 - INFO -     Fold R²: 0.3219 (took 1.3s)
+2025-05-20 01:34:43,478 - INFO - gbm CV R² scores: 0.3285 ± 0.0354
+2025-05-20 01:34:43,478 - INFO - Training rf model...
+2025-05-20 01:34:43,479 - INFO -   Processing fold 1/3...
+2025-05-20 01:34:44,323 - INFO -     Fold R²: 0.3181 (took 0.8s)
+2025-05-20 01:34:44,325 - INFO -   Processing fold 2/3...
+2025-05-20 01:34:45,151 - INFO -     Fold R²: 0.3723 (took 0.8s)
+2025-05-20 01:34:45,153 - INFO -   Processing fold 3/3...
+2025-05-20 01:34:45,959 - INFO -     Fold R²: 0.3151 (took 0.8s)
+2025-05-20 01:34:45,959 - INFO - rf CV R² scores: 0.3352 ± 0.0263
+2025-05-20 01:34:45,959 - INFO - Training ridge model...
+2025-05-20 01:34:45,960 - INFO -   Processing fold 1/3...
+2025-05-20 01:34:45,964 - INFO -     Fold R²: 0.3159 (took 0.0s)
+2025-05-20 01:34:45,965 - INFO -   Processing fold 2/3...
+2025-05-20 01:34:45,971 - INFO -     Fold R²: 0.3586 (took 0.0s)
+2025-05-20 01:34:45,972 - INFO -   Processing fold 3/3...
+2025-05-20 01:34:45,977 - INFO -     Fold R²: 0.2725 (took 0.0s)
+2025-05-20 01:34:45,977 - INFO - ridge CV R² scores: 0.3157 ± 0.0352
+2025-05-20 01:34:45,978 - INFO - Ensemble metrics - R²: 0.3894, RMSE: 11.1784
+2025-05-20 01:34:47,170 - INFO - 
+Months with highest errors for 1-day ahead predictions:
+2025-05-20 01:34:47,171 - INFO -   Feb: MAE = 15.09
+2025-05-20 01:34:47,171 - INFO -   Dec: MAE = 14.41
+2025-05-20 01:34:47,171 - INFO -   Jan: MAE = 13.28
+2025-05-20 01:34:47,712 - INFO - 
+--- Training models for 2-day ahead prediction ---
+2025-05-20 01:34:47,741 - INFO - Selected 100 most correlated features from 230 total
+2025-05-20 01:34:47,742 - INFO - Added previous day prediction as feature for day 2
+2025-05-20 01:34:47,742 - INFO - Using 101 features for day 2 prediction
+2025-05-20 01:34:47,762 - INFO - Training models with 3-fold CV...
+2025-05-20 01:34:47,762 - INFO - Training gbm model...
+2025-05-20 01:34:47,763 - INFO -   Processing fold 1/3...
+2025-05-20 01:34:47,765 - ERROR - Error in fold 1: Input X contains NaN.
+GradientBoostingRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:47,765 - INFO -   Processing fold 2/3...
+2025-05-20 01:34:47,767 - ERROR - Error in fold 2: Input X contains NaN.
+GradientBoostingRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:47,767 - INFO -   Processing fold 3/3...
+2025-05-20 01:34:47,769 - ERROR - Error in fold 3: Input X contains NaN.
+GradientBoostingRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:47,770 - INFO - gbm CV R² scores: 0.0000 ± 0.0000
+2025-05-20 01:34:47,770 - INFO - Training rf model...
+2025-05-20 01:34:47,771 - INFO -   Processing fold 1/3...
+2025-05-20 01:34:47,772 - ERROR - Error in fold 1: Input X contains NaN.
+RandomForestRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:47,773 - INFO -   Processing fold 2/3...
+2025-05-20 01:34:47,775 - ERROR - Error in fold 2: Input X contains NaN.
+RandomForestRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:47,775 - INFO -   Processing fold 3/3...
+2025-05-20 01:34:47,776 - ERROR - Error in fold 3: Input X contains NaN.
+RandomForestRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:47,777 - INFO - rf CV R² scores: 0.0000 ± 0.0000
+2025-05-20 01:34:47,777 - INFO - Training ridge model...
+2025-05-20 01:34:47,778 - INFO -   Processing fold 1/3...
+2025-05-20 01:34:47,779 - ERROR - Error in fold 1: Input X contains NaN.
+Ridge does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:47,780 - INFO -   Processing fold 2/3...
+2025-05-20 01:34:47,781 - ERROR - Error in fold 2: Input X contains NaN.
+Ridge does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:47,782 - INFO -   Processing fold 3/3...
+2025-05-20 01:34:47,785 - ERROR - Error in fold 3: Input X contains NaN.
+Ridge does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:47,787 - INFO - ridge CV R² scores: 0.0000 ± 0.0000
+2025-05-20 01:34:47,788 - INFO - Ensemble metrics - R²: -0.2625, RMSE: 16.0737
+2025-05-20 01:34:49,010 - INFO - 
+Months with highest errors for 2-day ahead predictions:
+2025-05-20 01:34:49,011 - INFO -   Jan: MAE = 21.54
+2025-05-20 01:34:49,011 - INFO -   Feb: MAE = 20.10
+2025-05-20 01:34:49,011 - INFO -   Dec: MAE = 13.92
+2025-05-20 01:34:49,458 - INFO - 
+--- Training models for 3-day ahead prediction ---
+2025-05-20 01:34:49,473 - INFO - Selected 100 most correlated features from 123 total
+2025-05-20 01:34:49,475 - INFO - Added previous day prediction as feature for day 3
+2025-05-20 01:34:49,475 - INFO - Using 101 features for day 3 prediction
+2025-05-20 01:34:49,497 - INFO - Training models with 2-fold CV...
+2025-05-20 01:34:49,497 - INFO - Training gbm model...
+2025-05-20 01:34:49,498 - INFO -   Processing fold 1/2...
+2025-05-20 01:34:49,501 - ERROR - Error in fold 1: Input X contains NaN.
+GradientBoostingRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:49,501 - INFO -   Processing fold 2/2...
+2025-05-20 01:34:49,503 - ERROR - Error in fold 2: Input X contains NaN.
+GradientBoostingRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:49,503 - INFO - gbm CV R² scores: 0.0000 ± 0.0000
+2025-05-20 01:34:49,503 - INFO - Training rf model...
+2025-05-20 01:34:49,505 - INFO -   Processing fold 1/2...
+2025-05-20 01:34:49,506 - ERROR - Error in fold 1: Input X contains NaN.
+RandomForestRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:49,507 - INFO -   Processing fold 2/2...
+2025-05-20 01:34:49,508 - ERROR - Error in fold 2: Input X contains NaN.
+RandomForestRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:49,508 - INFO - rf CV R² scores: 0.0000 ± 0.0000
+2025-05-20 01:34:49,509 - INFO - Training ridge model...
+2025-05-20 01:34:49,509 - INFO -   Processing fold 1/2...
+2025-05-20 01:34:49,511 - ERROR - Error in fold 1: Input X contains NaN.
+Ridge does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:49,511 - INFO -   Processing fold 2/2...
+2025-05-20 01:34:49,512 - ERROR - Error in fold 2: Input X contains NaN.
+Ridge does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:49,513 - INFO - ridge CV R² scores: 0.0000 ± 0.0000
+2025-05-20 01:34:49,514 - INFO - Ensemble metrics - R²: -0.2625, RMSE: 16.0737
+2025-05-20 01:34:50,725 - INFO - 
+Months with highest errors for 3-day ahead predictions:
+2025-05-20 01:34:50,726 - INFO -   Jan: MAE = 21.89
+2025-05-20 01:34:50,726 - INFO -   Feb: MAE = 20.22
+2025-05-20 01:34:50,727 - INFO -   Dec: MAE = 13.76
+2025-05-20 01:34:51,202 - INFO - 
+--- Training models for 4-day ahead prediction ---
+2025-05-20 01:34:51,213 - INFO - Selected 100 most correlated features from 123 total
+2025-05-20 01:34:51,215 - INFO - Added previous day prediction as feature for day 4
+2025-05-20 01:34:51,215 - INFO - Using 101 features for day 4 prediction
+2025-05-20 01:34:51,234 - INFO - Training models with 2-fold CV...
+2025-05-20 01:34:51,234 - INFO - Training gbm model...
+2025-05-20 01:34:51,235 - INFO -   Processing fold 1/2...
+2025-05-20 01:34:53,090 - INFO -     Fold R²: 0.1564 (took 1.9s)
+2025-05-20 01:34:53,090 - INFO -   Processing fold 2/2...
+2025-05-20 01:34:54,942 - INFO -     Fold R²: 0.2094 (took 1.9s)
+2025-05-20 01:34:54,943 - INFO - gbm CV R² scores: 0.1829 ± 0.0265
+2025-05-20 01:34:54,943 - INFO - Training rf model...
+2025-05-20 01:34:54,944 - INFO -   Processing fold 1/2...
+2025-05-20 01:34:55,951 - INFO -     Fold R²: 0.1796 (took 1.0s)
+2025-05-20 01:34:55,952 - INFO -   Processing fold 2/2...
+2025-05-20 01:34:56,925 - INFO -     Fold R²: 0.2276 (took 1.0s)
+2025-05-20 01:34:56,926 - INFO - rf CV R² scores: 0.2036 ± 0.0240
+2025-05-20 01:34:56,926 - INFO - Training ridge model...
+2025-05-20 01:34:56,927 - INFO -   Processing fold 1/2...
+2025-05-20 01:34:56,931 - INFO -     Fold R²: 0.1401 (took 0.0s)
+2025-05-20 01:34:56,932 - INFO -   Processing fold 2/2...
+2025-05-20 01:34:56,938 - INFO -     Fold R²: 0.1715 (took 0.0s)
+2025-05-20 01:34:56,938 - INFO - ridge CV R² scores: 0.1558 ± 0.0157
+2025-05-20 01:34:56,939 - INFO - Ensemble metrics - R²: 0.1521, RMSE: 13.1796
+2025-05-20 01:34:58,195 - INFO - 
+Months with highest errors for 4-day ahead predictions:
+2025-05-20 01:34:58,196 - INFO -   Dec: MAE = 20.78
+2025-05-20 01:34:58,196 - INFO -   Feb: MAE = 17.72
+2025-05-20 01:34:58,196 - INFO -   Jan: MAE = 16.40
+2025-05-20 01:34:58,725 - INFO - 
+--- Training models for 5-day ahead prediction ---
+2025-05-20 01:34:58,741 - INFO - Selected 100 most correlated features from 123 total
+2025-05-20 01:34:58,742 - INFO - Added previous day prediction as feature for day 5
+2025-05-20 01:34:58,742 - INFO - Using 101 features for day 5 prediction
+2025-05-20 01:34:58,772 - INFO - Training models with 2-fold CV...
+2025-05-20 01:34:58,772 - INFO - Training gbm model...
+2025-05-20 01:34:58,773 - INFO -   Processing fold 1/2...
+2025-05-20 01:34:58,774 - ERROR - Error in fold 1: Input X contains NaN.
+GradientBoostingRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:58,775 - INFO -   Processing fold 2/2...
+2025-05-20 01:34:58,777 - ERROR - Error in fold 2: Input X contains NaN.
+GradientBoostingRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:58,778 - INFO - gbm CV R² scores: 0.0000 ± 0.0000
+2025-05-20 01:34:58,778 - INFO - Training rf model...
+2025-05-20 01:34:58,779 - INFO -   Processing fold 1/2...
+2025-05-20 01:34:58,780 - ERROR - Error in fold 1: Input X contains NaN.
+RandomForestRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:58,780 - INFO -   Processing fold 2/2...
+2025-05-20 01:34:58,781 - ERROR - Error in fold 2: Input X contains NaN.
+RandomForestRegressor does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:58,782 - INFO - rf CV R² scores: 0.0000 ± 0.0000
+2025-05-20 01:34:58,782 - INFO - Training ridge model...
+2025-05-20 01:34:58,783 - INFO -   Processing fold 1/2...
+2025-05-20 01:34:58,785 - ERROR - Error in fold 1: Input X contains NaN.
+Ridge does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:58,786 - INFO -   Processing fold 2/2...
+2025-05-20 01:34:58,787 - ERROR - Error in fold 2: Input X contains NaN.
+Ridge does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+2025-05-20 01:34:58,787 - INFO - ridge CV R² scores: 0.0000 ± 0.0000
+2025-05-20 01:34:58,789 - INFO - Ensemble metrics - R²: -0.2629, RMSE: 16.0848
+2025-05-20 01:34:59,963 - INFO - 
+Months with highest errors for 5-day ahead predictions:
+2025-05-20 01:34:59,963 - INFO -   Jan: MAE = 21.02
+2025-05-20 01:34:59,964 - INFO -   Feb: MAE = 18.71
+2025-05-20 01:34:59,964 - INFO -   Dec: MAE = 14.72
+2025-05-20 01:35:02,422 - INFO - Saved ensemble model for 0-day ahead prediction in gbm\models\day_0
+2025-05-20 01:35:02,425 - INFO - Saved ensemble model for 1-day ahead prediction in gbm\models\day_1
+2025-05-20 01:35:02,427 - INFO - Saved ensemble model for 2-day ahead prediction in gbm\models\day_2
+2025-05-20 01:35:02,431 - INFO - Saved ensemble model for 3-day ahead prediction in gbm\models\day_3
+2025-05-20 01:35:02,434 - INFO - Saved ensemble model for 4-day ahead prediction in gbm\models\day_4
+2025-05-20 01:35:02,437 - INFO - Saved ensemble model for 5-day ahead prediction in gbm\models\day_5
+2025-05-20 01:35:02,449 - INFO - 
+Model saved to gbm\models\gbm_model.pkl
+2025-05-20 01:35:02,449 - INFO - Scaler saved to gbm\models\scaler.pkl
+2025-05-20 01:35:02,450 - INFO - Feature list saved to gbm\models\feature_columns.pkl
+2025-05-20 01:35:02,450 - INFO - Process completed successfully.
+2025-05-20 01:36:47,659 - INFO - Loading dataset...
+2025-05-20 01:36:47,670 - INFO - Preprocessing data...
+2025-05-20 01:36:47,671 - INFO - Initial dataset size: 5295
+2025-05-20 01:36:47,909 - INFO - 
+Outliers removed: 52 rows
+2025-05-20 01:36:47,910 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-20 01:36:47,910 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-20 01:36:47,911 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-20 01:36:47,911 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-20 01:36:47,911 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-20 01:36:47,912 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-20 01:36:47,912 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-20 01:36:47,912 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-20 01:36:47,912 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-20 01:36:47,913 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-20 01:36:47,913 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-20 01:36:47,913 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-20 01:36:47,913 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-20 01:36:47,913 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 01:36:47,913 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-20 01:36:47,914 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-20 01:36:47,914 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-20 01:36:47,915 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-20 01:36:47,915 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-20 01:36:47,917 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-20 01:36:47,917 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-20 01:36:47,918 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-20 01:36:47,918 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-20 01:36:47,919 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-20 01:36:47,919 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-20 01:36:47,919 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-20 01:36:47,920 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-20 01:36:47,920 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-20 01:36:47,920 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-20 01:36:47,921 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-20 01:36:47,921 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-20 01:36:47,921 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-20 01:36:47,922 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-20 01:36:47,922 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-20 01:36:47,922 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-20 01:36:47,923 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-20 01:36:47,923 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-20 01:36:47,923 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-20 01:36:47,923 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-20 01:36:47,924 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-20 01:36:47,924 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-20 01:36:47,924 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-20 01:36:47,925 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-20 01:36:47,925 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-20 01:36:47,925 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-20 01:36:47,925 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-20 01:36:47,925 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-20 01:36:47,926 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-20 01:36:47,926 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-20 01:36:47,926 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-20 01:36:47,926 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-20 01:36:47,927 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-20 01:36:47,927 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-20 01:36:49,416 - INFO - 
+Rows dropped due to NaN values: 53
+2025-05-20 01:36:49,419 - INFO - 
+Final dataset size: 3604
+2025-05-20 01:36:49,419 - INFO - Total rows removed: 1691
+2025-05-20 01:36:49,419 - INFO - 
+Rainfall Statistics After Processing:
+2025-05-20 01:36:49,420 - INFO - Mean: 9.88mm
+2025-05-20 01:36:49,420 - INFO - Median: 1.00mm
+2025-05-20 01:36:49,420 - INFO - Std Dev: 17.50mm
+2025-05-20 01:36:49,421 - INFO - Max: 100.00mm
+2025-05-20 01:36:49,425 - INFO - 
+No NaN values remain in the dataset.
+2025-05-20 01:36:49,425 - INFO - 
+Final feature list (55 features):
+2025-05-20 01:36:49,425 - INFO - Tn, Tx, Tavg, RH_avg, ss, ff_x, ff_avg, ddd_x, Month, Day, DayOfWeek, Season, Temp_Range, Month_sin, Month_cos, Day_sin, Day_cos, DayOfYear_sin, DayOfYear_cos, Temp_Humidity, Temp_Range_RH, Dew_Point, Heat_Index, Rain_Streak, Dry_Streak, RR_Rolling_Mean_3d, RR_Rolling_Std_3d, Tavg_Rolling_Mean_3d, RH_Rolling_Mean_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tavg_Rolling_Mean_7d, RH_Rolling_Mean_7d, RR_Rolling_Mean_14d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_14d, RH_Rolling_Mean_14d, RR_Lag_1, Tavg_Lag_1, Rain_Binary_Lag_1, RR_Lag_2, Tavg_Lag_2, Rain_Binary_Lag_2, RR_Lag_3, Tavg_Lag_3, Rain_Binary_Lag_3, RR_Lag_5, Tavg_Lag_5, Rain_Binary_Lag_5, RR_Lag_7, Tavg_Lag_7, Rain_Binary_Lag_7, RR_Lag_14, Tavg_Lag_14, Rain_Binary_Lag_14
+2025-05-20 01:36:49,433 - INFO - 
+Plotting correlations for top 15 features: RR_Rolling_Mean_3d, RR_Rolling_Std_3d, RR_Rolling_Mean_7d, RR_Rolling_Std_7d, Tx, RR_Rolling_Mean_14d, RH_avg, Tavg, RH_Rolling_Mean_3d, RR_Rolling_Std_14d, Tavg_Rolling_Mean_3d, Tavg_Lag_1, RH_Rolling_Mean_7d, Heat_Index, DayOfYear_cos
+2025-05-20 01:36:51,654 - INFO - Training and evaluating model...
+2025-05-20 01:36:51,657 - INFO - 
+Feature matrix shape: (3604, 55)
+2025-05-20 01:36:51,664 - INFO - 
+Training Gradient Boosting model...
+2025-05-20 01:36:57,346 - INFO - Making predictions...
+2025-05-20 01:36:57,350 - INFO - 
+Model evaluation metrics:
+2025-05-20 01:36:57,350 - INFO - Mean Squared Error (MSE): 5.6175
+2025-05-20 01:36:57,350 - INFO - Root Mean Squared Error (RMSE): 2.3701
+2025-05-20 01:36:57,351 - INFO - Mean Absolute Error (MAE): 1.0219
+2025-05-20 01:36:57,351 - INFO - R-squared (R²): 0.9726
+2025-05-20 01:36:57,520 - INFO - Computing permutation importance (this may take a while)...
+2025-05-20 01:37:00,758 - INFO - 
+Feature Importance (top 10):
+2025-05-20 01:37:00,758 - INFO - RR_Rolling_Mean_3d: 3.1787
+2025-05-20 01:37:00,758 - INFO - RR_Lag_2: 0.6252
+2025-05-20 01:37:00,758 - INFO - RR_Lag_1: 0.5478
+2025-05-20 01:37:00,758 - INFO - RR_Rolling_Std_3d: 0.0833
+2025-05-20 01:37:00,759 - INFO - Tx: 0.0134
+2025-05-20 01:37:00,759 - INFO - Rain_Streak: 0.0037
+2025-05-20 01:37:00,759 - INFO - Dry_Streak: 0.0034
+2025-05-20 01:37:00,759 - INFO - Tn: 0.0022
+2025-05-20 01:37:00,760 - INFO - RR_Rolling_Std_7d: 0.0021
+2025-05-20 01:37:00,760 - INFO - Tavg_Lag_2: 0.0020
+2025-05-20 01:37:00,953 - INFO - 
+Preparing multi-day forecasting dataset...
+2025-05-20 01:37:00,957 - INFO - 
+Initial data shape: (3604, 61)
+2025-05-20 01:37:00,959 - INFO - Initial NaN counts:
+Tanggal               0
+Tn                    0
+Tx                    0
+Tavg                  0
+RH_avg                0
+                     ..
+Tavg_Lag_14           0
+Rain_Binary_Lag_14    0
+RainToday             0
+Rain_Streak           0
+Dry_Streak            0
+Length: 61, dtype: int64
+2025-05-20 01:37:01,031 - INFO - 
+After adding all features - shape: (3604, 352)
+2025-05-20 01:37:01,039 - INFO - NaN counts after features:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          6
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 01:37:01,142 - INFO - 
+After handling missing values - shape: (3604, 352)
+2025-05-20 01:37:01,150 - INFO - NaN counts after handling missing values:
+Tanggal            0
+Tn                 0
+Tx                 0
+Tavg               0
+RH_avg             0
+                  ..
+RR_cum_7d          0
+RainPattern_3d     0
+DryPattern_3d      0
+RH_Tavg_RR_Lag1    0
+Wind_RH_Lag1       0
+Length: 352, dtype: int64
+2025-05-20 01:37:01,208 - INFO - 
+Day 1 dataset - shape: 3603
+2025-05-20 01:37:01,210 - INFO - Number of NaN values in day 1 dataset: 0
+2025-05-20 01:37:01,211 - INFO - Final size of day 1 dataset: 3603
+2025-05-20 01:37:01,233 - INFO - 
+Day 2 dataset - shape: 3602
+2025-05-20 01:37:01,236 - INFO - Number of NaN values in day 2 dataset: 0
+2025-05-20 01:37:01,236 - INFO - Final size of day 2 dataset: 3602
+2025-05-20 01:37:01,257 - INFO - 
+Day 3 dataset - shape: 3601
+2025-05-20 01:37:01,260 - INFO - Number of NaN values in day 3 dataset: 0
+2025-05-20 01:37:01,260 - INFO - Final size of day 3 dataset: 3601
+2025-05-20 01:37:01,282 - INFO - 
+Day 4 dataset - shape: 3600
+2025-05-20 01:37:01,285 - INFO - Number of NaN values in day 4 dataset: 0
+2025-05-20 01:37:01,285 - INFO - Final size of day 4 dataset: 3600
+2025-05-20 01:37:01,306 - INFO - 
+Day 5 dataset - shape: 3599
+2025-05-20 01:37:01,308 - INFO - Number of NaN values in day 5 dataset: 0
+2025-05-20 01:37:01,309 - INFO - Final size of day 5 dataset: 3599
+2025-05-20 01:37:01,311 - INFO - 
+Training multi-day forecasting models...
+2025-05-20 01:37:01,311 - INFO - 
+--- Training models for 0-day ahead prediction ---
+2025-05-20 01:37:01,368 - INFO - Selected 100 most correlated features from 346 total
+2025-05-20 01:37:01,368 - INFO - Using 100 features for day 0 prediction
+2025-05-20 01:37:01,377 - INFO - Training models with 3-fold CV...
+2025-05-20 01:37:01,377 - INFO - Training gbm model...
+2025-05-20 01:37:01,378 - INFO -   Processing fold 1/3...
+2025-05-20 01:37:02,448 - INFO -     Fold R²: 0.9748 (took 1.1s)
+2025-05-20 01:37:02,448 - INFO -   Processing fold 2/3...
+2025-05-20 01:37:03,618 - INFO -     Fold R²: 0.9678 (took 1.2s)
+2025-05-20 01:37:03,618 - INFO -   Processing fold 3/3...
+2025-05-20 01:37:04,802 - INFO -     Fold R²: 0.9758 (took 1.2s)
+2025-05-20 01:37:04,803 - INFO - gbm CV R² scores: 0.9728 ± 0.0036
+2025-05-20 01:37:04,803 - INFO - Training rf model...
+2025-05-20 01:37:04,803 - INFO -   Processing fold 1/3...
+2025-05-20 01:37:05,456 - INFO -     Fold R²: 0.9641 (took 0.7s)
+2025-05-20 01:37:05,457 - INFO -   Processing fold 2/3...
+2025-05-20 01:37:06,042 - INFO -     Fold R²: 0.9552 (took 0.6s)
+2025-05-20 01:37:06,043 - INFO -   Processing fold 3/3...
+2025-05-20 01:37:06,595 - INFO -     Fold R²: 0.9555 (took 0.6s)
+2025-05-20 01:37:06,595 - INFO - rf CV R² scores: 0.9582 ± 0.0041
+2025-05-20 01:37:06,596 - INFO - Training ridge model...
+2025-05-20 01:37:06,597 - INFO -   Processing fold 1/3...
+2025-05-20 01:37:06,602 - INFO -     Fold R²: 0.9893 (took 0.0s)
+2025-05-20 01:37:06,603 - INFO -   Processing fold 2/3...
+2025-05-20 01:37:06,607 - INFO -     Fold R²: 0.9869 (took 0.0s)
+2025-05-20 01:37:06,607 - INFO -   Processing fold 3/3...
+2025-05-20 01:37:06,611 - INFO -     Fold R²: 0.9921 (took 0.0s)
+2025-05-20 01:37:06,612 - INFO - ridge CV R² scores: 0.9895 ± 0.0021
+2025-05-20 01:37:06,613 - INFO - Ensemble metrics - R²: 0.9950, RMSE: 1.0068
+2025-05-20 01:37:07,600 - INFO - 
+--- Training models for 1-day ahead prediction ---
+2025-05-20 01:37:07,621 - INFO - Selected 100 most correlated features from 225 total
+2025-05-20 01:37:07,622 - INFO - Using 100 features for day 1 prediction
+2025-05-20 01:37:07,630 - INFO - Training models with 2-fold CV...
+2025-05-20 01:37:07,630 - INFO - Training gbm model...
+2025-05-20 01:37:07,631 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:08,339 - INFO -     Fold R²: 0.2723 (took 0.7s)
+2025-05-20 01:37:08,339 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:09,068 - INFO -     Fold R²: 0.3312 (took 0.7s)
+2025-05-20 01:37:09,069 - INFO - gbm CV R² scores: 0.3017 ± 0.0295
+2025-05-20 01:37:09,069 - INFO - Training rf model...
+2025-05-20 01:37:09,070 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:09,591 - INFO -     Fold R²: 0.3114 (took 0.5s)
+2025-05-20 01:37:09,592 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:10,132 - INFO -     Fold R²: 0.3372 (took 0.5s)
+2025-05-20 01:37:10,132 - INFO - rf CV R² scores: 0.3243 ± 0.0129
+2025-05-20 01:37:10,132 - INFO - Training ridge model...
+2025-05-20 01:37:10,133 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:10,137 - INFO -     Fold R²: 0.3048 (took 0.0s)
+2025-05-20 01:37:10,137 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:10,142 - INFO -     Fold R²: 0.3015 (took 0.0s)
+2025-05-20 01:37:10,142 - INFO - ridge CV R² scores: 0.3032 ± 0.0016
+2025-05-20 01:37:10,144 - INFO - Ensemble metrics - R²: 0.3935, RMSE: 11.1409
+2025-05-20 01:37:11,287 - INFO - 
+--- Training models for 2-day ahead prediction ---
+2025-05-20 01:37:11,310 - INFO - Selected 100 most correlated features from 225 total
+2025-05-20 01:37:11,310 - INFO - Using 100 features for day 2 prediction
+2025-05-20 01:37:11,320 - INFO - Training models with 2-fold CV...
+2025-05-20 01:37:11,320 - INFO - Training gbm model...
+2025-05-20 01:37:11,321 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:12,047 - INFO -     Fold R²: 0.1450 (took 0.7s)
+2025-05-20 01:37:12,048 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:12,772 - INFO -     Fold R²: 0.1818 (took 0.7s)
+2025-05-20 01:37:12,773 - INFO - gbm CV R² scores: 0.1634 ± 0.0184
+2025-05-20 01:37:12,773 - INFO - Training rf model...
+2025-05-20 01:37:12,773 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:13,286 - INFO -     Fold R²: 0.1939 (took 0.5s)
+2025-05-20 01:37:13,297 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:13,842 - INFO -     Fold R²: 0.2179 (took 0.5s)
+2025-05-20 01:37:13,843 - INFO - rf CV R² scores: 0.2059 ± 0.0120
+2025-05-20 01:37:13,843 - INFO - Training ridge model...
+2025-05-20 01:37:13,843 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:13,848 - INFO -     Fold R²: 0.1398 (took 0.0s)
+2025-05-20 01:37:13,848 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:13,852 - INFO -     Fold R²: 0.1462 (took 0.0s)
+2025-05-20 01:37:13,852 - INFO - ridge CV R² scores: 0.1430 ± 0.0032
+2025-05-20 01:37:13,854 - INFO - Ensemble metrics - R²: 0.2174, RMSE: 12.6557
+2025-05-20 01:37:14,868 - INFO - 
+--- Training models for 3-day ahead prediction ---
+2025-05-20 01:37:14,879 - INFO - Selected 100 most correlated features from 121 total
+2025-05-20 01:37:14,880 - INFO - Using 100 features for day 3 prediction
+2025-05-20 01:37:14,888 - INFO - Training models with 2-fold CV...
+2025-05-20 01:37:14,889 - INFO - Training gbm model...
+2025-05-20 01:37:14,889 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:15,709 - INFO -     Fold R²: 0.1275 (took 0.8s)
+2025-05-20 01:37:15,710 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:16,499 - INFO -     Fold R²: 0.1776 (took 0.8s)
+2025-05-20 01:37:16,499 - INFO - gbm CV R² scores: 0.1525 ± 0.0251
+2025-05-20 01:37:16,501 - INFO - Training rf model...
+2025-05-20 01:37:16,501 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:17,059 - INFO -     Fold R²: 0.1852 (took 0.6s)
+2025-05-20 01:37:17,059 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:17,631 - INFO -     Fold R²: 0.2040 (took 0.6s)
+2025-05-20 01:37:17,632 - INFO - rf CV R² scores: 0.1946 ± 0.0094
+2025-05-20 01:37:17,633 - INFO - Training ridge model...
+2025-05-20 01:37:17,633 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:17,639 - INFO -     Fold R²: 0.1462 (took 0.0s)
+2025-05-20 01:37:17,640 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:17,646 - INFO -     Fold R²: 0.1745 (took 0.0s)
+2025-05-20 01:37:17,646 - INFO - ridge CV R² scores: 0.1604 ± 0.0141
+2025-05-20 01:37:17,647 - INFO - Ensemble metrics - R²: 0.1760, RMSE: 12.9859
+2025-05-20 01:37:18,750 - INFO - 
+--- Training models for 4-day ahead prediction ---
+2025-05-20 01:37:18,763 - INFO - Selected 100 most correlated features from 121 total
+2025-05-20 01:37:18,764 - INFO - Using 100 features for day 4 prediction
+2025-05-20 01:37:18,774 - INFO - Training models with 2-fold CV...
+2025-05-20 01:37:18,775 - INFO - Training gbm model...
+2025-05-20 01:37:18,775 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:19,545 - INFO -     Fold R²: 0.1377 (took 0.8s)
+2025-05-20 01:37:19,546 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:20,323 - INFO -     Fold R²: 0.1898 (took 0.8s)
+2025-05-20 01:37:20,323 - INFO - gbm CV R² scores: 0.1637 ± 0.0261
+2025-05-20 01:37:20,323 - INFO - Training rf model...
+2025-05-20 01:37:20,325 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:20,886 - INFO -     Fold R²: 0.1791 (took 0.6s)
+2025-05-20 01:37:20,887 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:21,396 - INFO -     Fold R²: 0.2257 (took 0.5s)
+2025-05-20 01:37:21,397 - INFO - rf CV R² scores: 0.2024 ± 0.0233
+2025-05-20 01:37:21,397 - INFO - Training ridge model...
+2025-05-20 01:37:21,398 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:21,401 - INFO -     Fold R²: 0.1430 (took 0.0s)
+2025-05-20 01:37:21,402 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:21,406 - INFO -     Fold R²: 0.1740 (took 0.0s)
+2025-05-20 01:37:21,407 - INFO - ridge CV R² scores: 0.1585 ± 0.0155
+2025-05-20 01:37:21,408 - INFO - Ensemble metrics - R²: 0.1727, RMSE: 13.0186
+2025-05-20 01:37:22,413 - INFO - 
+--- Training models for 5-day ahead prediction ---
+2025-05-20 01:37:22,428 - INFO - Selected 100 most correlated features from 121 total
+2025-05-20 01:37:22,428 - INFO - Using 100 features for day 5 prediction
+2025-05-20 01:37:22,439 - INFO - Training models with 2-fold CV...
+2025-05-20 01:37:22,439 - INFO - Training gbm model...
+2025-05-20 01:37:22,440 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:23,194 - INFO -     Fold R²: 0.1118 (took 0.8s)
+2025-05-20 01:37:23,194 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:23,960 - INFO -     Fold R²: 0.2263 (took 0.8s)
+2025-05-20 01:37:23,960 - INFO - gbm CV R² scores: 0.1690 ± 0.0572
+2025-05-20 01:37:23,961 - INFO - Training rf model...
+2025-05-20 01:37:23,961 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:24,496 - INFO -     Fold R²: 0.1726 (took 0.5s)
+2025-05-20 01:37:24,497 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:25,020 - INFO -     Fold R²: 0.2393 (took 0.5s)
+2025-05-20 01:37:25,021 - INFO - rf CV R² scores: 0.2059 ± 0.0333
+2025-05-20 01:37:25,021 - INFO - Training ridge model...
+2025-05-20 01:37:25,022 - INFO -   Processing fold 1/2...
+2025-05-20 01:37:25,025 - INFO -     Fold R²: 0.1048 (took 0.0s)
+2025-05-20 01:37:25,026 - INFO -   Processing fold 2/2...
+2025-05-20 01:37:25,029 - INFO -     Fold R²: 0.1851 (took 0.0s)
+2025-05-20 01:37:25,030 - INFO - ridge CV R² scores: 0.1449 ± 0.0402
+2025-05-20 01:37:25,031 - INFO - Ensemble metrics - R²: 0.1538, RMSE: 13.1661
+2025-05-20 01:37:27,662 - INFO - Saved ensemble model for 0-day ahead prediction in gbm\models\day_0
+2025-05-20 01:37:27,665 - INFO - Saved ensemble model for 1-day ahead prediction in gbm\models\day_1
+2025-05-20 01:37:27,668 - INFO - Saved ensemble model for 2-day ahead prediction in gbm\models\day_2
+2025-05-20 01:37:27,671 - INFO - Saved ensemble model for 3-day ahead prediction in gbm\models\day_3
+2025-05-20 01:37:27,674 - INFO - Saved ensemble model for 4-day ahead prediction in gbm\models\day_4
+2025-05-20 01:37:27,677 - INFO - Saved ensemble model for 5-day ahead prediction in gbm\models\day_5
+2025-05-20 01:37:27,688 - INFO - 
+Model saved to gbm\models\gbm_model.pkl
+2025-05-20 01:37:27,688 - INFO - Scaler saved to gbm\models\scaler.pkl
+2025-05-20 01:37:27,689 - INFO - Feature list saved to gbm\models\feature_columns.pkl
+2025-05-20 01:37:27,689 - INFO - Process completed successfully.
