@@ -1,0 +1,463 @@
+2025-05-19 21:44:35,472 - INFO - Loading data...
+2025-05-19 21:44:35,481 - INFO - 
+Initial data shape: (5295, 11)
+2025-05-19 21:44:35,482 - INFO - 
+Preprocessing data...
+2025-05-19 21:44:35,482 - INFO - Initial dataset size: 5295
+2025-05-19 21:44:35,824 - INFO - 
+Outliers removed: 52 rows
+2025-05-19 21:44:35,825 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-19 21:44:35,825 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-19 21:44:35,825 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-19 21:44:35,827 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-19 21:44:35,827 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-19 21:44:35,827 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-19 21:44:36,690 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-19 21:44:36,690 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-19 21:44:36,690 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-19 21:44:36,691 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-19 21:44:36,691 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-19 21:44:36,691 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-19 21:44:36,692 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-19 21:44:36,692 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 21:44:36,692 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-19 21:44:36,693 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-19 21:44:36,693 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-19 21:44:36,693 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 21:44:36,694 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-19 21:44:36,694 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-19 21:44:36,694 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-19 21:44:36,695 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-19 21:44:36,695 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-19 21:44:36,695 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-19 21:44:36,696 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-19 21:44:36,696 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-19 21:44:36,697 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-19 21:44:36,697 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-19 21:44:36,697 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-19 21:44:36,699 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-19 21:44:36,699 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-19 21:44:36,699 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-19 21:44:36,700 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-19 21:44:36,700 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-19 21:44:36,700 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-19 21:44:36,701 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-19 21:44:36,701 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-19 21:44:36,701 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-19 21:44:36,702 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-19 21:44:36,702 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-19 21:44:36,702 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-19 21:44:36,703 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-19 21:44:36,703 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-19 21:44:36,703 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-19 21:44:36,703 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-19 21:44:36,704 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-19 21:44:36,704 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-19 21:44:36,704 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-19 21:44:36,705 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-19 21:44:36,705 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-19 21:44:36,705 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-19 21:44:36,705 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-19 21:44:36,707 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-19 21:44:36,707 - ERROR - Error in preprocessing: time-weighted interpolation only works on Series or DataFrames with a DatetimeIndex
+2025-05-19 21:44:36,707 - ERROR - An error occurred: time-weighted interpolation only works on Series or DataFrames with a DatetimeIndex
+2025-05-19 21:44:36,773 - ERROR - Traceback (most recent call last):
+  File "D:\WORK\skripsi\main_gbm_advanced.py", line 520, in main
+    df_processed, df_multi_day = predictor.preprocess_data(df)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\skripsi\main_gbm_advanced.py", line 98, in preprocess_data
+    df[col] = df[col].interpolate(method='time').fillna(method='bfill').fillna(method='ffill')
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\generic.py", line 8499, in interpolate
+    new_data = obj._mgr.interpolate(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\internals\base.py", line 291, in interpolate
+    return self.apply_with_block(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\internals\managers.py", line 363, in apply
+    applied = getattr(b, f)(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\internals\blocks.py", line 1797, in interpolate
+    new_values = self.array_values.interpolate(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\arrays\numpy_.py", line 296, in interpolate
+    missing.interpolate_2d_inplace(
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\missing.py", line 373, in interpolate_2d_inplace
+    raise ValueError(
+ValueError: time-weighted interpolation only works on Series or DataFrames with a DatetimeIndex
+
+2025-05-19 21:45:08,496 - INFO - Loading data...
+2025-05-19 21:45:08,504 - INFO - 
+Initial data shape: (5295, 11)
+2025-05-19 21:45:08,504 - INFO - 
+Preprocessing data...
+2025-05-19 21:45:08,505 - INFO - Initial dataset size: 5295
+2025-05-19 21:45:08,938 - INFO - 
+Outliers removed: 52 rows
+2025-05-19 21:45:08,938 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-19 21:45:08,938 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-19 21:45:08,939 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-19 21:45:08,939 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-19 21:45:08,939 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-19 21:45:08,939 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-19 21:45:08,940 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-19 21:45:08,940 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-19 21:45:08,940 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-19 21:45:08,940 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-19 21:45:08,941 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-19 21:45:08,941 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-19 21:45:08,941 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-19 21:45:08,941 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 21:45:08,942 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-19 21:45:08,942 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-19 21:45:08,942 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-19 21:45:08,942 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 21:45:08,943 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-19 21:45:08,943 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-19 21:45:08,944 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-19 21:45:08,944 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-19 21:45:08,944 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-19 21:45:08,945 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-19 21:45:08,945 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-19 21:45:08,945 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-19 21:45:08,945 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-19 21:45:08,946 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-19 21:45:08,946 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-19 21:45:08,946 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-19 21:45:08,946 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-19 21:45:08,947 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-19 21:45:08,947 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-19 21:45:08,947 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-19 21:45:08,947 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-19 21:45:08,948 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-19 21:45:08,948 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-19 21:45:08,948 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-19 21:45:08,948 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-19 21:45:08,949 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-19 21:45:08,949 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-19 21:45:08,949 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-19 21:45:08,950 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-19 21:45:08,950 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-19 21:45:08,950 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-19 21:45:08,951 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-19 21:45:08,951 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-19 21:45:08,951 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-19 21:45:08,951 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-19 21:45:08,952 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-19 21:45:08,952 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-19 21:45:08,953 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-19 21:45:08,953 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-19 21:45:08,954 - ERROR - Error in preprocessing: time-weighted interpolation only works on Series or DataFrames with a DatetimeIndex
+2025-05-19 21:45:08,954 - ERROR - An error occurred: time-weighted interpolation only works on Series or DataFrames with a DatetimeIndex
+2025-05-19 21:45:08,958 - ERROR - Traceback (most recent call last):
+  File "D:\WORK\skripsi\main_gbm_advanced.py", line 520, in main
+    df_processed, df_multi_day = predictor.preprocess_data(df)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\skripsi\main_gbm_advanced.py", line 98, in preprocess_data
+    df[col] = df[col].interpolate(method='time').fillna(method='bfill').fillna(method='ffill')
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\generic.py", line 8499, in interpolate
+    new_data = obj._mgr.interpolate(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\internals\base.py", line 291, in interpolate
+    return self.apply_with_block(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\internals\managers.py", line 363, in apply
+    applied = getattr(b, f)(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\internals\blocks.py", line 1797, in interpolate
+    new_values = self.array_values.interpolate(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\arrays\numpy_.py", line 296, in interpolate
+    missing.interpolate_2d_inplace(
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\missing.py", line 373, in interpolate_2d_inplace
+    raise ValueError(
+ValueError: time-weighted interpolation only works on Series or DataFrames with a DatetimeIndex
+
+2025-05-19 21:46:57,532 - INFO - Loading data...
+2025-05-19 21:53:33,252 - INFO - Loading data...
+2025-05-19 21:53:33,261 - INFO - 
+Initial data shape: (5295, 11)
+2025-05-19 21:53:33,261 - INFO - 
+Preprocessing data...
+2025-05-19 21:53:33,261 - INFO - Initial dataset size: 5295
+2025-05-19 21:53:33,697 - INFO - 
+Outliers removed: 52 rows
+2025-05-19 21:53:33,697 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-19 21:53:33,698 - ERROR - Error in preprocessing: 'Tanggal'
+2025-05-19 21:53:33,698 - ERROR - An error occurred: 'Tanggal'
+2025-05-19 21:53:33,733 - ERROR - Traceback (most recent call last):
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\indexes\base.py", line 3805, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas\\_libs\\hashtable_class_helper.pxi", line 7081, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas\\_libs\\hashtable_class_helper.pxi", line 7089, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'Tanggal'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\WORK\skripsi\main_gbm_advanced.py", line 519, in main
+    df_processed, df_multi_day = predictor.preprocess_data(df)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\skripsi\main_gbm_advanced.py", line 87, in preprocess_data
+    logging.info(f"Date: {row['Tanggal']}, Rainfall: {row['RR']}mm")
+                          ~~~^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\series.py", line 1121, in __getitem__
+    return self._get_value(key)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\series.py", line 1237, in _get_value
+    loc = self.index.get_loc(label)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Astrea\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    raise KeyError(key) from err
+KeyError: 'Tanggal'
+
+2025-05-19 22:00:04,639 - INFO - Loading data...
+2025-05-19 22:00:04,647 - INFO - 
+Initial data shape: (5295, 11)
+2025-05-19 22:00:04,648 - INFO - 
+Preprocessing data...
+2025-05-19 22:00:04,648 - INFO - Initial dataset size: 5295
+2025-05-19 22:00:05,084 - INFO - 
+Outliers removed: 52 rows
+2025-05-19 22:00:05,084 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-19 22:00:05,085 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-19 22:00:05,085 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-19 22:00:05,086 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-19 22:00:05,086 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-19 22:00:05,086 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-19 22:00:05,087 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-19 22:00:05,087 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-19 22:00:05,087 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-19 22:00:05,088 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-19 22:00:05,088 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-19 22:00:05,088 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-19 22:00:05,089 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-19 22:00:05,089 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 22:00:05,090 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-19 22:00:05,090 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-19 22:00:05,090 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-19 22:00:05,091 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 22:00:05,091 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-19 22:00:05,091 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-19 22:00:05,092 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-19 22:00:05,092 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-19 22:00:05,093 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-19 22:00:05,093 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-19 22:00:05,093 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-19 22:00:05,094 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-19 22:00:05,094 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-19 22:00:05,094 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-19 22:00:05,095 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-19 22:00:05,095 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-19 22:00:05,096 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-19 22:00:05,096 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-19 22:00:05,096 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-19 22:00:05,097 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-19 22:00:05,097 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-19 22:00:05,097 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-19 22:00:05,098 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-19 22:00:05,098 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-19 22:00:05,099 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-19 22:00:05,099 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-19 22:00:05,100 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-19 22:00:05,100 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-19 22:00:05,100 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-19 22:00:05,100 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-19 22:00:05,101 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-19 22:00:05,101 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-19 22:00:05,101 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-19 22:00:05,103 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-19 22:00:05,103 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-19 22:00:05,104 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-19 22:00:05,104 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-19 22:00:05,104 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-19 22:00:05,105 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-19 22:00:05,151 - INFO - 
+Rows dropped due to NaN values: 52
+2025-05-19 22:00:05,156 - ERROR - Error in preprocessing: 'AdvancedWeatherPredictor' object has no attribute '_update_feature_columns'
+2025-05-19 22:00:05,157 - ERROR - An error occurred: 'AdvancedWeatherPredictor' object has no attribute '_update_feature_columns'
+2025-05-19 22:00:05,158 - ERROR - Traceback (most recent call last):
+  File "D:\WORK\skripsi\main_gbm_advanced.py", line 501, in main
+    df_processed, df_multi_day = predictor.preprocess_data(df)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\skripsi\main_gbm_advanced.py", line 171, in preprocess_data
+    self._update_feature_columns(df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'AdvancedWeatherPredictor' object has no attribute '_update_feature_columns'
+
+2025-05-19 22:09:30,255 - INFO - Loading data...
+2025-05-19 22:09:30,267 - INFO - 
+Initial data shape: (5295, 11)
+2025-05-19 22:09:30,267 - INFO - 
+Preprocessing data...
+2025-05-19 22:09:30,268 - INFO - Initial dataset size: 5295
+2025-05-19 22:09:30,748 - INFO - 
+Outliers removed: 52 rows
+2025-05-19 22:09:30,748 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-19 22:09:30,749 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-19 22:09:30,750 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-19 22:09:30,750 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-19 22:09:30,750 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-19 22:09:30,751 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-19 22:09:30,751 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-19 22:09:30,752 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-19 22:09:30,752 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-19 22:09:30,752 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-19 22:09:30,753 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-19 22:09:30,753 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-19 22:09:30,753 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-19 22:09:30,754 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 22:09:30,754 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-19 22:09:30,755 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-19 22:09:30,755 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-19 22:09:30,755 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 22:09:30,756 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-19 22:09:30,756 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-19 22:09:30,756 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-19 22:09:30,756 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-19 22:09:30,757 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-19 22:09:30,757 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-19 22:09:30,757 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-19 22:09:30,758 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-19 22:09:30,758 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-19 22:09:30,758 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-19 22:09:30,759 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-19 22:09:30,759 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-19 22:09:30,760 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-19 22:09:30,760 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-19 22:09:30,760 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-19 22:09:30,761 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-19 22:09:30,761 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-19 22:09:30,761 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-19 22:09:30,762 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-19 22:09:30,762 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-19 22:09:30,763 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-19 22:09:30,763 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-19 22:09:30,764 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-19 22:09:30,765 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-19 22:09:30,765 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-19 22:09:30,765 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-19 22:09:30,766 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-19 22:09:30,766 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-19 22:09:30,767 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-19 22:09:30,767 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-19 22:09:30,768 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-19 22:09:30,768 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-19 22:09:30,769 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-19 22:09:30,769 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-19 22:09:30,770 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-19 22:09:30,815 - INFO - 
+Rows dropped due to NaN values: 52
+2025-05-19 22:09:30,820 - ERROR - Error in preprocessing: 'AdvancedWeatherPredictor' object has no attribute '_update_feature_columns'
+2025-05-19 22:09:30,821 - ERROR - An error occurred: 'AdvancedWeatherPredictor' object has no attribute '_update_feature_columns'
+2025-05-19 22:09:30,821 - ERROR - Traceback (most recent call last):
+  File "D:\WORK\skripsi\main_gbm_advanced.py", line 501, in main
+    df_processed, df_multi_day = predictor.preprocess_data(df)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\WORK\skripsi\main_gbm_advanced.py", line 171, in preprocess_data
+    self._update_feature_columns(df)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'AdvancedWeatherPredictor' object has no attribute '_update_feature_columns'
+
+2025-05-19 22:13:14,330 - INFO - Loading data...
+2025-05-19 22:13:14,339 - INFO - 
+Initial data shape: (5295, 11)
+2025-05-19 22:13:14,339 - INFO - 
+Preprocessing data...
+2025-05-19 22:13:14,340 - INFO - Initial dataset size: 5295
+2025-05-19 22:13:14,772 - INFO - 
+Outliers removed: 52 rows
+2025-05-19 22:13:14,773 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-19 22:13:14,773 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-19 22:13:14,775 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-19 22:13:14,775 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-19 22:13:14,775 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-19 22:13:14,775 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-19 22:13:14,776 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-19 22:13:14,776 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-19 22:13:14,777 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-19 22:13:14,777 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-19 22:13:14,777 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-19 22:13:14,778 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-19 22:13:14,778 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-19 22:13:14,779 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 22:13:14,779 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-19 22:13:14,780 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-19 22:13:14,781 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-19 22:13:14,781 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 22:13:14,781 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-19 22:13:14,782 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-19 22:13:14,782 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-19 22:13:14,782 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-19 22:13:14,783 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-19 22:13:14,783 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-19 22:13:14,783 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-19 22:13:14,784 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-19 22:13:14,784 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-19 22:13:14,784 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-19 22:13:14,785 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-19 22:13:14,785 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-19 22:13:14,786 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-19 22:13:14,786 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-19 22:13:14,786 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-19 22:13:14,787 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-19 22:13:14,787 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-19 22:13:14,787 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-19 22:13:14,788 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-19 22:13:14,788 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-19 22:13:14,789 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-19 22:13:14,789 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-19 22:13:14,789 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-19 22:13:14,790 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-19 22:13:14,790 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-19 22:13:14,790 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-19 22:13:14,792 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-19 22:13:14,792 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-19 22:13:14,792 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-19 22:13:14,793 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-19 22:13:14,793 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-19 22:13:14,793 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-19 22:13:14,793 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-19 22:13:14,794 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-19 22:13:14,795 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-19 22:13:14,836 - INFO - 
+Rows dropped due to NaN values: 52
+2025-05-19 22:13:14,841 - INFO - Updated feature set with 82 features
+2025-05-19 22:13:14,841 - INFO - 
+Final dataset size: 3605
+2025-05-19 22:13:14,843 - INFO - Multi-day dataset size: 3602
+2025-05-19 22:13:14,843 - INFO - Total features: 82
+2025-05-19 22:13:15,453 - INFO - Seasonal decomposition analysis completed
+2025-05-19 22:13:15,454 - INFO - 
+Starting model tuning and evaluation...
+2025-05-19 22:13:15,461 - INFO - 
+Training model for Day 1 prediction...
+2025-05-19 22:14:37,700 - INFO - Best parameters for Day 1 model:
+2025-05-19 22:14:37,700 - INFO - {'learning_rate': 0.014829634081378086, 'max_depth': 7, 'max_features': None, 'min_samples_leaf': 7, 'min_samples_split': 18, 'n_estimators': 151, 'subsample': 0.8253102287905535}
+2025-05-19 22:14:37,704 - INFO - Day 1 Metrics:
+2025-05-19 22:14:37,705 - INFO - RMSE: 11.1532
+2025-05-19 22:14:37,705 - INFO - MAE: 7.3292
+2025-05-19 22:14:37,705 - INFO - R²: 0.3953
+2025-05-19 22:14:39,124 - INFO - 
+Training model for Day 2 prediction...
+2025-05-19 22:15:57,886 - INFO - Best parameters for Day 2 model:
+2025-05-19 22:15:57,887 - INFO - {'learning_rate': 0.014829634081378086, 'max_depth': 7, 'max_features': None, 'min_samples_leaf': 7, 'min_samples_split': 18, 'n_estimators': 151, 'subsample': 0.8253102287905535}
+2025-05-19 22:15:57,892 - INFO - Day 2 Metrics:
+2025-05-19 22:15:57,892 - INFO - RMSE: 13.0978
+2025-05-19 22:15:57,892 - INFO - MAE: 8.9239
+2025-05-19 22:15:57,892 - INFO - R²: 0.1617
+2025-05-19 22:15:59,030 - INFO - 
+Training model for Day 3 prediction...
+2025-05-19 22:17:17,153 - INFO - Best parameters for Day 3 model:
+2025-05-19 22:17:17,154 - INFO - {'learning_rate': 0.014829634081378086, 'max_depth': 7, 'max_features': None, 'min_samples_leaf': 7, 'min_samples_split': 18, 'n_estimators': 151, 'subsample': 0.8253102287905535}
+2025-05-19 22:17:17,158 - INFO - Day 3 Metrics:
+2025-05-19 22:17:17,158 - INFO - RMSE: 13.1630
+2025-05-19 22:17:17,158 - INFO - MAE: 9.0240
+2025-05-19 22:17:17,159 - INFO - R²: 0.1534
+2025-05-19 22:17:18,988 - INFO - Models saved to gbm_advanced\models\advanced_gbm_20250519_221314.pkl
+2025-05-19 22:17:18,990 - INFO - 
+Advanced weather prediction completed successfully!
