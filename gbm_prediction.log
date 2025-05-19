@@ -1,0 +1,308 @@
+2025-05-19 19:24:19,097 - INFO - Loading and preprocessing data...
+2025-05-19 19:24:20,350 - INFO - 
+Original data types:
+2025-05-19 19:24:20,350 - INFO - STATION             object
+NAME                object
+LATITUDE           float64
+LONGITUDE          float64
+ELEVATION          float64
+                    ...   
+WT21_ATTRIBUTES     object
+WT22               float64
+WT22_ATTRIBUTES     object
+WV03               float64
+WV03_ATTRIBUTES     object
+Length: 100, dtype: object
+2025-05-19 19:24:20,388 - INFO - 
+Initial data head:
+2025-05-19 19:24:20,424 - INFO - 
+           STATION                                       NAME  LATITUDE  LONGITUDE  ELEVATION       DATE   ACMH ACMH_ATTRIBUTES   ACSH ACSH_ATTRIBUTES  AWND AWND_ATTRIBUTES  FMTM FMTM_ATTRIBUTES  FRGT FRGT_ATTRIBUTES    PGTM PGTM_ATTRIBUTES  PRCP PRCP_ATTRIBUTES  PSUN PSUN_ATTRIBUTES  SNOW SNOW_ATTRIBUTES  SNWD SNWD_ATTRIBUTES  TAVG TAVG_ATTRIBUTES  TMAX TMAX_ATTRIBUTES  TMIN TMIN_ATTRIBUTES  TOBS TOBS_ATTRIBUTES   TSUN TSUN_ATTRIBUTES  WDF1 WDF1_ATTRIBUTES  WDF2 WDF2_ATTRIBUTES  WDF5 WDF5_ATTRIBUTES   WDFG WDFG_ATTRIBUTES   WDFM WDFM_ATTRIBUTES  WESD WESD_ATTRIBUTES  WSF1 WSF1_ATTRIBUTES  WSF2 WSF2_ATTRIBUTES  WSF5 WSF5_ATTRIBUTES  WSFG WSFG_ATTRIBUTES  WSFM WSFM_ATTRIBUTES  WT01 WT01_ATTRIBUTES  WT02 WT02_ATTRIBUTES  WT03 WT03_ATTRIBUTES  WT04 WT04_ATTRIBUTES  WT05 WT05_ATTRIBUTES  WT06 WT06_ATTRIBUTES  WT07 WT07_ATTRIBUTES  WT08 WT08_ATTRIBUTES  WT09 WT09_ATTRIBUTES  WT10 WT10_ATTRIBUTES  WT11 WT11_ATTRIBUTES  WT13 WT13_ATTRIBUTES  WT14 WT14_ATTRIBUTES  WT15 WT15_ATTRIBUTES  WT16 WT16_ATTRIBUTES  WT17 WT17_ATTRIBUTES  WT18 WT18_ATTRIBUTES  WT19 WT19_ATTRIBUTES  WT21 WT21_ATTRIBUTES  WT22 WT22_ATTRIBUTES  WV03 WV03_ATTRIBUTES
+12441  USW00013739  PHILADELPHIA INTERNATIONAL AIRPORT, PA US  39.87326  -75.22681        2.1 1975-01-01   80.0             ,,X   90.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  2006.0             ,,X   0.0        ,,0,2400  68.0             ,,X   0.0            ,,0,   0.0            ,,0,   NaN             NaN  10.6             ,,0   1.1             ,,0   NaN             NaN  384.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  315.0            W,,X  315.0            W,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN  17.5             ,,X  11.6             ,,X   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN
+12472  USW00013739  PHILADELPHIA INTERNATIONAL AIRPORT, PA US  39.87326  -75.22681        2.1 1975-01-02   90.0             ,,X  100.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  1448.0             ,,X   0.0        ,,0,2400   0.0             ,,X  20.0            ,,0,   0.0            ,,0,   NaN             NaN   0.6             ,,0  -3.3             ,,0   NaN             NaN    0.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   45.0            W,,X   45.0            W,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   7.7             ,,X   4.9             ,,X   1.0             ,,X   NaN             NaN   NaN             NaN   1.0             ,,0   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN
+12500  USW00013739  PHILADELPHIA INTERNATIONAL AIRPORT, PA US  39.87326  -75.22681        2.1 1975-01-03   50.0             ,,X   40.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  1418.0             ,,X   0.0        ,,0,2400  85.0             ,,X   0.0            ,,0,   0.0            ,,0,   NaN             NaN   7.8             ,,0   0.0             ,,0   NaN             NaN  576.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  315.0            W,,X  315.0            W,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN  13.9             ,,X   9.4             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN
+12531  USW00013739  PHILADELPHIA INTERNATIONAL AIRPORT, PA US  39.87326  -75.22681        2.1 1975-01-04   20.0             ,,X   20.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  1342.0             ,,X   0.0        ,,0,2400  91.0             ,,X   0.0            ,,0,   0.0            ,,0,   NaN             NaN  19.4             ,,0   2.8             ,,0   NaN             NaN  690.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  315.0            W,,X  270.0            W,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN  11.8             ,,X   7.6             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN
+12561  USW00013739  PHILADELPHIA INTERNATIONAL AIRPORT, PA US  39.87326  -75.22681        2.1 1975-01-05  100.0             ,,X  100.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  1306.0             ,,X   0.5        ,,0,2400   0.0             ,,X   0.0            ,,0,   0.0            ,,0,   NaN             NaN  10.0             ,,0   8.9             ,,0   NaN             NaN    0.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   90.0            W,,X   90.0            W,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   7.2             ,,X   6.7             ,,X   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN
+2025-05-19 19:24:20,426 - INFO - Initial data shape: (30737, 100)
+2025-05-19 19:24:20,436 - INFO - 
+Data after selecting required columns:
+2025-05-19 19:24:20,439 - INFO - 
+            DATE  PRCP  SNOW  SNWD  TMAX  TMIN
+12441 1975-01-01   0.0   0.0   0.0  10.6   1.1
+12472 1975-01-02   0.0  20.0   0.0   0.6  -3.3
+12500 1975-01-03   0.0   0.0   0.0   7.8   0.0
+12531 1975-01-04   0.0   0.0   0.0  19.4   2.8
+12561 1975-01-05   0.5   0.0   0.0  10.0   8.9
+2025-05-19 19:24:20,449 - INFO - 
+Data after numeric conversion:
+2025-05-19 19:24:20,453 - INFO - 
+            DATE  PRCP  SNOW  SNWD  TMAX  TMIN
+12441 1975-01-01   0.0   0.0   0.0  10.6   1.1
+12472 1975-01-02   0.0  20.0   0.0   0.6  -3.3
+12500 1975-01-03   0.0   0.0   0.0   7.8   0.0
+12531 1975-01-04   0.0   0.0   0.0  19.4   2.8
+12561 1975-01-05   0.5   0.0   0.0  10.0   8.9
+2025-05-19 19:24:20,460 - INFO - 
+Final preprocessed data:
+2025-05-19 19:24:20,461 - INFO - 
+        DATE  PRCP      SNOW      SNWD      TMAX      TMIN
+0 1975-01-01   0.0 -0.103502 -0.147067 -0.709642 -0.739528
+1 1975-01-02   0.0  1.274445 -0.147067 -1.669593 -1.205485
+2 1975-01-03   0.0 -0.103502 -0.147067 -0.978428 -0.856018
+3 1975-01-04   0.0 -0.103502 -0.147067  0.135115 -0.559499
+4 1975-01-05   0.5 -0.103502 -0.147067 -0.767239  0.086487
+2025-05-19 19:24:20,462 - INFO - 
+Preprocessing Results:
+2025-05-19 19:24:20,462 - INFO - Initial rows: 30737
+2025-05-19 19:24:20,462 - INFO - Final rows: 30737
+2025-05-19 19:24:20,462 - INFO - 
+SNOW Statistics:
+2025-05-19 19:24:20,462 - INFO - Mean: -0.00
+2025-05-19 19:24:20,463 - INFO - Std: 1.00
+2025-05-19 19:24:20,464 - INFO - Min: -0.10
+2025-05-19 19:24:20,464 - INFO - Max: 48.19
+2025-05-19 19:24:20,464 - INFO - 
+SNWD Statistics:
+2025-05-19 19:24:20,465 - INFO - Mean: -0.00
+2025-05-19 19:24:20,465 - INFO - Std: 1.00
+2025-05-19 19:24:20,465 - INFO - Min: -0.15
+2025-05-19 19:24:20,466 - INFO - Max: 26.83
+2025-05-19 19:24:20,466 - INFO - 
+TMAX Statistics:
+2025-05-19 19:24:20,467 - INFO - Mean: 0.00
+2025-05-19 19:24:20,467 - INFO - Std: 1.00
+2025-05-19 19:24:20,468 - INFO - Min: -3.11
+2025-05-19 19:24:20,468 - INFO - Max: 2.11
+2025-05-19 19:24:20,468 - INFO - 
+TMIN Statistics:
+2025-05-19 19:24:20,468 - INFO - Mean: -0.00
+2025-05-19 19:24:20,469 - INFO - Std: 1.00
+2025-05-19 19:24:20,469 - INFO - Min: -3.15
+2025-05-19 19:24:20,470 - INFO - Max: 2.14
+2025-05-19 19:24:20,470 - INFO - 
+PRCP Statistics:
+2025-05-19 19:24:20,470 - INFO - Mean: 2.94
+2025-05-19 19:24:20,471 - INFO - Std: 8.44
+2025-05-19 19:24:20,471 - INFO - Min: 0.00
+2025-05-19 19:24:20,472 - INFO - Max: 203.70
+2025-05-19 19:24:20,472 - INFO - 
+Cleaned data types:
+2025-05-19 19:24:20,472 - INFO - DATE    datetime64[ns]
+PRCP           float64
+SNOW           float64
+SNWD           float64
+TMAX           float64
+TMIN           float64
+dtype: object
+2025-05-19 19:24:20,474 - INFO - 
+Data before feature engineering:
+2025-05-19 19:24:20,477 - INFO - 
+        DATE  PRCP      SNOW      SNWD      TMAX      TMIN
+0 1975-01-01   0.0 -0.103502 -0.147067 -0.709642 -0.739528
+1 1975-01-02   0.0  1.274445 -0.147067 -1.669593 -1.205485
+2 1975-01-03   0.0 -0.103502 -0.147067 -0.978428 -0.856018
+3 1975-01-04   0.0 -0.103502 -0.147067  0.135115 -0.559499
+4 1975-01-05   0.5 -0.103502 -0.147067 -0.767239  0.086487
+2025-05-19 19:24:20,477 - INFO - Initial shape: (30737, 6)
+2025-05-19 19:24:20,490 - INFO - 
+Data after basic feature engineering:
+2025-05-19 19:24:20,493 - INFO - 
+        DATE  PRCP      SNOW      SNWD      TMAX      TMIN  day_of_year  month  day_of_week  is_winter  is_summer  temp_range  snow_coverage
+0 1975-01-01   0.0 -0.103502 -0.147067 -0.709642 -0.739528            1      1            2          1          0    0.029886              0
+1 1975-01-02   0.0  1.274445 -0.147067 -1.669593 -1.205485            2      1            3          1          0   -0.464108              0
+2 1975-01-03   0.0 -0.103502 -0.147067 -0.978428 -0.856018            3      1            4          1          0   -0.122411              0
+3 1975-01-04   0.0 -0.103502 -0.147067  0.135115 -0.559499            4      1            5          1          0    0.694615              0
+4 1975-01-05   0.5 -0.103502 -0.147067 -0.767239  0.086487            5      1            6          1          0   -0.853725              0
+2025-05-19 19:24:20,734 - INFO - 
+Final engineered data:
+2025-05-19 19:24:20,753 - INFO - 
+        DATE  PRCP      SNOW      SNWD      TMAX      TMIN  day_of_year  month  day_of_week  is_winter  is_summer  temp_range  snow_coverage  PRCP_lag_1  PRCP_lag_2  PRCP_lag_3  SNOW_lag_1  SNOW_lag_2  SNOW_lag_3  SNWD_lag_1  SNWD_lag_2  SNWD_lag_3  TMAX_lag_1  TMAX_lag_2  TMAX_lag_3  TMIN_lag_1  TMIN_lag_2  TMIN_lag_3  PRCP_rolling_mean_3d  SNOW_rolling_mean_3d  SNWD_rolling_mean_3d  TMAX_rolling_mean_3d  TMIN_rolling_mean_3d  PRCP_rolling_std_3d  SNOW_rolling_std_3d  SNWD_rolling_std_3d  TMAX_rolling_std_3d  TMIN_rolling_std_3d  PRCP_rolling_max_3d  SNOW_rolling_max_3d  SNWD_rolling_max_3d  TMAX_rolling_max_3d  TMIN_rolling_max_3d  PRCP_rolling_min_3d  SNOW_rolling_min_3d  SNWD_rolling_min_3d  TMAX_rolling_min_3d  TMIN_rolling_min_3d  PRCP_rolling_mean_7d  SNOW_rolling_mean_7d  SNWD_rolling_mean_7d  TMAX_rolling_mean_7d  TMIN_rolling_mean_7d  PRCP_rolling_std_7d  SNOW_rolling_std_7d  SNWD_rolling_std_7d  TMAX_rolling_std_7d  TMIN_rolling_std_7d  PRCP_rolling_max_7d  SNOW_rolling_max_7d  SNWD_rolling_max_7d  TMAX_rolling_max_7d  TMIN_rolling_max_7d  PRCP_rolling_min_7d  SNOW_rolling_min_7d  SNWD_rolling_min_7d  TMAX_rolling_min_7d  TMIN_rolling_min_7d  PRCP_rolling_mean_14d  SNOW_rolling_mean_14d  SNWD_rolling_mean_14d  TMAX_rolling_mean_14d  TMIN_rolling_mean_14d  PRCP_rolling_std_14d  SNOW_rolling_std_14d  SNWD_rolling_std_14d  TMAX_rolling_std_14d  TMIN_rolling_std_14d  PRCP_rolling_max_14d  SNOW_rolling_max_14d  SNWD_rolling_max_14d  TMAX_rolling_max_14d  TMIN_rolling_max_14d  PRCP_rolling_min_14d  SNOW_rolling_min_14d  SNWD_rolling_min_14d  TMAX_rolling_min_14d  TMIN_rolling_min_14d  PRCP_rolling_mean_30d  SNOW_rolling_mean_30d  SNWD_rolling_mean_30d  TMAX_rolling_mean_30d  TMIN_rolling_mean_30d  PRCP_rolling_std_30d  SNOW_rolling_std_30d  SNWD_rolling_std_30d  TMAX_rolling_std_30d  TMIN_rolling_std_30d  PRCP_rolling_max_30d  SNOW_rolling_max_30d  SNWD_rolling_max_30d  TMAX_rolling_max_30d  TMIN_rolling_max_30d  PRCP_rolling_min_30d  SNOW_rolling_min_30d  SNWD_rolling_min_30d  TMAX_rolling_min_30d  TMIN_rolling_min_30d  PRCP_ema_1  SNOW_ema_1  SNWD_ema_1  TMAX_ema_1  TMIN_ema_1  PRCP_ema_3  SNOW_ema_3  SNWD_ema_3  TMAX_ema_3  TMIN_ema_3  PRCP_ema_5  SNOW_ema_5  SNWD_ema_5  TMAX_ema_5  TMIN_ema_5
+0 1975-01-01   0.0 -0.103502 -0.147067 -0.709642 -0.739528            1      1            2          1          0    0.029886              0         0.0         0.0         0.0   -0.103502   -0.103502   -0.103502   -0.147067   -0.147067   -0.147067   -0.709642   -0.709642   -0.709642   -0.739528   -0.739528   -0.739528              0.000000              0.355814             -0.147067             -1.119221             -0.933677             0.000000             0.795558                  0.0             0.495221             0.242492                  0.0             1.274445            -0.147067            -0.709642            -0.739528                  0.0            -0.103502            -0.147067            -1.669593            -1.205485              0.071429              0.093348             -0.147067             -0.300977             -0.234237             0.188982             0.520815                  0.0             1.001358             0.831174                  0.5             1.274445            -0.147067             1.047069              1.08194                  0.0            -0.103502            -0.147067            -1.669593            -1.205485               0.035714               0.019529              -0.147067              -0.171383              -0.157838              0.133631              0.372672                   0.0              1.052783              0.994756                   0.5              1.274445             -0.147067              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.669593             -1.734982               1.523333               0.087114              -0.050939              -0.680843              -0.649161              3.944327               0.76329              0.388083              0.925537              0.871893                  18.0              3.892543              1.788128              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.832785             -1.851471    0.000000   -0.103502   -0.147067   -0.709642   -0.739528    0.000000   -0.103502   -0.147067   -0.709642   -0.739528    0.000000   -0.103502   -0.147067   -0.709642   -0.739528
+1 1975-01-02   0.0  1.274445 -0.147067 -1.669593 -1.205485            2      1            3          1          0   -0.464108              0         0.0         0.0         0.0   -0.103502   -0.103502   -0.103502   -0.147067   -0.147067   -0.147067   -0.709642   -0.709642   -0.709642   -0.739528   -0.739528   -0.739528              0.000000              0.355814             -0.147067             -1.119221             -0.933677             0.000000             0.795558                  0.0             0.495221             0.242492                  0.0             1.274445            -0.147067            -0.709642            -0.739528                  0.0            -0.103502            -0.147067            -1.669593            -1.205485              0.071429              0.093348             -0.147067             -0.300977             -0.234237             0.188982             0.520815                  0.0             1.001358             0.831174                  0.5             1.274445            -0.147067             1.047069              1.08194                  0.0            -0.103502            -0.147067            -1.669593            -1.205485               0.035714               0.019529              -0.147067              -0.171383              -0.157838              0.133631              0.372672                   0.0              1.052783              0.994756                   0.5              1.274445             -0.147067              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.669593             -1.734982               1.523333               0.087114              -0.050939              -0.680843              -0.649161              3.944327               0.76329              0.388083              0.925537              0.871893                  18.0              3.892543              1.788128              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.832785             -1.851471    0.000000    0.621733   -0.147067   -1.214879   -0.984769    0.000000    0.707055   -0.147067   -1.274319   -1.013621    0.000000    0.815129   -0.147067   -1.349609   -1.050166
+2 1975-01-03   0.0 -0.103502 -0.147067 -0.978428 -0.856018            3      1            4          1          0   -0.122411              0         0.0         0.0         0.0    1.274445   -0.103502   -0.103502   -0.147067   -0.147067   -0.147067   -1.669593   -0.709642   -0.709642   -1.205485   -0.739528   -0.739528              0.000000              0.355814             -0.147067             -1.119221             -0.933677             0.000000             0.795558                  0.0             0.495221             0.242492                  0.0             1.274445            -0.147067            -0.709642            -0.739528                  0.0            -0.103502            -0.147067            -1.669593            -1.205485              0.071429              0.093348             -0.147067             -0.300977             -0.234237             0.188982             0.520815                  0.0             1.001358             0.831174                  0.5             1.274445            -0.147067             1.047069              1.08194                  0.0            -0.103502            -0.147067            -1.669593            -1.205485               0.035714               0.019529              -0.147067              -0.171383              -0.157838              0.133631              0.372672                   0.0              1.052783              0.994756                   0.5              1.274445             -0.147067              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.669593             -1.734982               1.523333               0.087114              -0.050939              -0.680843              -0.649161              3.944327               0.76329              0.388083              0.925537              0.871893                  18.0              3.892543              1.788128              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.832785             -1.851471    0.000000    0.354119   -0.147067   -1.127628   -0.937259    0.000000    0.336938   -0.147067   -1.139209   -0.941656    0.000000    0.290197   -0.147067   -1.137506   -0.939224
+3 1975-01-04   0.0 -0.103502 -0.147067  0.135115 -0.559499            4      1            5          1          0    0.694615              0         0.0         0.0         0.0   -0.103502    1.274445   -0.103502   -0.147067   -0.147067   -0.147067   -0.978428   -1.669593   -0.709642   -0.856018   -1.205485   -0.739528              0.000000              0.355814             -0.147067             -0.837635             -0.873667             0.000000             0.795558                  0.0             0.910555             0.323354                  0.0             1.274445            -0.147067             0.135115            -0.559499                  0.0            -0.103502            -0.147067            -1.669593            -1.205485              0.071429              0.093348             -0.147067             -0.300977             -0.234237             0.188982             0.520815                  0.0             1.001358             0.831174                  0.5             1.274445            -0.147067             1.047069              1.08194                  0.0            -0.103502            -0.147067            -1.669593            -1.205485               0.035714               0.019529              -0.147067              -0.171383              -0.157838              0.133631              0.372672                   0.0              1.052783              0.994756                   0.5              1.274445             -0.147067              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.669593             -1.734982               1.523333               0.087114              -0.050939              -0.680843              -0.649161              3.944327               0.76329              0.388083              0.925537              0.871893                  18.0              3.892543              1.788128              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.832785             -1.851471    0.000000    0.221051   -0.147067   -0.760445   -0.827413    0.000000    0.163057   -0.147067   -0.636120   -0.790785    0.000000    0.080224   -0.147067   -0.458775   -0.736704
+4 1975-01-05   0.5 -0.103502 -0.147067 -0.767239  0.086487            5      1            6          1          0   -0.853725              0         0.0         0.0         0.0   -0.103502   -0.103502    1.274445   -0.147067   -0.147067   -0.147067    0.135115   -0.978428   -1.669593   -0.559499   -0.856018   -1.205485              0.166667             -0.103502             -0.147067             -0.536851             -0.443010             0.288675             0.000000                  0.0             0.591442             0.481929                  0.5            -0.103502            -0.147067             0.135115             0.086487                  0.0            -0.103502            -0.147067            -0.978428            -0.856018              0.071429              0.093348             -0.147067             -0.300977             -0.234237             0.188982             0.520815                  0.0             1.001358             0.831174                  0.5             1.274445            -0.147067             1.047069              1.08194                  0.0            -0.103502            -0.147067            -1.669593            -1.205485               0.035714               0.019529              -0.147067              -0.171383              -0.157838              0.133631              0.372672                   0.0              1.052783              0.994756                   0.5              1.274445             -0.147067              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.669593             -1.734982               1.523333               0.087114              -0.050939              -0.680843              -0.649161              3.944327               0.76329              0.388083              0.925537              0.871893                  18.0              3.892543              1.788128              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.832785             -1.851471    0.122097    0.141797   -0.147067   -0.762104   -0.604244    0.180304    0.066934   -0.147067   -0.683402   -0.474434    0.258065   -0.014602   -0.147067   -0.617982   -0.311832
+2025-05-19 19:24:20,754 - INFO - Final shape: (30737, 123)
+2025-05-19 19:24:20,755 - INFO - 
+Engineered data types:
+2025-05-19 19:24:20,756 - INFO - DATE          datetime64[ns]
+PRCP                 float64
+SNOW                 float64
+SNWD                 float64
+TMAX                 float64
+                   ...      
+PRCP_ema_5           float64
+SNOW_ema_5           float64
+SNWD_ema_5           float64
+TMAX_ema_5           float64
+TMIN_ema_5           float64
+Length: 123, dtype: object
+2025-05-19 19:24:20,761 - INFO - Data shape before sequence creation: (30737, 123)
+2025-05-19 19:24:20,763 - INFO - 
+After train-test split:
+2025-05-19 19:24:20,763 - INFO - X_train shape: (24589, 5)
+2025-05-19 19:24:20,764 - INFO - X_test shape: (6148, 5)
+2025-05-19 19:24:20,764 - INFO - Training data date range: 1975-01-01T00:00:00.000000000 to 2058-03-02T00:00:00.000000000
+2025-05-19 19:24:20,764 - INFO - Testing data date range: 2058-03-03T00:00:00.000000000 to 2074-12-31T00:00:00.000000000
+2025-05-19 19:25:35,240 - INFO - Model saved to models/gbm_model.pkl
+2025-05-19 19:25:35,240 - INFO - 
+==================================================
+2025-05-19 19:25:35,241 - INFO - MODEL PERFORMANCE METRICS
+2025-05-19 19:25:35,241 - INFO - ==================================================
+2025-05-19 19:25:35,241 - INFO - MAE: 0.0064
+2025-05-19 19:25:35,242 - INFO - RMSE: 0.0526
+2025-05-19 19:25:35,242 - INFO - R2: 1.0000
+2025-05-19 19:25:35,242 - INFO - MAPE: 3646810.5297
+2025-05-19 19:31:36,128 - INFO - Loading and preprocessing data...
+2025-05-19 19:31:37,292 - INFO - 
+Original data types:
+2025-05-19 19:31:37,292 - INFO - STATION             object
+NAME                object
+LATITUDE           float64
+LONGITUDE          float64
+ELEVATION          float64
+                    ...   
+WT21_ATTRIBUTES     object
+WT22               float64
+WT22_ATTRIBUTES     object
+WV03               float64
+WV03_ATTRIBUTES     object
+Length: 100, dtype: object
+2025-05-19 19:31:37,321 - INFO - 
+Initial data head:
+2025-05-19 19:31:37,341 - INFO - 
+           STATION                                       NAME  LATITUDE  LONGITUDE  ELEVATION       DATE   ACMH ACMH_ATTRIBUTES   ACSH ACSH_ATTRIBUTES  AWND AWND_ATTRIBUTES  FMTM FMTM_ATTRIBUTES  FRGT FRGT_ATTRIBUTES    PGTM PGTM_ATTRIBUTES  PRCP PRCP_ATTRIBUTES  PSUN PSUN_ATTRIBUTES  SNOW SNOW_ATTRIBUTES  SNWD SNWD_ATTRIBUTES  TAVG TAVG_ATTRIBUTES  TMAX TMAX_ATTRIBUTES  TMIN TMIN_ATTRIBUTES  TOBS TOBS_ATTRIBUTES   TSUN TSUN_ATTRIBUTES  WDF1 WDF1_ATTRIBUTES  WDF2 WDF2_ATTRIBUTES  WDF5 WDF5_ATTRIBUTES   WDFG WDFG_ATTRIBUTES   WDFM WDFM_ATTRIBUTES  WESD WESD_ATTRIBUTES  WSF1 WSF1_ATTRIBUTES  WSF2 WSF2_ATTRIBUTES  WSF5 WSF5_ATTRIBUTES  WSFG WSFG_ATTRIBUTES  WSFM WSFM_ATTRIBUTES  WT01 WT01_ATTRIBUTES  WT02 WT02_ATTRIBUTES  WT03 WT03_ATTRIBUTES  WT04 WT04_ATTRIBUTES  WT05 WT05_ATTRIBUTES  WT06 WT06_ATTRIBUTES  WT07 WT07_ATTRIBUTES  WT08 WT08_ATTRIBUTES  WT09 WT09_ATTRIBUTES  WT10 WT10_ATTRIBUTES  WT11 WT11_ATTRIBUTES  WT13 WT13_ATTRIBUTES  WT14 WT14_ATTRIBUTES  WT15 WT15_ATTRIBUTES  WT16 WT16_ATTRIBUTES  WT17 WT17_ATTRIBUTES  WT18 WT18_ATTRIBUTES  WT19 WT19_ATTRIBUTES  WT21 WT21_ATTRIBUTES  WT22 WT22_ATTRIBUTES  WV03 WV03_ATTRIBUTES
+12441  USW00013739  PHILADELPHIA INTERNATIONAL AIRPORT, PA US  39.87326  -75.22681        2.1 1975-01-01   80.0             ,,X   90.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  2006.0             ,,X   0.0        ,,0,2400  68.0             ,,X   0.0            ,,0,   0.0            ,,0,   NaN             NaN  10.6             ,,0   1.1             ,,0   NaN             NaN  384.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  315.0            W,,X  315.0            W,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN  17.5             ,,X  11.6             ,,X   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN
+12472  USW00013739  PHILADELPHIA INTERNATIONAL AIRPORT, PA US  39.87326  -75.22681        2.1 1975-01-02   90.0             ,,X  100.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  1448.0             ,,X   0.0        ,,0,2400   0.0             ,,X  20.0            ,,0,   0.0            ,,0,   NaN             NaN   0.6             ,,0  -3.3             ,,0   NaN             NaN    0.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   45.0            W,,X   45.0            W,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   7.7             ,,X   4.9             ,,X   1.0             ,,X   NaN             NaN   NaN             NaN   1.0             ,,0   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN
+12500  USW00013739  PHILADELPHIA INTERNATIONAL AIRPORT, PA US  39.87326  -75.22681        2.1 1975-01-03   50.0             ,,X   40.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  1418.0             ,,X   0.0        ,,0,2400  85.0             ,,X   0.0            ,,0,   0.0            ,,0,   NaN             NaN   7.8             ,,0   0.0             ,,0   NaN             NaN  576.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  315.0            W,,X  315.0            W,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN  13.9             ,,X   9.4             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN
+12531  USW00013739  PHILADELPHIA INTERNATIONAL AIRPORT, PA US  39.87326  -75.22681        2.1 1975-01-04   20.0             ,,X   20.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  1342.0             ,,X   0.0        ,,0,2400  91.0             ,,X   0.0            ,,0,   0.0            ,,0,   NaN             NaN  19.4             ,,0   2.8             ,,0   NaN             NaN  690.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  315.0            W,,X  270.0            W,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN  11.8             ,,X   7.6             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN
+12561  USW00013739  PHILADELPHIA INTERNATIONAL AIRPORT, PA US  39.87326  -75.22681        2.1 1975-01-05  100.0             ,,X  100.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN  1306.0             ,,X   0.5        ,,0,2400   0.0             ,,X   0.0            ,,0,   0.0            ,,0,   NaN             NaN  10.0             ,,0   8.9             ,,0   NaN             NaN    0.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   90.0            W,,X   90.0            W,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   7.2             ,,X   6.7             ,,X   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   1.0             ,,X   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN   NaN             NaN
+2025-05-19 19:31:37,342 - INFO - Initial data shape: (30737, 100)
+2025-05-19 19:31:37,347 - INFO - 
+Data after selecting required columns:
+2025-05-19 19:31:37,350 - INFO - 
+            DATE  PRCP  SNOW  SNWD  TMAX  TMIN
+12441 1975-01-01   0.0   0.0   0.0  10.6   1.1
+12472 1975-01-02   0.0  20.0   0.0   0.6  -3.3
+12500 1975-01-03   0.0   0.0   0.0   7.8   0.0
+12531 1975-01-04   0.0   0.0   0.0  19.4   2.8
+12561 1975-01-05   0.5   0.0   0.0  10.0   8.9
+2025-05-19 19:31:37,357 - INFO - 
+Data after numeric conversion:
+2025-05-19 19:31:37,359 - INFO - 
+            DATE  PRCP  SNOW  SNWD  TMAX  TMIN
+12441 1975-01-01   0.0   0.0   0.0  10.6   1.1
+12472 1975-01-02   0.0  20.0   0.0   0.6  -3.3
+12500 1975-01-03   0.0   0.0   0.0   7.8   0.0
+12531 1975-01-04   0.0   0.0   0.0  19.4   2.8
+12561 1975-01-05   0.5   0.0   0.0  10.0   8.9
+2025-05-19 19:31:37,366 - INFO - 
+Final preprocessed data:
+2025-05-19 19:31:37,368 - INFO - 
+        DATE  PRCP      SNOW      SNWD      TMAX      TMIN
+0 1975-01-01   0.0 -0.103502 -0.147067 -0.709642 -0.739528
+1 1975-01-02   0.0  1.274445 -0.147067 -1.669593 -1.205485
+2 1975-01-03   0.0 -0.103502 -0.147067 -0.978428 -0.856018
+3 1975-01-04   0.0 -0.103502 -0.147067  0.135115 -0.559499
+4 1975-01-05   0.5 -0.103502 -0.147067 -0.767239  0.086487
+2025-05-19 19:31:37,368 - INFO - 
+Preprocessing Results:
+2025-05-19 19:31:37,368 - INFO - Initial rows: 30737
+2025-05-19 19:31:37,369 - INFO - Final rows: 30737
+2025-05-19 19:31:37,369 - INFO - 
+SNOW Statistics:
+2025-05-19 19:31:37,369 - INFO - Mean: -0.00
+2025-05-19 19:31:37,370 - INFO - Std: 1.00
+2025-05-19 19:31:37,370 - INFO - Min: -0.10
+2025-05-19 19:31:37,371 - INFO - Max: 48.19
+2025-05-19 19:31:37,371 - INFO - 
+SNWD Statistics:
+2025-05-19 19:31:37,371 - INFO - Mean: -0.00
+2025-05-19 19:31:37,372 - INFO - Std: 1.00
+2025-05-19 19:31:37,372 - INFO - Min: -0.15
+2025-05-19 19:31:37,372 - INFO - Max: 26.83
+2025-05-19 19:31:37,372 - INFO - 
+TMAX Statistics:
+2025-05-19 19:31:37,373 - INFO - Mean: 0.00
+2025-05-19 19:31:37,373 - INFO - Std: 1.00
+2025-05-19 19:31:37,374 - INFO - Min: -3.11
+2025-05-19 19:31:37,374 - INFO - Max: 2.11
+2025-05-19 19:31:37,374 - INFO - 
+TMIN Statistics:
+2025-05-19 19:31:37,375 - INFO - Mean: -0.00
+2025-05-19 19:31:37,375 - INFO - Std: 1.00
+2025-05-19 19:31:37,375 - INFO - Min: -3.15
+2025-05-19 19:31:37,375 - INFO - Max: 2.14
+2025-05-19 19:31:37,376 - INFO - 
+PRCP Statistics:
+2025-05-19 19:31:37,376 - INFO - Mean: 2.94
+2025-05-19 19:31:37,376 - INFO - Std: 8.44
+2025-05-19 19:31:37,377 - INFO - Min: 0.00
+2025-05-19 19:31:37,377 - INFO - Max: 203.70
+2025-05-19 19:31:37,377 - INFO - 
+Cleaned data types:
+2025-05-19 19:31:37,377 - INFO - DATE    datetime64[ns]
+PRCP           float64
+SNOW           float64
+SNWD           float64
+TMAX           float64
+TMIN           float64
+dtype: object
+2025-05-19 19:31:37,379 - INFO - 
+Data before feature engineering:
+2025-05-19 19:31:37,381 - INFO - 
+        DATE  PRCP      SNOW      SNWD      TMAX      TMIN
+0 1975-01-01   0.0 -0.103502 -0.147067 -0.709642 -0.739528
+1 1975-01-02   0.0  1.274445 -0.147067 -1.669593 -1.205485
+2 1975-01-03   0.0 -0.103502 -0.147067 -0.978428 -0.856018
+3 1975-01-04   0.0 -0.103502 -0.147067  0.135115 -0.559499
+4 1975-01-05   0.5 -0.103502 -0.147067 -0.767239  0.086487
+2025-05-19 19:31:37,382 - INFO - Initial shape: (30737, 6)
+2025-05-19 19:31:37,388 - INFO - 
+Data after basic feature engineering:
+2025-05-19 19:31:37,390 - INFO - 
+        DATE  PRCP      SNOW      SNWD      TMAX      TMIN  day_of_year  month  day_of_week  is_winter  is_summer  temp_range  snow_coverage
+0 1975-01-01   0.0 -0.103502 -0.147067 -0.709642 -0.739528            1      1            2          1          0    0.029886              0
+1 1975-01-02   0.0  1.274445 -0.147067 -1.669593 -1.205485            2      1            3          1          0   -0.464108              0
+2 1975-01-03   0.0 -0.103502 -0.147067 -0.978428 -0.856018            3      1            4          1          0   -0.122411              0
+3 1975-01-04   0.0 -0.103502 -0.147067  0.135115 -0.559499            4      1            5          1          0    0.694615              0
+4 1975-01-05   0.5 -0.103502 -0.147067 -0.767239  0.086487            5      1            6          1          0   -0.853725              0
+2025-05-19 19:31:37,622 - INFO - 
+Final engineered data:
+2025-05-19 19:31:37,640 - INFO - 
+        DATE  PRCP      SNOW      SNWD      TMAX      TMIN  day_of_year  month  day_of_week  is_winter  is_summer  temp_range  snow_coverage  PRCP_lag_1  PRCP_lag_2  PRCP_lag_3  SNOW_lag_1  SNOW_lag_2  SNOW_lag_3  SNWD_lag_1  SNWD_lag_2  SNWD_lag_3  TMAX_lag_1  TMAX_lag_2  TMAX_lag_3  TMIN_lag_1  TMIN_lag_2  TMIN_lag_3  PRCP_rolling_mean_3d  SNOW_rolling_mean_3d  SNWD_rolling_mean_3d  TMAX_rolling_mean_3d  TMIN_rolling_mean_3d  PRCP_rolling_std_3d  SNOW_rolling_std_3d  SNWD_rolling_std_3d  TMAX_rolling_std_3d  TMIN_rolling_std_3d  PRCP_rolling_max_3d  SNOW_rolling_max_3d  SNWD_rolling_max_3d  TMAX_rolling_max_3d  TMIN_rolling_max_3d  PRCP_rolling_min_3d  SNOW_rolling_min_3d  SNWD_rolling_min_3d  TMAX_rolling_min_3d  TMIN_rolling_min_3d  PRCP_rolling_mean_7d  SNOW_rolling_mean_7d  SNWD_rolling_mean_7d  TMAX_rolling_mean_7d  TMIN_rolling_mean_7d  PRCP_rolling_std_7d  SNOW_rolling_std_7d  SNWD_rolling_std_7d  TMAX_rolling_std_7d  TMIN_rolling_std_7d  PRCP_rolling_max_7d  SNOW_rolling_max_7d  SNWD_rolling_max_7d  TMAX_rolling_max_7d  TMIN_rolling_max_7d  PRCP_rolling_min_7d  SNOW_rolling_min_7d  SNWD_rolling_min_7d  TMAX_rolling_min_7d  TMIN_rolling_min_7d  PRCP_rolling_mean_14d  SNOW_rolling_mean_14d  SNWD_rolling_mean_14d  TMAX_rolling_mean_14d  TMIN_rolling_mean_14d  PRCP_rolling_std_14d  SNOW_rolling_std_14d  SNWD_rolling_std_14d  TMAX_rolling_std_14d  TMIN_rolling_std_14d  PRCP_rolling_max_14d  SNOW_rolling_max_14d  SNWD_rolling_max_14d  TMAX_rolling_max_14d  TMIN_rolling_max_14d  PRCP_rolling_min_14d  SNOW_rolling_min_14d  SNWD_rolling_min_14d  TMAX_rolling_min_14d  TMIN_rolling_min_14d  PRCP_rolling_mean_30d  SNOW_rolling_mean_30d  SNWD_rolling_mean_30d  TMAX_rolling_mean_30d  TMIN_rolling_mean_30d  PRCP_rolling_std_30d  SNOW_rolling_std_30d  SNWD_rolling_std_30d  TMAX_rolling_std_30d  TMIN_rolling_std_30d  PRCP_rolling_max_30d  SNOW_rolling_max_30d  SNWD_rolling_max_30d  TMAX_rolling_max_30d  TMIN_rolling_max_30d  PRCP_rolling_min_30d  SNOW_rolling_min_30d  SNWD_rolling_min_30d  TMAX_rolling_min_30d  TMIN_rolling_min_30d  PRCP_ema_1  SNOW_ema_1  SNWD_ema_1  TMAX_ema_1  TMIN_ema_1  PRCP_ema_3  SNOW_ema_3  SNWD_ema_3  TMAX_ema_3  TMIN_ema_3  PRCP_ema_5  SNOW_ema_5  SNWD_ema_5  TMAX_ema_5  TMIN_ema_5
+0 1975-01-01   0.0 -0.103502 -0.147067 -0.709642 -0.739528            1      1            2          1          0    0.029886              0         0.0         0.0         0.0   -0.103502   -0.103502   -0.103502   -0.147067   -0.147067   -0.147067   -0.709642   -0.709642   -0.709642   -0.739528   -0.739528   -0.739528              0.000000              0.355814             -0.147067             -1.119221             -0.933677             0.000000             0.795558                  0.0             0.495221             0.242492                  0.0             1.274445            -0.147067            -0.709642            -0.739528                  0.0            -0.103502            -0.147067            -1.669593            -1.205485              0.071429              0.093348             -0.147067             -0.300977             -0.234237             0.188982             0.520815                  0.0             1.001358             0.831174                  0.5             1.274445            -0.147067             1.047069              1.08194                  0.0            -0.103502            -0.147067            -1.669593            -1.205485               0.035714               0.019529              -0.147067              -0.171383              -0.157838              0.133631              0.372672                   0.0              1.052783              0.994756                   0.5              1.274445             -0.147067              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.669593             -1.734982               1.523333               0.087114              -0.050939              -0.680843              -0.649161              3.944327               0.76329              0.388083              0.925537              0.871893                  18.0              3.892543              1.788128              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.832785             -1.851471    0.000000   -0.103502   -0.147067   -0.709642   -0.739528    0.000000   -0.103502   -0.147067   -0.709642   -0.739528    0.000000   -0.103502   -0.147067   -0.709642   -0.739528
+1 1975-01-02   0.0  1.274445 -0.147067 -1.669593 -1.205485            2      1            3          1          0   -0.464108              0         0.0         0.0         0.0   -0.103502   -0.103502   -0.103502   -0.147067   -0.147067   -0.147067   -0.709642   -0.709642   -0.709642   -0.739528   -0.739528   -0.739528              0.000000              0.355814             -0.147067             -1.119221             -0.933677             0.000000             0.795558                  0.0             0.495221             0.242492                  0.0             1.274445            -0.147067            -0.709642            -0.739528                  0.0            -0.103502            -0.147067            -1.669593            -1.205485              0.071429              0.093348             -0.147067             -0.300977             -0.234237             0.188982             0.520815                  0.0             1.001358             0.831174                  0.5             1.274445            -0.147067             1.047069              1.08194                  0.0            -0.103502            -0.147067            -1.669593            -1.205485               0.035714               0.019529              -0.147067              -0.171383              -0.157838              0.133631              0.372672                   0.0              1.052783              0.994756                   0.5              1.274445             -0.147067              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.669593             -1.734982               1.523333               0.087114              -0.050939              -0.680843              -0.649161              3.944327               0.76329              0.388083              0.925537              0.871893                  18.0              3.892543              1.788128              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.832785             -1.851471    0.000000    0.621733   -0.147067   -1.214879   -0.984769    0.000000    0.707055   -0.147067   -1.274319   -1.013621    0.000000    0.815129   -0.147067   -1.349609   -1.050166
+2 1975-01-03   0.0 -0.103502 -0.147067 -0.978428 -0.856018            3      1            4          1          0   -0.122411              0         0.0         0.0         0.0    1.274445   -0.103502   -0.103502   -0.147067   -0.147067   -0.147067   -1.669593   -0.709642   -0.709642   -1.205485   -0.739528   -0.739528              0.000000              0.355814             -0.147067             -1.119221             -0.933677             0.000000             0.795558                  0.0             0.495221             0.242492                  0.0             1.274445            -0.147067            -0.709642            -0.739528                  0.0            -0.103502            -0.147067            -1.669593            -1.205485              0.071429              0.093348             -0.147067             -0.300977             -0.234237             0.188982             0.520815                  0.0             1.001358             0.831174                  0.5             1.274445            -0.147067             1.047069              1.08194                  0.0            -0.103502            -0.147067            -1.669593            -1.205485               0.035714               0.019529              -0.147067              -0.171383              -0.157838              0.133631              0.372672                   0.0              1.052783              0.994756                   0.5              1.274445             -0.147067              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.669593             -1.734982               1.523333               0.087114              -0.050939              -0.680843              -0.649161              3.944327               0.76329              0.388083              0.925537              0.871893                  18.0              3.892543              1.788128              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.832785             -1.851471    0.000000    0.354119   -0.147067   -1.127628   -0.937259    0.000000    0.336938   -0.147067   -1.139209   -0.941656    0.000000    0.290197   -0.147067   -1.137506   -0.939224
+3 1975-01-04   0.0 -0.103502 -0.147067  0.135115 -0.559499            4      1            5          1          0    0.694615              0         0.0         0.0         0.0   -0.103502    1.274445   -0.103502   -0.147067   -0.147067   -0.147067   -0.978428   -1.669593   -0.709642   -0.856018   -1.205485   -0.739528              0.000000              0.355814             -0.147067             -0.837635             -0.873667             0.000000             0.795558                  0.0             0.910555             0.323354                  0.0             1.274445            -0.147067             0.135115            -0.559499                  0.0            -0.103502            -0.147067            -1.669593            -1.205485              0.071429              0.093348             -0.147067             -0.300977             -0.234237             0.188982             0.520815                  0.0             1.001358             0.831174                  0.5             1.274445            -0.147067             1.047069              1.08194                  0.0            -0.103502            -0.147067            -1.669593            -1.205485               0.035714               0.019529              -0.147067              -0.171383              -0.157838              0.133631              0.372672                   0.0              1.052783              0.994756                   0.5              1.274445             -0.147067              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.669593             -1.734982               1.523333               0.087114              -0.050939              -0.680843              -0.649161              3.944327               0.76329              0.388083              0.925537              0.871893                  18.0              3.892543              1.788128              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.832785             -1.851471    0.000000    0.221051   -0.147067   -0.760445   -0.827413    0.000000    0.163057   -0.147067   -0.636120   -0.790785    0.000000    0.080224   -0.147067   -0.458775   -0.736704
+4 1975-01-05   0.5 -0.103502 -0.147067 -0.767239  0.086487            5      1            6          1          0   -0.853725              0         0.0         0.0         0.0   -0.103502   -0.103502    1.274445   -0.147067   -0.147067   -0.147067    0.135115   -0.978428   -1.669593   -0.559499   -0.856018   -1.205485              0.166667             -0.103502             -0.147067             -0.536851             -0.443010             0.288675             0.000000                  0.0             0.591442             0.481929                  0.5            -0.103502            -0.147067             0.135115             0.086487                  0.0            -0.103502            -0.147067            -0.978428            -0.856018              0.071429              0.093348             -0.147067             -0.300977             -0.234237             0.188982             0.520815                  0.0             1.001358             0.831174                  0.5             1.274445            -0.147067             1.047069              1.08194                  0.0            -0.103502            -0.147067            -1.669593            -1.205485               0.035714               0.019529              -0.147067              -0.171383              -0.157838              0.133631              0.372672                   0.0              1.052783              0.994756                   0.5              1.274445             -0.147067              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.669593             -1.734982               1.523333               0.087114              -0.050939              -0.680843              -0.649161              3.944327               0.76329              0.388083              0.925537              0.871893                  18.0              3.892543              1.788128              1.738234              1.494948                   0.0             -0.103502             -0.147067             -1.832785             -1.851471    0.122097    0.141797   -0.147067   -0.762104   -0.604244    0.180304    0.066934   -0.147067   -0.683402   -0.474434    0.258065   -0.014602   -0.147067   -0.617982   -0.311832
+2025-05-19 19:31:37,641 - INFO - Final shape: (30737, 123)
+2025-05-19 19:31:37,642 - INFO - 
+Engineered data types:
+2025-05-19 19:31:37,643 - INFO - DATE          datetime64[ns]
+PRCP                 float64
+SNOW                 float64
+SNWD                 float64
+TMAX                 float64
+                   ...      
+PRCP_ema_5           float64
+SNOW_ema_5           float64
+SNWD_ema_5           float64
+TMAX_ema_5           float64
+TMIN_ema_5           float64
+Length: 123, dtype: object
+2025-05-19 19:31:37,648 - INFO - Data shape before sequence creation: (30737, 123)
+2025-05-19 19:31:37,650 - INFO - 
+After train-test split:
+2025-05-19 19:31:37,651 - INFO - X_train shape: (24589, 5)
+2025-05-19 19:31:37,651 - INFO - X_test shape: (6148, 5)
+2025-05-19 19:31:37,651 - INFO - Training data date range: 1975-01-01T00:00:00.000000000 to 2058-03-02T00:00:00.000000000
+2025-05-19 19:31:37,651 - INFO - Testing data date range: 2058-03-03T00:00:00.000000000 to 2074-12-31T00:00:00.000000000
+2025-05-19 19:32:46,741 - INFO - Model saved to models/gbm_model.pkl
+2025-05-19 19:32:46,742 - INFO - 
+==================================================
+2025-05-19 19:32:46,742 - INFO - MODEL PERFORMANCE METRICS
+2025-05-19 19:32:46,742 - INFO - ==================================================
+2025-05-19 19:32:46,742 - INFO - MAE: 0.0064
+2025-05-19 19:32:46,743 - INFO - RMSE: 0.0526
+2025-05-19 19:32:46,743 - INFO - R2: 1.0000
+2025-05-19 19:32:46,744 - INFO - MAPE: 3646810.5297
