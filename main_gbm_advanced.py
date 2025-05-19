@@ -9,6 +9,8 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, e
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import RandomizedSearchCV, TimeSeriesSplit
 from sklearn.inspection import permutation_importance
+import matplotlib
+matplotlib.use('Agg')  # Set non-interactive backend before importing pyplot
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime, timedelta
@@ -57,7 +59,7 @@ class AdvancedWeatherPredictor:
         os.makedirs(self.run_dir, exist_ok=True)
 
     def preprocess_data(self, df):
-        """Enhanced preprocessing with outlier removal and lag features for multi-day prediction"""
+        """Enhanced preprocessing with outlier removal and better error handling"""
         try:
             df = df.copy()
             
@@ -72,7 +74,7 @@ class AdvancedWeatherPredictor:
             # Replace 8888 with NaN in RR column
             df['RR'] = df['RR'].replace(8888, np.nan)
             
-            # Plot original distribution and identify outliers
+            # Plot original distribution
             self._plot_outliers(df, self.run_dir, "Original Rainfall Distribution")
             
             # Remove outliers (RR > 100)
@@ -86,18 +88,14 @@ class AdvancedWeatherPredictor:
                 for _, row in outliers.iterrows():
                     logging.info(f"Date: {row['Tanggal']}, Rainfall: {row['RR']}mm")
             
-            # Now set the date as index
-            df = df.set_index('Tanggal')
+            # Plot distribution after outlier removal
+            self._plot_outliers(df, self.run_dir, "Rainfall Distribution After Outlier Removal")
             
-            # Handle missing values using interpolation for time series
+            # Handle missing values using median imputation for better stability
             for col in df.columns:
-                if df[col].isna().any():
-                    # For RR (rainfall), use 0 for missing values as common practice
-                    if col == 'RR':
-                        df[col] = df[col].fillna(0)
-                    else:
-                        # Use interpolation for other variables
-                        df[col] = df[col].interpolate(method='time').fillna(method='bfill').fillna(method='ffill')
+                if col != 'Tanggal' and df[col].isna().any():
+                    median_val = df[col].median()
+                    df[col] = df[col].fillna(median_val)
             
             # Convert wind direction to numeric
             wind_dir_map = {
@@ -116,46 +114,30 @@ class AdvancedWeatherPredictor:
                 df['ddd_x'] = pd.to_numeric(df['ddd_x'], errors='coerce')
                 df.loc[df['ddd_x'].isna(), 'ddd_x'] = df.loc[df['ddd_x'].isna(), 'ddd_car_deg']
             
-            # Add time-based features
-            df['Month'] = df.index.month
-            df['Day'] = df.index.day
-            df['DayOfWeek'] = df.index.dayofweek
-            df['Season'] = (df.index.month % 12 + 3) // 3
+            # Add basic features that won't introduce NaN values
+            df['Month'] = df['Tanggal'].dt.month
+            df['Day'] = df['Tanggal'].dt.day
+            df['DayOfWeek'] = df['Tanggal'].dt.dayofweek
+            df['Season'] = (df['Month'] % 12 + 3) // 3
             df['Temp_Range'] = df['Tx'] - df['Tn']
+            df['RH_Temp_Interaction'] = df['RH_avg'] * df['Tavg']  # New interaction feature
             
-            # Create features for multi-day prediction
-            
-            # 1. Add more comprehensive rolling windows
-            windows = [3, 7, 14, 30]
+            # Add rolling features with careful handling of NaN values
+            windows = [3, 7, 14]  # Reduced number of windows
             for window in windows:
-                # Rolling statistics
+                # Rolling mean with min_periods=1 to avoid NaN
                 df[f'RR_Rolling_Mean_{window}d'] = df[self.target_column].rolling(window=window, min_periods=1).mean()
                 df[f'RR_Rolling_Std_{window}d'] = df[self.target_column].rolling(window=window, min_periods=1).std()
-                df[f'RR_Rolling_Max_{window}d'] = df[self.target_column].rolling(window=window, min_periods=1).max()
-                
-                df[f'Tavg_Rolling_Mean_{window}d'] = df['Tavg'].rolling(window=window, min_periods=1).mean()
-                df[f'Tavg_Rolling_Std_{window}d'] = df['Tavg'].rolling(window=window, min_periods=1).std()
-                
-                # Also add rolling features for humidity
-                df[f'RH_Rolling_Mean_{window}d'] = df['RH_avg'].rolling(window=window, min_periods=1).mean()
+                df[f'Temp_Rolling_Mean_{window}d'] = df['Tavg'].rolling(window=window, min_periods=1).mean()
             
-            # 2. Add lag features for each target forecast day
-            # Create lags up to forecast_days + buffer
-            max_lag = self.forecast_days + 10  # Additional lags as buffer
-            for lag in range(1, max_lag + 1):
+            # Add lag features (reduced number of lags)
+            for lag in [1, 2, 3, 7]:
                 df[f'RR_Lag_{lag}'] = df[self.target_column].shift(lag)
-                df[f'Tavg_Lag_{lag}'] = df['Tavg'].shift(lag)
+                df[f'Temp_Lag_{lag}'] = df['Tavg'].shift(lag)
                 df[f'RH_Lag_{lag}'] = df['RH_avg'].shift(lag)
             
-            # 3. Add moving average lag differences (momentum indicators)
-            df['RR_MA7_MA14_Diff'] = df['RR_Rolling_Mean_7d'] - df['RR_Rolling_Mean_14d']
-            df['RR_MA3_MA7_Diff'] = df['RR_Rolling_Mean_3d'] - df['RR_Rolling_Mean_7d']
-            
-            # 4. Add cyclical encoding for month and day of week for better seasonality capture
-            df['Month_Sin'] = np.sin(2 * np.pi * df.index.month/12)
-            df['Month_Cos'] = np.cos(2 * np.pi * df.index.month/12)
-            df['DayOfWeek_Sin'] = np.sin(2 * np.pi * df.index.dayofweek/7)
-            df['DayOfWeek_Cos'] = np.cos(2 * np.pi * df.index.dayofweek/7)
+            # Set date as index after all date-based features are created
+            df = df.set_index('Tanggal')
             
             # Drop rows with NaN values that couldn't be imputed
             df_before_drop = df.copy()
@@ -168,16 +150,39 @@ class AdvancedWeatherPredictor:
             # Create dataset for training multi-day models
             df_multi_day = self._prepare_multi_day_dataset(df)
             
-            # Update feature columns with created features
-            self._update_feature_columns(df)
+            # Update feature columns with new features that were successfully created
+            self.feature_columns = [
+                'Tn', 'Tx', 'Tavg', 'RH_avg', 'ss', 'ff_x', 'ff_avg', 'ddd_x',
+                'Month', 'Day', 'DayOfWeek', 'Season', 'Temp_Range', 'RH_Temp_Interaction'
+            ]
             
-            # Final dataset stats
+            # Add rolling and lag features if they exist and don't have NaN values
+            for col in df.columns:
+                if (col.startswith(('RR_Rolling', 'RR_Lag', 'Temp_Rolling', 'Temp_Lag', 'RH_Lag')) 
+                    and not df[col].isna().any()):
+                    self.feature_columns.append(col)
+            
+            # Log final stats
             logging.info(f"\nFinal dataset size: {len(df)}")
             logging.info(f"Multi-day dataset size: {len(df_multi_day)}")
             logging.info(f"Total features: {len(self.feature_columns)}")
+            logging.info("\nRainfall Statistics After Processing:")
+            logging.info(f"Mean: {df[self.target_column].mean():.2f}mm")
+            logging.info(f"Median: {df[self.target_column].median():.2f}mm")
+            logging.info(f"Std Dev: {df[self.target_column].std():.2f}mm")
+            logging.info(f"Max: {df[self.target_column].max():.2f}mm")
             
-            # Create seasonal decomposition and plot
-            self._seasonal_decomposition(df)
+            # Check no NaN values remain
+            nan_counts = df.isna().sum()
+            if nan_counts.sum() > 0:
+                logging.warning("\nWARNING: NaN values still exist in the dataset:")
+                logging.warning(nan_counts[nan_counts > 0])
+            else:
+                logging.info("\nNo NaN values remain in the dataset.")
+            
+            # Final feature list
+            logging.info(f"\nFinal feature list ({len(self.feature_columns)} features):")
+            logging.info(', '.join(self.feature_columns))
             
             return df, df_multi_day
             
@@ -419,6 +424,18 @@ class AdvancedWeatherPredictor:
             f.write(f"Weather Prediction Model Metrics Report\n")
             f.write(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
             
+            # Write model configuration
+            f.write("Model Configuration:\n")
+            f.write("-" * 30 + "\n")
+            f.write("GradientBoostingRegressor with parameters:\n")
+            f.write("- n_estimators: 300\n")
+            f.write("- learning_rate: 0.05\n")
+            f.write("- max_depth: 5\n")
+            f.write("- min_samples_split: 5\n")
+            f.write("- min_samples_leaf: 2\n")
+            f.write("- subsample: 0.8\n")
+            f.write("- max_features: sqrt\n\n")
+            
             for day in range(1, self.forecast_days + 1):
                 f.write(f"\nDay {day} Forecast Metrics:\n")
                 f.write("-" * 30 + "\n")
@@ -427,22 +444,33 @@ class AdvancedWeatherPredictor:
                 f.write(f"R²: {metrics_dict['R2'][day-1]:.4f}\n")
                 f.write(f"Mean Absolute Percentage Error: {metrics_dict['MAPE'][day-1]:.4f}%\n")
                 f.write(f"Explained Variance Score: {metrics_dict['EV'][day-1]:.4f}\n")
-                
-                f.write("\nBest Model Parameters:\n")
-                f.write(f"{metrics_dict['Best_Params'][day-1]}\n")
-                
+                f.write(f"Training Time: {metrics_dict['Training_Time'][day-1]:.2f} seconds\n")
+            
             f.write("\nOverall Model Performance:\n")
             f.write("-" * 30 + "\n")
             f.write(f"Average RMSE across all days: {np.mean(metrics_dict['RMSE']):.4f}\n")
             f.write(f"Average R² across all days: {np.mean(metrics_dict['R2']):.4f}\n")
+            f.write(f"Average MAPE across all days: {np.mean(metrics_dict['MAPE']):.4f}%\n")
+            f.write(f"Total Training Time: {sum(metrics_dict['Training_Time']):.2f} seconds\n")
             
         logging.info(f"Detailed report saved to {report_file}")
 
     def model_tuning_and_evaluation(self, df_multi_day):
-        """Train and evaluate models with hyperparameter tuning for multi-day forecasting"""
+        """Train and evaluate models with robust approach for multi-day forecasting"""
         try:
             # Prepare data
             X = df_multi_day[self.feature_columns].values
+            
+            # Verify no NaN values exist in the data
+            if np.isnan(X).any():
+                logging.error("NaN values found in features!")
+                # Find which features have NaN values
+                nan_cols = np.isnan(X).any(axis=0)
+                for i, has_nan in enumerate(nan_cols):
+                    if has_nan:
+                        logging.error(f"Feature '{self.feature_columns[i]}' has NaN values")
+                raise ValueError("Input contains NaN values. Fix preprocessing before training.")
+            
             # Scale features
             X_scaled = self.scaler.fit_transform(X)
             
@@ -459,14 +487,10 @@ class AdvancedWeatherPredictor:
                 'R2': [],
                 'MAPE': [],
                 'EV': [],  # Explained variance
-                'Best_Params': [],
                 'Training_Time': []
             }
             
-            # Time series cross-validation
-            tscv = TimeSeriesSplit(n_splits=5)
-            
-            # Calculate split index for final evaluation
+            # Calculate split index for chronological split (80% train, 20% test)
             split_idx = int(len(X_scaled) * 0.8)
             
             # Split data
@@ -474,16 +498,10 @@ class AdvancedWeatherPredictor:
             X_test = X_scaled[split_idx:]
             df_test = df_multi_day.iloc[split_idx:].copy()
             
-            # Parameter grid for RandomizedSearchCV
-            param_dist = {
-                'n_estimators': randint(100, 500),
-                'learning_rate': uniform(0.01, 0.19),
-                'max_depth': randint(3, 10),
-                'min_samples_split': randint(2, 20),
-                'min_samples_leaf': randint(1, 10),
-                'subsample': uniform(0.6, 0.4),
-                'max_features': ['sqrt', 'log2', None]
-            }
+            # Log split information
+            logging.info(f"\nTraining data shape: {X_train.shape}")
+            logging.info(f"Testing data shape: {X_test.shape}")
+            logging.info(f"Training date range: {df_test.index[0]} to {df_test.index[-1]}")
             
             # Train a separate model for each forecast day
             for day in range(1, self.forecast_days + 1):
@@ -497,42 +515,34 @@ class AdvancedWeatherPredictor:
                 logging.info(f"\nTraining model for Day {day} prediction...")
                 start_time = time.time()
                 
-                # Initialize base model
-                base_model = GradientBoostingRegressor(random_state=42)
-                
-                # Randomized search with time series cross-validation
-                random_search = RandomizedSearchCV(
-                    estimator=base_model,
-                    param_distributions=param_dist,
-                    n_iter=20,  # Number of parameter settings sampled
-                    cv=tscv,
-                    scoring='neg_root_mean_squared_error',
-                    random_state=42,
-                    n_jobs=-1,
-                    verbose=1
+                # Use robust model parameters
+                model = GradientBoostingRegressor(
+                    n_estimators=300,
+                    learning_rate=0.05,
+                    max_depth=5,
+                    min_samples_split=5,
+                    min_samples_leaf=2,
+                    subsample=0.8,
+                    max_features='sqrt',
+                    random_state=42
                 )
                 
                 # Fit the model
-                random_search.fit(X_train, y_train)
+                model.fit(X_train, y_train)
                 training_time = time.time() - start_time
                 
-                # Get best model
-                best_model = random_search.best_estimator_
-                models[f'day_{day}'] = best_model
+                # Store model
+                models[f'day_{day}'] = model
                 
                 # Make predictions
-                y_pred = best_model.predict(X_test)
+                y_pred = model.predict(X_test)
                 predictions[f'day_{day}'] = y_pred
                 
-                # Calculate comprehensive metrics
+                # Calculate metrics
                 rmse = np.sqrt(mean_squared_error(y_test, y_pred))
                 mae = mean_absolute_error(y_test, y_pred)
                 r2 = r2_score(y_test, y_pred)
-                
-                # Calculate MAPE (Mean Absolute Percentage Error)
                 mape = np.mean(np.abs((y_test - y_pred) / (y_test + 1e-10))) * 100
-                
-                # Calculate Explained Variance Score
                 ev_score = explained_variance_score(y_test, y_pred)
                 
                 # Store metrics
@@ -541,7 +551,6 @@ class AdvancedWeatherPredictor:
                 metrics_dict['R2'].append(r2)
                 metrics_dict['MAPE'].append(mape)
                 metrics_dict['EV'].append(ev_score)
-                metrics_dict['Best_Params'].append(str(random_search.best_params_))
                 metrics_dict['Training_Time'].append(training_time)
                 
                 # Log detailed metrics
@@ -553,8 +562,6 @@ class AdvancedWeatherPredictor:
                 logging.info(f"MAPE: {mape:.4f}%")
                 logging.info(f"Explained Variance Score: {ev_score:.4f}")
                 logging.info(f"Training Time: {training_time:.2f} seconds")
-                logging.info(f"\nBest parameters:")
-                logging.info(random_search.best_params_)
                 
                 # Calculate prediction standard deviations
                 residuals = y_test - y_pred
@@ -562,26 +569,14 @@ class AdvancedWeatherPredictor:
                 prediction_stds[f'day_{day}'] = np.ones_like(y_pred) * std_dev
                 
                 # Get feature importance
-                feature_importances[f'day_{day}'] = best_model.feature_importances_
+                feature_importances[f'day_{day}'] = model.feature_importances_
                 
                 # Plot feature importance
                 self.plot_feature_importance(
-                    best_model.feature_importances_,
+                    model.feature_importances_,
                     self.feature_columns,
                     f'Feature Importance Day {day}'
                 )
-                
-                # For Day 1, calculate permutation importance
-                if day == 1:
-                    perm_importance = permutation_importance(
-                        best_model, X_test, y_test, n_repeats=10, random_state=42, n_jobs=-1
-                    )
-                    
-                    self.plot_feature_importance(
-                        perm_importance.importances_mean,
-                        self.feature_columns,
-                        'Permutation Feature Importance Day 1'
-                    )
                 
                 # Plot prediction with confidence intervals
                 self.plot_prediction_intervals(df_test, y_pred, prediction_stds[f'day_{day}'], day)

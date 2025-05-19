@@ -1,0 +1,4 @@
+,RMSE,MAE,R2,MAPE,EV,Best_Params,Training_Time
+0,11.1532,7.3292,0.3953,2183221387567.7207,0.4061,"{'learning_rate': 0.014829634081378086, 'max_depth': 7, 'max_features': None, 'min_samples_leaf': 7, 'min_samples_split': 18, 'n_estimators': 151, 'subsample': 0.8253102287905535}",80.0527
+1,13.0978,8.9239,0.1617,3058725295044.8184,0.1766,"{'learning_rate': 0.014829634081378086, 'max_depth': 7, 'max_features': None, 'min_samples_leaf': 7, 'min_samples_split': 18, 'n_estimators': 151, 'subsample': 0.8253102287905535}",81.0599
+2,13.163,9.024,0.1534,3119447380990.4673,0.1745,"{'learning_rate': 0.014829634081378086, 'max_depth': 7, 'max_features': None, 'min_samples_leaf': 7, 'min_samples_split': 18, 'n_estimators': 151, 'subsample': 0.8253102287905535}",75.209

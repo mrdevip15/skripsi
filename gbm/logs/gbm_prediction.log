@@ -377,3 +377,96 @@ Plotting correlations for top 15 features: RR_Rolling_Mean_3d, RR_Rolling_Mean_7
 2025-05-19 19:53:40,371 - INFO - MAE: 4.2084
 2025-05-19 19:53:40,371 - INFO - RMSE: 7.3122
 2025-05-19 19:53:40,371 - INFO - R2: 0.7395
+2025-05-19 22:30:57,518 - INFO - Loading and preprocessing data...
+2025-05-19 22:30:57,526 - INFO - 
+Initial data shape: (5295, 11)
+2025-05-19 22:30:57,527 - INFO - Initial dataset size: 5295
+2025-05-19 22:30:58,475 - INFO - 
+Outliers removed: 52 rows
+2025-05-19 22:30:58,476 - INFO - Dates with extreme rainfall (>100mm):
+2025-05-19 22:30:58,477 - INFO - Date: 2010-01-15 00:00:00, Rainfall: 110.0mm
+2025-05-19 22:30:58,478 - INFO - Date: 2010-02-20 00:00:00, Rainfall: 180.0mm
+2025-05-19 22:30:58,478 - INFO - Date: 2011-02-05 00:00:00, Rainfall: 113.0mm
+2025-05-19 22:30:58,479 - INFO - Date: 2011-02-06 00:00:00, Rainfall: 122.0mm
+2025-05-19 22:30:58,479 - INFO - Date: 2012-03-15 00:00:00, Rainfall: 141.0mm
+2025-05-19 22:30:58,480 - INFO - Date: 2012-05-13 00:00:00, Rainfall: 125.0mm
+2025-05-19 22:30:58,480 - INFO - Date: 2013-01-02 00:00:00, Rainfall: 120.8mm
+2025-05-19 22:30:58,481 - INFO - Date: 2013-01-04 00:00:00, Rainfall: 103.5mm
+2025-05-19 22:30:58,481 - INFO - Date: 2014-01-13 00:00:00, Rainfall: 105.2mm
+2025-05-19 22:30:58,482 - INFO - Date: 2014-04-08 00:00:00, Rainfall: 137.9mm
+2025-05-19 22:30:58,482 - INFO - Date: 2014-12-06 00:00:00, Rainfall: 137.4mm
+2025-05-19 22:30:58,482 - INFO - Date: 2014-12-07 00:00:00, Rainfall: 105.4mm
+2025-05-19 22:30:58,483 - INFO - Date: 2015-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 22:30:58,483 - INFO - Date: 2015-03-03 00:00:00, Rainfall: 127.6mm
+2025-05-19 22:30:58,483 - INFO - Date: 2015-12-18 00:00:00, Rainfall: 130.7mm
+2025-05-19 22:30:58,485 - INFO - Date: 2015-12-19 00:00:00, Rainfall: 112.4mm
+2025-05-19 22:30:58,485 - INFO - Date: 2016-01-22 00:00:00, Rainfall: 160.3mm
+2025-05-19 22:30:58,485 - INFO - Date: 2016-02-28 00:00:00, Rainfall: 103.4mm
+2025-05-19 22:30:58,486 - INFO - Date: 2016-10-10 00:00:00, Rainfall: 127.4mm
+2025-05-19 22:30:58,486 - INFO - Date: 2016-10-25 00:00:00, Rainfall: 188.7mm
+2025-05-19 22:30:58,487 - INFO - Date: 2016-12-13 00:00:00, Rainfall: 101.0mm
+2025-05-19 22:30:58,487 - INFO - Date: 2016-12-30 00:00:00, Rainfall: 115.3mm
+2025-05-19 22:30:58,487 - INFO - Date: 2017-01-26 00:00:00, Rainfall: 107.9mm
+2025-05-19 22:30:58,489 - INFO - Date: 2017-02-17 00:00:00, Rainfall: 120.3mm
+2025-05-19 22:30:58,489 - INFO - Date: 2017-12-13 00:00:00, Rainfall: 106.0mm
+2025-05-19 22:30:58,489 - INFO - Date: 2017-12-20 00:00:00, Rainfall: 101.4mm
+2025-05-19 22:30:58,490 - INFO - Date: 2017-12-21 00:00:00, Rainfall: 109.3mm
+2025-05-19 22:30:58,490 - INFO - Date: 2017-12-22 00:00:00, Rainfall: 156.0mm
+2025-05-19 22:30:58,490 - INFO - Date: 2018-01-12 00:00:00, Rainfall: 124.6mm
+2025-05-19 22:30:58,491 - INFO - Date: 2018-01-13 00:00:00, Rainfall: 104.5mm
+2025-05-19 22:30:58,491 - INFO - Date: 2018-02-16 00:00:00, Rainfall: 112.8mm
+2025-05-19 22:30:58,491 - INFO - Date: 2018-03-14 00:00:00, Rainfall: 152.1mm
+2025-05-19 22:30:58,492 - INFO - Date: 2018-12-23 00:00:00, Rainfall: 108.7mm
+2025-05-19 22:30:58,492 - INFO - Date: 2018-12-28 00:00:00, Rainfall: 140.3mm
+2025-05-19 22:30:58,492 - INFO - Date: 2019-04-29 00:00:00, Rainfall: 107.0mm
+2025-05-19 22:30:58,493 - INFO - Date: 2020-05-22 00:00:00, Rainfall: 122.9mm
+2025-05-19 22:30:58,493 - INFO - Date: 2021-01-16 00:00:00, Rainfall: 109.4mm
+2025-05-19 22:30:58,494 - INFO - Date: 2021-01-19 00:00:00, Rainfall: 111.0mm
+2025-05-19 22:30:58,494 - INFO - Date: 2021-01-25 00:00:00, Rainfall: 100.9mm
+2025-05-19 22:30:58,494 - INFO - Date: 2021-03-10 00:00:00, Rainfall: 153.7mm
+2025-05-19 22:30:58,495 - INFO - Date: 2021-04-02 00:00:00, Rainfall: 135.8mm
+2025-05-19 22:30:58,495 - INFO - Date: 2021-12-06 00:00:00, Rainfall: 145.9mm
+2025-05-19 22:30:58,495 - INFO - Date: 2021-12-07 00:00:00, Rainfall: 218.8mm
+2025-05-19 22:30:58,495 - INFO - Date: 2022-01-01 00:00:00, Rainfall: 110.4mm
+2025-05-19 22:30:58,496 - INFO - Date: 2022-01-20 00:00:00, Rainfall: 123.1mm
+2025-05-19 22:30:58,496 - INFO - Date: 2022-02-21 00:00:00, Rainfall: 155.3mm
+2025-05-19 22:30:58,496 - INFO - Date: 2022-05-27 00:00:00, Rainfall: 147.6mm
+2025-05-19 22:30:58,497 - INFO - Date: 2022-10-07 00:00:00, Rainfall: 101.6mm
+2025-05-19 22:30:58,497 - INFO - Date: 2022-12-28 00:00:00, Rainfall: 102.0mm
+2025-05-19 22:30:58,497 - INFO - Date: 2023-02-02 00:00:00, Rainfall: 200.0mm
+2025-05-19 22:30:58,498 - INFO - Date: 2023-02-13 00:00:00, Rainfall: 200.0mm
+2025-05-19 22:30:58,498 - INFO - Date: 2023-02-14 00:00:00, Rainfall: 183.0mm
+2025-05-19 22:30:58,782 - INFO - 
+Rows dropped due to NaN values: 42
+2025-05-19 22:30:58,783 - INFO - 
+Final dataset size: 3615
+2025-05-19 22:30:58,783 - INFO - Total rows removed: 1680
+2025-05-19 22:30:58,783 - INFO - 
+Rainfall Statistics After Processing:
+2025-05-19 22:30:58,783 - INFO - Mean: 9.97mm
+2025-05-19 22:30:58,785 - INFO - Median: 1.00mm
+2025-05-19 22:30:58,785 - INFO - Std Dev: 17.62mm
+2025-05-19 22:30:58,785 - INFO - Max: 100.00mm
+2025-05-19 22:30:58,787 - INFO - 
+No NaN values remain in the dataset.
+2025-05-19 22:30:58,787 - INFO - 
+Final feature list (21 features):
+2025-05-19 22:30:58,787 - INFO - Tn, Tx, Tavg, RH_avg, ss, ff_x, ff_avg, ddd_x, Month, Day, DayOfWeek, Season, Temp_Range, RR_Rolling_Mean_3d, Tavg_Rolling_Mean_3d, RR_Rolling_Mean_7d, Tavg_Rolling_Mean_7d, RR_Lag_1, Tavg_Lag_1, RR_Lag_3, Tavg_Lag_3
+2025-05-19 22:30:58,787 - INFO - 
+Processed data shape: (3615, 25)
+2025-05-19 22:30:58,791 - INFO - 
+Training data shape: (2892, 21)
+2025-05-19 22:30:58,791 - INFO - Testing data shape: (723, 21)
+2025-05-19 22:30:58,791 - INFO - Training date range: 2010-01-07T00:00:00.000000000 to 2022-03-07T00:00:00.000000000
+2025-05-19 22:30:58,792 - INFO - Testing date range: 2022-03-08T00:00:00.000000000 to 2024-06-30T00:00:00.000000000
+2025-05-19 22:30:58,792 - INFO - Training GradientBoostingRegressor...
+2025-05-19 22:30:59,606 - INFO - 
+Plotting correlations for top 15 features: RR_Rolling_Mean_3d, RR_Rolling_Mean_7d, Tx, Tavg, RH_avg, Tavg_Rolling_Mean_3d, Tavg_Lag_1, Tavg_Rolling_Mean_7d, RR_Lag_1, Temp_Range, Season, ff_x, Tn, RR_Lag_3, Tavg_Lag_3
+2025-05-19 22:31:02,335 - INFO - Model saved to gbm\models\gbm_model_20250519_223057.pkl
+2025-05-19 22:31:02,335 - INFO - 
+==================================================
+2025-05-19 22:31:02,335 - INFO - MODEL PERFORMANCE METRICS
+2025-05-19 22:31:02,336 - INFO - ==================================================
+2025-05-19 22:31:02,336 - INFO - MAE: 4.2084
+2025-05-19 22:31:02,336 - INFO - RMSE: 7.3122
+2025-05-19 22:31:02,336 - INFO - R2: 0.7395

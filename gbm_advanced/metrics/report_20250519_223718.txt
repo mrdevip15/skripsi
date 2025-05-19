@@ -1,0 +1,48 @@
+Weather Prediction Model Metrics Report
+Generated on: 2025-05-19 22:37:30
+
+Model Configuration:
+------------------------------
+GradientBoostingRegressor with parameters:
+- n_estimators: 300
+- learning_rate: 0.05
+- max_depth: 5
+- min_samples_split: 5
+- min_samples_leaf: 2
+- subsample: 0.8
+- max_features: sqrt
+
+
+Day 1 Forecast Metrics:
+------------------------------
+RMSE: 11.7717
+MAE: 7.4466
+R²: 0.3264
+Mean Absolute Percentage Error: 1966133618955.2563%
+Explained Variance Score: 0.3453
+Training Time: 1.96 seconds
+
+Day 2 Forecast Metrics:
+------------------------------
+RMSE: 13.6675
+MAE: 9.0441
+R²: 0.0872
+Mean Absolute Percentage Error: 3035722455210.1807%
+Explained Variance Score: 0.1100
+Training Time: 1.93 seconds
+
+Day 3 Forecast Metrics:
+------------------------------
+RMSE: 14.0029
+MAE: 9.3333
+R²: 0.0419
+Mean Absolute Percentage Error: 3024310606741.7856%
+Explained Variance Score: 0.0719
+Training Time: 1.90 seconds
+
+Overall Model Performance:
+------------------------------
+Average RMSE across all days: 13.1474
+Average R² across all days: 0.1518
+Average MAPE across all days: 2675388893635.7407%
+Total Training Time: 5.79 seconds

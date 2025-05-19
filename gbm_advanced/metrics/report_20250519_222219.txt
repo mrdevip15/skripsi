@@ -1,0 +1,41 @@
+Weather Prediction Model Metrics Report
+Generated on: 2025-05-19 22:26:20
+
+
+Day 1 Forecast Metrics:
+------------------------------
+RMSE: 11.1532
+MAE: 7.3292
+R²: 0.3953
+Mean Absolute Percentage Error: 2183221387567.7207%
+Explained Variance Score: 0.4061
+
+Best Model Parameters:
+{'learning_rate': 0.014829634081378086, 'max_depth': 7, 'max_features': None, 'min_samples_leaf': 7, 'min_samples_split': 18, 'n_estimators': 151, 'subsample': 0.8253102287905535}
+
+Day 2 Forecast Metrics:
+------------------------------
+RMSE: 13.0978
+MAE: 8.9239
+R²: 0.1617
+Mean Absolute Percentage Error: 3058725295044.8184%
+Explained Variance Score: 0.1766
+
+Best Model Parameters:
+{'learning_rate': 0.014829634081378086, 'max_depth': 7, 'max_features': None, 'min_samples_leaf': 7, 'min_samples_split': 18, 'n_estimators': 151, 'subsample': 0.8253102287905535}
+
+Day 3 Forecast Metrics:
+------------------------------
+RMSE: 13.1630
+MAE: 9.0240
+R²: 0.1534
+Mean Absolute Percentage Error: 3119447380990.4673%
+Explained Variance Score: 0.1745
+
+Best Model Parameters:
+{'learning_rate': 0.014829634081378086, 'max_depth': 7, 'max_features': None, 'min_samples_leaf': 7, 'min_samples_split': 18, 'n_estimators': 151, 'subsample': 0.8253102287905535}
+
+Overall Model Performance:
+------------------------------
+Average RMSE across all days: 12.4713
+Average R² across all days: 0.2368
