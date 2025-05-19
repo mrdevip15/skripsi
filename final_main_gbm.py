@@ -587,13 +587,14 @@ class GBMWeatherPredictor:
     def train_multi_day_models(self, multi_day_data):
         """Train separate advanced models for each forecast day using ensemble approach"""
         results = {}
+        predictions = {}  # To store predictions for cascading forecast
         
         # More lightweight and efficient model configurations
         base_models = {
             'gbm': GradientBoostingRegressor(
-                n_estimators=200,  # Reduced from 300
+                n_estimators=200,
                 learning_rate=0.05,
-                max_depth=5,  # Reduced from 6
+                max_depth=5,
                 min_samples_split=5,
                 min_samples_leaf=4,
                 subsample=0.8,
@@ -601,32 +602,64 @@ class GBMWeatherPredictor:
                 random_state=42
             ),
             'rf': RandomForestRegressor(
-                n_estimators=200,  # Reduced from 300
-                max_depth=10,  # Reduced from 12
+                n_estimators=200,
+                max_depth=10,
                 min_samples_split=4,
                 min_samples_leaf=2,
                 max_features='sqrt',
                 bootstrap=True,
                 random_state=42,
-                n_jobs=N_JOBS  # Controlled parallel processing
+                n_jobs=N_JOBS
             ),
             'ridge': Ridge(
                 alpha=1.0, 
                 solver='auto',
                 random_state=42
             )
-            # Removed MLP as it's slower and less stable
         }
         
         # Process each forecast day
-        for day, day_df in multi_day_data.items():
+        for day in range(self.forecast_days + 1):  # Include day 0
             logging.info(f"\n--- Training models for {day}-day ahead prediction ---")
             
-            # Use fewer features for faster training
+            if day not in multi_day_data:
+                logging.warning(f"No data available for day {day}, skipping")
+                continue
+                
+            day_df = multi_day_data[day].copy()
+            
+            # Add specialized temporal features for different forecast horizons
+            if day > 0:
+                self._add_specialized_temporal_features(day_df, day)
+                
+                # Add cascading prediction features for n > 1 day forecasts
+                if day > 1 and day-1 in predictions:
+                    self._add_cascading_predictions(day_df, predictions[day-1], day)
+            
+            # Use fewer features for faster training and select appropriate features for horizon
             features_to_use = self._select_features_for_horizon(day, self.extended_features)
+            
+            # Add any new features created
+            for col in day_df.columns:
+                if col.startswith(('fourier_', 'wavelet_', 'cascade_pred_')) and col not in features_to_use:
+                    features_to_use.append(col)
+            
             if len(features_to_use) > 100:  # If too many features, select subset
-                features_to_use = self._select_most_important_features(day_df, features_to_use, 
-                                                                     f'Future_RR_{day}d', 100)
+                # For longer horizons, prioritize cyclical and seasonal features
+                if day >= 3:
+                    # Ensure key temporal features are included
+                    priority_features = [f for f in features_to_use if 
+                                       any(p in f for p in ['Month', 'Season', 'fourier_', 'wavelet_', 
+                                                          'cascade_pred_', 'SameDay', '_cum'])]
+                    # Get remaining features up to 100 total
+                    remaining_count = 100 - len(priority_features)
+                    other_features = [f for f in features_to_use if f not in priority_features]
+                    selected_features = self._select_most_important_features(
+                        day_df, other_features, f'Future_RR_{day}d', remaining_count)
+                    features_to_use = priority_features + selected_features
+                else:
+                    features_to_use = self._select_most_important_features(
+                        day_df, features_to_use, f'Future_RR_{day}d', 100)
             
             logging.info(f"Using {len(features_to_use)} features for day {day} prediction")
             
@@ -650,6 +683,13 @@ class GBMWeatherPredictor:
             
             # Use fewer CV folds for faster training
             cv_folds = 3 if day == 0 else 2  # Reduced from 5
+            
+            # Apply more regularization for longer horizons to prevent overfitting
+            if day > 1:
+                # Adjust regularization parameters for longer horizons
+                base_models['gbm'].max_depth = max(3, 5 - day//2)  # Reduce tree depth
+                base_models['rf'].max_depth = max(6, 10 - day)  # Reduce tree depth
+                base_models['ridge'].alpha = 1.0 + day * 0.5  # Increase regularization
             
             # Initialize cross-validation
             cv_scores = {model_name: [] for model_name in base_models.keys()}
@@ -719,6 +759,32 @@ class GBMWeatherPredictor:
                 if model_name in weights:  # Check if model has a weight
                     ensemble_pred += weights[model_name] * cv_predictions[model_name]
             
+            # Store full dataset predictions for cascading
+            all_features = day_df[features_to_use]
+            all_scaled = scaler.transform(all_features)
+            all_preds = {}
+            
+            # Make predictions on full dataset
+            for model_name, model in base_models.items():
+                if model_name in weights:
+                    try:
+                        all_preds[model_name] = model.predict(all_scaled)
+                    except:
+                        # If model failed, use zeros
+                        all_preds[model_name] = np.zeros(len(all_scaled))
+            
+            # Create full dataset ensemble prediction
+            full_ensemble_pred = np.zeros(len(all_scaled))
+            for model_name in all_preds:
+                if model_name in weights:
+                    full_ensemble_pred += weights[model_name] * all_preds[model_name]
+            
+            # Store for cascading predictions
+            predictions[day] = {
+                'dates': day_df['Tanggal'],
+                'predictions': full_ensemble_pred
+            }
+            
             # Calculate prediction standard deviation for uncertainty estimation
             pred_std = np.std([cv_predictions[model_name] for model_name in base_models.keys() 
                             if model_name in cv_predictions], axis=0)
@@ -760,6 +826,80 @@ class GBMWeatherPredictor:
                                                 day, ensemble_metrics)
             
         return results
+        
+    def _add_specialized_temporal_features(self, df, forecast_day):
+        """Add specialized temporal features for medium and long-term forecasts"""
+        # Add Fourier features for seasonal patterns - especially useful for 3+ day forecasts
+        for period in [365.25, 180, 90, 30]:  # Annual, semi-annual, quarterly, monthly
+            # Create sin and cos features for the given period
+            df[f'fourier_sin_{period}'] = np.sin(2 * np.pi * df['Tanggal'].dt.dayofyear / period)
+            df[f'fourier_cos_{period}'] = np.cos(2 * np.pi * df['Tanggal'].dt.dayofyear / period)
+            
+            # For longer forecasts, add harmonics
+            if forecast_day >= 3:
+                for harmonic in [2, 3]:
+                    df[f'fourier_sin_{period}_h{harmonic}'] = np.sin(2 * np.pi * harmonic * df['Tanggal'].dt.dayofyear / period)
+                    df[f'fourier_cos_{period}_h{harmonic}'] = np.cos(2 * np.pi * harmonic * df['Tanggal'].dt.dayofyear / period)
+        
+        # Add specialized long-term features for 3+ day forecasts
+        if forecast_day >= 3:
+            # Long-term rainfall running statistics (14-30 days)
+            if 'RR' in df.columns:
+                # Monthly climatology - what's normal for this time of year
+                df['monthly_rain_avg'] = df.groupby(df['Tanggal'].dt.month)['RR'].transform('mean')
+                df['monthly_rain_std'] = df.groupby(df['Tanggal'].dt.month)['RR'].transform('std')
+                
+                # Seasonal patterns
+                df['seasonal_pattern'] = df['RR'].rolling(window=30, min_periods=1).mean()
+                
+                # Rain frequency in recent period (% of days with rain)
+                df['rain_frequency_30d'] = df['RR'].rolling(window=30, min_periods=1).apply(
+                    lambda x: np.sum(x > 0) / len(x))
+        
+        logging.info(f"Added specialized temporal features for {forecast_day}-day ahead prediction")
+        
+    def _add_cascading_predictions(self, df, prev_day_preds, forecast_day):
+        """Add previous day predictions as features for current day"""
+        # Create a DataFrame with dates and predictions
+        prev_preds_df = pd.DataFrame({
+            'Tanggal': prev_day_preds['dates'],
+            f'cascade_pred_{forecast_day-1}d': prev_day_preds['predictions']
+        })
+        
+        # Merge with current dataframe
+        df_merged = pd.merge(df, prev_preds_df, on='Tanggal', how='left')
+        
+        # Copy merged columns back to original dataframe
+        for col in prev_preds_df.columns:
+            if col != 'Tanggal':
+                df[col] = df_merged[col]
+        
+        # Fill any NaN values with appropriate stats
+        if f'cascade_pred_{forecast_day-1}d' in df.columns:
+            # Forward fill first
+            df[f'cascade_pred_{forecast_day-1}d'] = df[f'cascade_pred_{forecast_day-1}d'].fillna(method='ffill')
+            # Then use mean for any remaining NaN
+            df[f'cascade_pred_{forecast_day-1}d'] = df[f'cascade_pred_{forecast_day-1}d'].fillna(
+                df[f'cascade_pred_{forecast_day-1}d'].mean())
+        
+        # Add derived features from cascaded predictions
+        if f'cascade_pred_{forecast_day-1}d' in df.columns:
+            # Binary rain prediction from previous day
+            df[f'cascade_rain_binary_{forecast_day-1}d'] = (df[f'cascade_pred_{forecast_day-1}d'] > 0.5).astype(int)
+            
+            # If we have more than one previous day prediction
+            if forecast_day > 2 and f'cascade_pred_{forecast_day-2}d' in df.columns:
+                # Rate of change in predictions
+                df[f'cascade_pred_change'] = df[f'cascade_pred_{forecast_day-1}d'] - df[f'cascade_pred_{forecast_day-2}d']
+                
+                # Trend continuation feature (is trend continuing in same direction)
+                if f'cascade_pred_change_prev' in df.columns:
+                    df['cascade_trend_continues'] = np.sign(df[f'cascade_pred_change']) == np.sign(df['cascade_pred_change_prev'])
+                
+                # Store current change for next day
+                df['cascade_pred_change_prev'] = df[f'cascade_pred_change']
+        
+        logging.info(f"Added cascading prediction features for {forecast_day}-day ahead prediction")
 
     def _select_features_for_horizon(self, day, all_features):
         """Select appropriate features based on forecast horizon"""
@@ -767,26 +907,36 @@ class GBMWeatherPredictor:
             return all_features
         
         # Base features that are always included
-        base_features = [f for f in self.feature_columns]
+        base_features = [f for f in self.feature_columns if not f.startswith(('RR_Lag', 'Tavg_Lag'))]
         
         # Features specific to short-term prediction (1-2 days)
-        short_term_patterns = ['_past_1d', '_past_2d', 'Lag_1', 'Lag_2', 'Rolling_Mean_3d',
-                             'RainPattern', 'Temp_', 'RH_', 'Rain_Streak']
-        
-        # Features specific to medium-term prediction (3-5 days)
-        medium_term_patterns = ['Month', 'Season', 'DayOfYear', 'Rolling_Mean_7d',
-                              'Rolling_Mean_14d', 'SameDay', 'cum_7d']
-        
         if day <= 2:
-            # Short-term prediction
+            short_term_patterns = ['_past_1d', '_past_2d', 'Lag_1', 'Lag_2', 'Rolling_Mean_3d',
+                                'RainPattern', 'Temp_', 'RH_', 'Rain_Streak', 'DryPattern',
+                                'volatility_3d', 'cum_3d']
+            
             specific_features = [f for f in all_features if 
                                any(pattern in f for pattern in short_term_patterns)]
         else:
-            # Medium-term prediction
+            # Features specific to medium-term prediction (3-5 days)
+            medium_term_patterns = ['Month', 'Season', 'DayOfYear', 'Month_sin', 'Month_cos',
+                                  'DayOfYear_sin', 'DayOfYear_cos', 'Rolling_Mean_7d',
+                                  'Rolling_Mean_14d', 'SameDay', 'cum_7d', 'volatility_7d']
+            
+            # Add fourier patterns if available
+            fourier_patterns = ['fourier_', 'wavelet_', 'monthly_rain', 'seasonal_pattern',
+                              'rain_frequency']
+            
             specific_features = [f for f in all_features if 
-                               any(pattern in f for pattern in medium_term_patterns)]
+                               any(pattern in f for pattern in medium_term_patterns + fourier_patterns)]
+            
+            # For longer term, remove most recent lags which become less relevant
+            specific_features = [f for f in specific_features if 'Lag_1' not in f and 'past_1d' not in f]
         
-        return list(set(base_features + specific_features))
+        # Add cascade prediction features if available
+        cascade_features = [f for f in all_features if f.startswith('cascade_')]
+        
+        return list(set(base_features + specific_features + cascade_features))
 
     def _calculate_ensemble_weights(self, cv_scores):
         """Calculate weights for ensemble based on cross-validation performance"""
