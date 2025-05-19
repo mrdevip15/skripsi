@@ -18,6 +18,7 @@ from scipy.stats import randint, uniform
 import statsmodels.api as sm
 from statsmodels.tsa.seasonal import seasonal_decompose
 import time
+from sklearn.feature_selection import SelectFromModel, mutual_info_regression
 
 # Create base directory for all advanced GBM results
 GBM_DIR = 'gbm_advanced'
@@ -91,6 +92,9 @@ class AdvancedWeatherPredictor:
             # Plot distribution after outlier removal
             self._plot_outliers(df, self.run_dir, "Rainfall Distribution After Outlier Removal")
             
+            # Binary indicator for rainfall occurrence
+            df['RR_Binary'] = (df['RR'] > 0).astype(int)
+            
             # Handle missing values using median imputation for better stability
             for col in df.columns:
                 if col != 'Tanggal' and df[col].isna().any():
@@ -114,27 +118,80 @@ class AdvancedWeatherPredictor:
                 df['ddd_x'] = pd.to_numeric(df['ddd_x'], errors='coerce')
                 df.loc[df['ddd_x'].isna(), 'ddd_x'] = df.loc[df['ddd_x'].isna(), 'ddd_car_deg']
             
-            # Add basic features that won't introduce NaN values
+            # Add calendar features
             df['Month'] = df['Tanggal'].dt.month
             df['Day'] = df['Tanggal'].dt.day
             df['DayOfWeek'] = df['Tanggal'].dt.dayofweek
+            df['DayOfYear'] = df['Tanggal'].dt.dayofyear
             df['Season'] = (df['Month'] % 12 + 3) // 3
+            
+            # Add weather features
             df['Temp_Range'] = df['Tx'] - df['Tn']
-            df['RH_Temp_Interaction'] = df['RH_avg'] * df['Tavg']  # New interaction feature
+            df['RH_Temp_Interaction'] = df['RH_avg'] * df['Tavg']
+            
+            # Add derived features that meteorologists use
+            
+            # Dew point calculation (approximation)
+            # Uses Magnus formula with Sonntag 1990 coefficients
+            df['Dew_Point'] = df['Tavg'] - ((100 - df['RH_avg']) / 5)
+            
+            # Wet-bulb temperature estimation (simplified)
+            df['Wet_Bulb_Temp'] = df['Tavg'] - 0.33 * (100 - df['RH_avg'])
+            
+            # Potential evapotranspiration (Hargreaves simplified)
+            # Scaled for use without solar radiation data
+            df['PET_Approx'] = 0.0023 * (df['Tx'] - df['Tn']).abs() ** 0.5 * (df['Tavg'] + 17.8)
+            
+            # Enhanced wind features - converting direction to sin/cos components
+            df['Wind_Dir_Sin'] = np.sin(np.radians(df['ddd_x']))
+            df['Wind_Dir_Cos'] = np.cos(np.radians(df['ddd_x']))
+            
+            # Wind speed weighted by direction (to capture weather patterns)
+            df['Wind_E_Component'] = df['ff_x'] * df['Wind_Dir_Sin']
+            df['Wind_N_Component'] = df['ff_x'] * df['Wind_Dir_Cos']
+            
+            # Interaction between humidity and wind
+            df['RH_Wind_Interaction'] = df['RH_avg'] * df['ff_x']
             
             # Add rolling features with careful handling of NaN values
-            windows = [3, 7, 14]  # Reduced number of windows
+            windows = [3, 7, 14]
             for window in windows:
-                # Rolling mean with min_periods=1 to avoid NaN
+                # Rolling statistics for rainfall
                 df[f'RR_Rolling_Mean_{window}d'] = df[self.target_column].rolling(window=window, min_periods=1).mean()
                 df[f'RR_Rolling_Std_{window}d'] = df[self.target_column].rolling(window=window, min_periods=1).std()
+                df[f'RR_Rolling_Max_{window}d'] = df[self.target_column].rolling(window=window, min_periods=1).max()
+                
+                # Frequency of rainfall
+                df[f'RR_Freq_{window}d'] = df['RR_Binary'].rolling(window=window, min_periods=1).mean()
+                
+                # Rolling statistics for other variables
                 df[f'Temp_Rolling_Mean_{window}d'] = df['Tavg'].rolling(window=window, min_periods=1).mean()
+                df[f'Temp_Range_Rolling_{window}d'] = df['Temp_Range'].rolling(window=window, min_periods=1).mean()
+                df[f'RH_Rolling_Mean_{window}d'] = df['RH_avg'].rolling(window=window, min_periods=1).mean()
+                df[f'Wind_Rolling_Mean_{window}d'] = df['ff_x'].rolling(window=window, min_periods=1).mean()
             
             # Add lag features (reduced number of lags)
             for lag in [1, 2, 3, 7]:
                 df[f'RR_Lag_{lag}'] = df[self.target_column].shift(lag)
+                df[f'RR_Binary_Lag_{lag}'] = df['RR_Binary'].shift(lag)
                 df[f'Temp_Lag_{lag}'] = df['Tavg'].shift(lag)
                 df[f'RH_Lag_{lag}'] = df['RH_avg'].shift(lag)
+                df[f'Wind_Lag_{lag}'] = df['ff_x'].shift(lag)
+            
+            # Add seasonal indicators using Fourier terms
+            for period in [365.25, 30.4, 7]:  # Yearly, monthly, weekly
+                for n in range(1, 3):  # Use first 2 harmonics
+                    df[f'Sin_{period}_{n}'] = np.sin(2 * n * np.pi * df['DayOfYear'] / period)
+                    df[f'Cos_{period}_{n}'] = np.cos(2 * n * np.pi * df['DayOfYear'] / period)
+            
+            # Feature interactions - especially important in weather prediction
+            df['RR_Lag1_Temp'] = df['RR_Lag_1'] * df['Tavg']
+            df['RR_Lag1_RH'] = df['RR_Lag_1'] * df['RH_avg']
+            df['Temp_RH_Lag1'] = df['Temp_Lag_1'] * df['RH_Lag_1']
+            
+            # Rainfall momentum
+            df['RR_1day_Change'] = df['RR'] - df['RR_Lag_1']
+            df['RR_3day_Change'] = df['RR'] - df['RR_Lag_3']
             
             # Set date as index after all date-based features are created
             df = df.set_index('Tanggal')
@@ -153,14 +210,24 @@ class AdvancedWeatherPredictor:
             # Update feature columns with new features that were successfully created
             self.feature_columns = [
                 'Tn', 'Tx', 'Tavg', 'RH_avg', 'ss', 'ff_x', 'ff_avg', 'ddd_x',
-                'Month', 'Day', 'DayOfWeek', 'Season', 'Temp_Range', 'RH_Temp_Interaction'
+                'Month', 'Day', 'DayOfWeek', 'DayOfYear', 'Season', 
+                'Temp_Range', 'RH_Temp_Interaction', 'Dew_Point', 'Wet_Bulb_Temp',
+                'PET_Approx', 'Wind_Dir_Sin', 'Wind_Dir_Cos', 
+                'Wind_E_Component', 'Wind_N_Component', 'RH_Wind_Interaction',
+                'RR_Binary'
             ]
             
-            # Add rolling and lag features if they exist and don't have NaN values
+            # Add rolling, lag, seasonal, and interaction features if they exist and don't have NaN values
             for col in df.columns:
-                if (col.startswith(('RR_Rolling', 'RR_Lag', 'Temp_Rolling', 'Temp_Lag', 'RH_Lag')) 
-                    and not df[col].isna().any()):
-                    self.feature_columns.append(col)
+                if col not in self.feature_columns and not df[col].isna().any():
+                    feature_prefixes = (
+                        'RR_Rolling', 'RR_Lag', 'Temp_Rolling', 'Temp_Lag', 'RH_Lag', 
+                        'Wind_Rolling', 'Wind_Lag', 'RH_Rolling', 'Temp_Range_Rolling',
+                        'RR_Freq', 'Sin_', 'Cos_', 'RR_Binary_Lag', 'RR_1day_Change',
+                        'RR_3day_Change', 'RR_Lag1_Temp', 'RR_Lag1_RH', 'Temp_RH_Lag1'
+                    )
+                    if any(col.startswith(prefix) for prefix in feature_prefixes):
+                        self.feature_columns.append(col)
             
             # Log final stats
             logging.info(f"\nFinal dataset size: {len(df)}")
@@ -392,7 +459,7 @@ class AdvancedWeatherPredictor:
         """Save all models and metadata"""
         model_data = {
             'models': models,
-            'feature_columns': self.feature_columns,
+            'all_feature_columns': self.feature_columns,
             'target_column': self.target_column,
             'timestamp': self.timestamp,
             'scaler': self.scaler,
@@ -455,24 +522,97 @@ class AdvancedWeatherPredictor:
             
         logging.info(f"Detailed report saved to {report_file}")
 
+    def _select_best_features(self, X, y, feature_names, threshold=0.01):
+        """Select most important features based on correlation and mutual information"""
+        # Initialize output features
+        selected_features = []
+        
+        # Create DataFrame for analysis
+        X_df = pd.DataFrame(X, columns=feature_names)
+        
+        # 1. Correlation-based filtering
+        # Calculate correlation with target
+        correlations = {}
+        for i, feature in enumerate(feature_names):
+            corr = abs(np.corrcoef(X[:, i], y)[0, 1])
+            if not np.isnan(corr):  # Avoid NaN correlations
+                correlations[feature] = corr
+        
+        # Get features with correlation above threshold
+        corr_selected = [f for f, c in correlations.items() if c > threshold]
+        logging.info(f"Selected {len(corr_selected)} features based on correlation")
+        
+        # 2. Information-based filtering
+        # Calculate mutual information with target
+        mi_scores = mutual_info_regression(X, y, random_state=42)
+        mi_scores = pd.Series(mi_scores, index=feature_names)
+        mi_selected = mi_scores[mi_scores > mi_scores.mean()].index.tolist()
+        
+        logging.info(f"Selected {len(mi_selected)} features based on mutual information")
+        
+        # Combine selected features
+        selected_features = list(set(corr_selected + mi_selected))
+        logging.info(f"Combined unique selected features: {len(selected_features)}")
+        
+        # Always keep some basic features regardless of selection
+        must_have = ['Tavg', 'RH_avg', 'RR_Lag_1', 'RR_Rolling_Mean_7d']
+        for feature in must_have:
+            if feature in feature_names and feature not in selected_features:
+                selected_features.append(feature)
+        
+        logging.info(f"Final feature count after selection: {len(selected_features)}")
+        logging.info(f"Selected features: {', '.join(selected_features)}")
+        
+        return selected_features
+
+    def _perform_time_series_cv(self, X, y, model_params, n_splits=5):
+        """Perform time series cross validation to find optimal parameters"""
+        from sklearn.model_selection import TimeSeriesSplit
+        
+        # Create time series split object
+        tscv = TimeSeriesSplit(n_splits=n_splits)
+        
+        # Parameters to try
+        param_grid = {
+            'n_estimators': [100, 200, 300, 500],
+            'learning_rate': [0.01, 0.05, 0.1],
+            'max_depth': [3, 5, 7],
+            'min_samples_split': [2, 5, 10],
+            'subsample': [0.7, 0.8, 0.9]
+        }
+        
+        # Create RandomizedSearchCV
+        search = RandomizedSearchCV(
+            GradientBoostingRegressor(**model_params),
+            param_grid,
+            n_iter=10,  # Try 10 combinations
+            cv=tscv,
+            scoring='r2',
+            random_state=42,
+            n_jobs=-1  # Use all cores
+        )
+        
+        search.fit(X, y)
+        
+        # Log best parameters
+        logging.info(f"\nBest parameters from time-series CV: {search.best_params_}")
+        logging.info(f"Best R² score from CV: {search.best_score_:.4f}")
+        
+        return search.best_params_
+
     def model_tuning_and_evaluation(self, df_multi_day):
-        """Train and evaluate models with robust approach for multi-day forecasting"""
+        """Train and evaluate models with simplified approach for multi-day forecasting"""
         try:
-            # Prepare data
-            X = df_multi_day[self.feature_columns].values
+            # Prepare data - dropna as a safety measure
+            df_clean = df_multi_day.dropna()
+            if len(df_clean) < len(df_multi_day):
+                logging.warning(f"Dropped {len(df_multi_day) - len(df_clean)} rows with NaN values before training")
             
-            # Verify no NaN values exist in the data
-            if np.isnan(X).any():
-                logging.error("NaN values found in features!")
-                # Find which features have NaN values
-                nan_cols = np.isnan(X).any(axis=0)
-                for i, has_nan in enumerate(nan_cols):
-                    if has_nan:
-                        logging.error(f"Feature '{self.feature_columns[i]}' has NaN values")
-                raise ValueError("Input contains NaN values. Fix preprocessing before training.")
+            # Calculate split index for chronological split (80% train, 20% test)
+            split_idx = int(len(df_clean) * 0.8)
             
-            # Scale features
-            X_scaled = self.scaler.fit_transform(X)
+            # Prepare test data frame for later use
+            df_test = df_clean.iloc[split_idx:].copy()
             
             # Dictionary to store models and predictions for each forecast day
             models = {}
@@ -486,36 +626,37 @@ class AdvancedWeatherPredictor:
                 'MAE': [],
                 'R2': [],
                 'MAPE': [],
-                'EV': [],  # Explained variance
+                'EV': [],
                 'Training_Time': []
             }
             
-            # Calculate split index for chronological split (80% train, 20% test)
-            split_idx = int(len(X_scaled) * 0.8)
-            
-            # Split data
-            X_train = X_scaled[:split_idx]
-            X_test = X_scaled[split_idx:]
-            df_test = df_multi_day.iloc[split_idx:].copy()
-            
             # Log split information
-            logging.info(f"\nTraining data shape: {X_train.shape}")
-            logging.info(f"Testing data shape: {X_test.shape}")
-            logging.info(f"Training date range: {df_test.index[0]} to {df_test.index[-1]}")
+            logging.info(f"\nTraining data shape: {df_clean.iloc[:split_idx].shape}")
+            logging.info(f"Testing data shape: {df_clean.iloc[split_idx:].shape}")
+            logging.info(f"Training date range: {df_clean.index[0]} to {df_clean.index[split_idx-1]}")
+            logging.info(f"Testing date range: {df_clean.index[split_idx]} to {df_clean.index[-1]}")
             
             # Train a separate model for each forecast day
             for day in range(1, self.forecast_days + 1):
-                target_col = f'RR_Day_{day}'
-                y = df_multi_day[target_col].values
+                logging.info(f"\nTraining model for Day {day} prediction...")
                 
-                # Split target
+                # Prepare features and target
+                X = df_clean[self.feature_columns].values
+                target_col = f'RR_Day_{day}'
+                y = df_clean[target_col].values
+                
+                # Split data
+                X_train = X[:split_idx]
+                X_test = X[split_idx:]
                 y_train = y[:split_idx]
                 y_test = y[split_idx:]
                 
-                logging.info(f"\nTraining model for Day {day} prediction...")
-                start_time = time.time()
+                # Scale features
+                X_train_scaled = self.scaler.fit_transform(X_train)
+                X_test_scaled = self.scaler.transform(X_test)
                 
-                # Use robust model parameters
+                # Use a simpler model with good defaults
+                start_time = time.time()
                 model = GradientBoostingRegressor(
                     n_estimators=300,
                     learning_rate=0.05,
@@ -527,15 +668,12 @@ class AdvancedWeatherPredictor:
                     random_state=42
                 )
                 
-                # Fit the model
-                model.fit(X_train, y_train)
+                # Train model
+                model.fit(X_train_scaled, y_train)
                 training_time = time.time() - start_time
                 
-                # Store model
-                models[f'day_{day}'] = model
-                
                 # Make predictions
-                y_pred = model.predict(X_test)
+                y_pred = model.predict(X_test_scaled)
                 predictions[f'day_{day}'] = y_pred
                 
                 # Calculate metrics
@@ -553,8 +691,8 @@ class AdvancedWeatherPredictor:
                 metrics_dict['EV'].append(ev_score)
                 metrics_dict['Training_Time'].append(training_time)
                 
-                # Log detailed metrics
-                logging.info(f"\nDay {day} Detailed Metrics:")
+                # Log metrics
+                logging.info(f"\nDay {day} Metrics:")
                 logging.info("-" * 40)
                 logging.info(f"RMSE: {rmse:.4f}")
                 logging.info(f"MAE: {mae:.4f}")
@@ -563,31 +701,34 @@ class AdvancedWeatherPredictor:
                 logging.info(f"Explained Variance Score: {ev_score:.4f}")
                 logging.info(f"Training Time: {training_time:.2f} seconds")
                 
+                # Store model and feature importance
+                models[f'day_{day}'] = model
+                feature_importances[f'day_{day}'] = dict(zip(self.feature_columns, model.feature_importances_))
+                
                 # Calculate prediction standard deviations
                 residuals = y_test - y_pred
                 std_dev = np.std(residuals)
                 prediction_stds[f'day_{day}'] = np.ones_like(y_pred) * std_dev
                 
-                # Get feature importance
-                feature_importances[f'day_{day}'] = model.feature_importances_
-                
                 # Plot feature importance
-                self.plot_feature_importance(
-                    model.feature_importances_,
-                    self.feature_columns,
-                    f'Feature Importance Day {day}'
-                )
+                plt.figure(figsize=(12, 6))
+                plt.title(f'Feature Importance for Day {day} Forecast')
+                importance = pd.Series(model.feature_importances_, index=self.feature_columns)
+                importance.sort_values(ascending=True).plot(kind='barh')
+                plt.tight_layout()
+                plt.savefig(os.path.join(self.run_dir, f'feature_importance_day_{day}.png'))
+                plt.close()
                 
                 # Plot prediction with confidence intervals
                 self.plot_prediction_intervals(df_test, y_pred, prediction_stds[f'day_{day}'], day)
             
-            # Save metrics
-            self._save_metrics(metrics_dict)
-            
             # Plot multi-day predictions
             self.plot_multi_day_predictions(df_test, predictions)
             
-            # Save all models and metadata
+            # Save metrics
+            self._save_metrics(metrics_dict)
+            
+            # Save models and metadata
             self.save_models(models, feature_importances, prediction_stds)
             
             return models, predictions, df_test
