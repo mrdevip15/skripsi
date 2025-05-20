@@ -523,40 +523,23 @@ class GBMWeatherPredictor:
             logging.info(f"{i+1}. {feature}: {importance:.4f}")
 
     def train_multi_day_models(self, multi_day_data):
-        """Train separate advanced models for each forecast day using ensemble approach"""
+        """Train separate GBM models for each forecast day"""
         results = {}
         
         # Define outlier threshold for rainfall
         RAINFALL_OUTLIER_THRESHOLD = 100  # mm
         
-        # More lightweight and efficient model configurations
-        base_models = {
-            'gbm': GradientBoostingRegressor(
-                n_estimators=200,
-                learning_rate=0.05,
-                max_depth=5,
-                min_samples_split=5,
-                min_samples_leaf=4,
-                subsample=0.8,
-                max_features='sqrt',
-                random_state=42
-            ),
-            'rf': RandomForestRegressor(
-                n_estimators=200,
-                max_depth=10,
-                min_samples_split=4,
-                min_samples_leaf=2,
-                max_features='sqrt',
-                bootstrap=True,
-                random_state=42,
-                n_jobs=N_JOBS
-            ),
-            'ridge': Ridge(
-                alpha=1.0, 
-                solver='auto',
-                random_state=42
-            )
-        }
+        # Define GBM model configuration
+        base_model = GradientBoostingRegressor(
+            n_estimators=200,
+            learning_rate=0.05,
+            max_depth=5,
+            min_samples_split=5,
+            min_samples_leaf=4,
+            subsample=0.8,
+            max_features='sqrt',
+            random_state=42
+        )
         
         # Process each forecast day
         for day, day_df in multi_day_data.items():
@@ -595,137 +578,113 @@ class GBMWeatherPredictor:
             cv_folds = 3 if day == 0 else 2
             
             # Initialize cross-validation
-            cv_scores = {model_name: [] for model_name in base_models.keys()}
-            cv_predictions = {model_name: np.zeros(len(X_test)) for model_name in base_models.keys()}
+            cv_predictions = np.zeros(len(X_test))
+            cv_scores = []
             
             # Show progress during training
-            logging.info(f"Training models with {cv_folds}-fold CV...")
-            model_names = list(base_models.keys())
+            logging.info(f"Training GBM model with {cv_folds}-fold CV...")
             
-            # Train each model
-            for model_name in model_names:
-                logging.info(f"Training {model_name} model...")
-                base_model = base_models[model_name]
+            # Train model with cross-validation
+            tscv = KFold(n_splits=cv_folds, shuffle=False)  # No shuffle for time series
+            fold_predictions = []
+            
+            # Process each fold
+            for fold, (train_idx, val_idx) in enumerate(tscv.split(X_train_scaled)):
+                logging.info(f"  Processing fold {fold+1}/{cv_folds}...")
+                start_time = time.time()
                 
-                # Use TimeSeriesSplit for temporal cross-validation
-                tscv = KFold(n_splits=cv_folds, shuffle=False)  # No shuffle for time series
-                fold_predictions = []
+                # Split data for this fold
+                X_fold_train = X_train_scaled[train_idx]
+                y_fold_train = y_train.iloc[train_idx]
+                X_fold_val = X_train_scaled[val_idx]
+                y_fold_val = y_train.iloc[val_idx]
                 
-                # Process each fold
-                for fold, (train_idx, val_idx) in enumerate(tscv.split(X_train_scaled)):
-                    logging.info(f"  Processing fold {fold+1}/{cv_folds}...")
-                    start_time = time.time()
+                try:
+                    # Train model
+                    model = clone(base_model)
+                    model.fit(X_fold_train, y_fold_train)
                     
-                    # Split data for this fold
-                    X_fold_train = X_train_scaled[train_idx]
-                    y_fold_train = y_train.iloc[train_idx]
-                    X_fold_val = X_train_scaled[val_idx]
-                    y_fold_val = y_train.iloc[val_idx]
+                    # Validate
+                    val_pred = model.predict(X_fold_val)
+                    r2 = r2_score(y_fold_val, val_pred)
+                    cv_scores.append(r2)
                     
-                    try:
-                        # Train model
-                        model = clone(base_model)
-                        model.fit(X_fold_train, y_fold_train)
-                        
-                        # Validate
-                        val_pred = model.predict(X_fold_val)
-                        r2 = r2_score(y_fold_val, val_pred)
-                        cv_scores[model_name].append(r2)
-                        
-                        # Predict on test set
-                        test_pred = model.predict(X_test_scaled)
-                        
-                        # Handle predictions
-                        # 1. Set negative values to 0
-                        test_pred = np.maximum(test_pred, 0)
-                        # 2. Set outlier predictions to 0
-                        outlier_mask = test_pred > RAINFALL_OUTLIER_THRESHOLD
-                        if np.any(outlier_mask):
-                            logging.warning(f"Found {np.sum(outlier_mask)} predictions > {RAINFALL_OUTLIER_THRESHOLD}mm in {model_name}, fold {fold+1}")
-                            test_pred[outlier_mask] = 0
-                        
-                        fold_predictions.append(test_pred)
-                        
-                        elapsed = time.time() - start_time
-                        logging.info(f"    Fold R²: {r2:.4f} (took {elapsed:.1f}s)")
-                        
-                    except Exception as e:
-                        logging.error(f"Error in fold {fold+1}: {str(e)}")
-                        if fold_predictions:
-                            fold_predictions.append(np.mean(fold_predictions, axis=0))
-                        else:
-                            fold_predictions.append(np.zeros(len(X_test_scaled)))
-                        cv_scores[model_name].append(0.0)
-                
-                # Average predictions across folds
-                if fold_predictions:
-                    cv_predictions[model_name] = np.mean(fold_predictions, axis=0)
-                    logging.info(f"{model_name} CV R² scores: {np.mean(cv_scores[model_name]):.4f} ± {np.std(cv_scores[model_name]):.4f}")
-                else:
-                    logging.warning(f"No valid predictions for {model_name}, using zeros")
-                    cv_predictions[model_name] = np.zeros(len(X_test))
-            
-            # Calculate ensemble weights based on CV performance
-            weights = self._calculate_ensemble_weights(cv_scores)
-            
-            # Create weighted ensemble prediction
-            ensemble_pred = np.zeros(len(X_test))
-            for model_name in base_models.keys():
-                if model_name in weights:
-                    model_pred = cv_predictions[model_name]
+                    # Predict on test set
+                    test_pred = model.predict(X_test_scaled)
+                    
                     # Handle predictions
                     # 1. Set negative values to 0
-                    model_pred = np.maximum(model_pred, 0)
+                    test_pred = np.maximum(test_pred, 0)
                     # 2. Set outlier predictions to 0
-                    model_pred[model_pred > RAINFALL_OUTLIER_THRESHOLD] = 0
-                    ensemble_pred += weights[model_name] * model_pred
+                    outlier_mask = test_pred > RAINFALL_OUTLIER_THRESHOLD
+                    if np.any(outlier_mask):
+                        logging.warning(f"Found {np.sum(outlier_mask)} predictions > {RAINFALL_OUTLIER_THRESHOLD}mm in fold {fold+1}")
+                        test_pred[outlier_mask] = 0
+                    
+                    fold_predictions.append(test_pred)
+                    
+                    elapsed = time.time() - start_time
+                    logging.info(f"    Fold R²: {r2:.4f} (took {elapsed:.1f}s)")
+                    
+                except Exception as e:
+                    logging.error(f"Error in fold {fold+1}: {str(e)}")
+                    if fold_predictions:
+                        fold_predictions.append(np.mean(fold_predictions, axis=0))
+                    else:
+                        fold_predictions.append(np.zeros(len(X_test_scaled)))
+                    cv_scores.append(0.0)
             
-            # Final check on ensemble predictions
-            ensemble_pred = np.maximum(ensemble_pred, 0)  # Ensure no negative values
-            outlier_mask = ensemble_pred > RAINFALL_OUTLIER_THRESHOLD
+            # Average predictions across folds
+            if fold_predictions:
+                final_predictions = np.mean(fold_predictions, axis=0)
+                logging.info(f"GBM CV R² scores: {np.mean(cv_scores):.4f} ± {np.std(cv_scores):.4f}")
+            else:
+                logging.warning(f"No valid predictions, using zeros")
+                final_predictions = np.zeros(len(X_test))
+            
+            # Final check on predictions
+            final_predictions = np.maximum(final_predictions, 0)  # Ensure no negative values
+            outlier_mask = final_predictions > RAINFALL_OUTLIER_THRESHOLD
             if np.any(outlier_mask):
-                logging.warning(f"Found {np.sum(outlier_mask)} ensemble predictions > {RAINFALL_OUTLIER_THRESHOLD}mm")
-                ensemble_pred[outlier_mask] = 0
+                logging.warning(f"Found {np.sum(outlier_mask)} final predictions > {RAINFALL_OUTLIER_THRESHOLD}mm")
+                final_predictions[outlier_mask] = 0
             
             # Calculate prediction standard deviation for uncertainty estimation
-            pred_std = np.std([cv_predictions[model_name] for model_name in base_models.keys() 
-                            if model_name in cv_predictions], axis=0)
+            pred_std = np.std(fold_predictions, axis=0)
             
             # Calculate final metrics
-            ensemble_metrics = {
-                'mse': mean_squared_error(y_test, ensemble_pred),
-                'rmse': np.sqrt(mean_squared_error(y_test, ensemble_pred)),
-                'mae': mean_absolute_error(y_test, ensemble_pred),
-                'r2': r2_score(y_test, ensemble_pred)
+            final_metrics = {
+                'mse': mean_squared_error(y_test, final_predictions),
+                'rmse': np.sqrt(mean_squared_error(y_test, final_predictions)),
+                'mae': mean_absolute_error(y_test, final_predictions),
+                'r2': r2_score(y_test, final_predictions)
             }
             
-            logging.info(f"Ensemble metrics - R²: {ensemble_metrics['r2']:.4f}, RMSE: {ensemble_metrics['rmse']:.4f}")
+            logging.info(f"Final metrics - R²: {final_metrics['r2']:.4f}, RMSE: {final_metrics['rmse']:.4f}")
             
             # Store results
             results[day] = {
                 'test_dates': test_dates,
                 'y_test': y_test,
-                'y_pred': ensemble_pred,
+                'y_pred': final_predictions,
                 'pred_std': pred_std,
-                'metrics': ensemble_metrics,
+                'metrics': final_metrics,
                 'features_used': features_to_use
             }
             
             # Save model data
             self.multi_day_models[day] = {
-                'model_name': 'ensemble',
-                'models': base_models,
-                'weights': weights,
+                'model': base_model,
                 'scaler': scaler,
                 'features_used': features_to_use,
                 'pred_std': pred_std
             }
             
             # Plot results
-            self._plot_prediction_with_error_bars(test_dates, y_test, ensemble_pred, 
-                                                ensemble_pred - 1.96 * pred_std,
-                                                ensemble_pred + 1.96 * pred_std,
-                                                day, ensemble_metrics)
+            self._plot_prediction_with_error_bars(test_dates, y_test, final_predictions, 
+                                                final_predictions - 1.96 * pred_std,
+                                                final_predictions + 1.96 * pred_std,
+                                                day, final_metrics)
             
         return results
 
@@ -903,26 +862,21 @@ class GBMWeatherPredictor:
             model_dir = os.path.join(self.models_dir, f'day_{day}')
             os.makedirs(model_dir, exist_ok=True)
             
-            # Save ensemble information
-            ensemble_path = os.path.join(model_dir, 'ensemble_info.pkl')
-            with open(ensemble_path, 'wb') as f:
-                pickle.dump({
-                    'weights': model_data['weights'],
-                    'features_used': model_data['features_used'],
-                    'pred_std': model_data['pred_std']
-                }, f)
-            
-            # Save individual models
-            for model_name, model in model_data['models'].items():
-                model_path = os.path.join(model_dir, f'{model_name}_model.pkl')
-                joblib.dump(model, model_path)
+            # Save model
+            model_path = os.path.join(model_dir, 'gbm_model.pkl')
+            joblib.dump(model_data['model'], model_path)
             
             # Save scaler
             scaler_path = os.path.join(model_dir, 'scaler.pkl')
             joblib.dump(model_data['scaler'], scaler_path)
             
-            logging.info(f"Saved ensemble model for {day}-day ahead prediction in {model_dir}")
+            # Save feature list
+            features_path = os.path.join(model_dir, 'features.pkl')
+            with open(features_path, 'wb') as f:
+                pickle.dump(model_data['features_used'], f)
             
+            logging.info(f"Saved GBM model for {day}-day ahead prediction in {model_dir}")
+
     def load_multi_day_models(self):
         """Load saved multi-day models from disk"""
         self.multi_day_models = {}
@@ -934,37 +888,37 @@ class GBMWeatherPredictor:
                 logging.warning(f"No saved model found for day {day}")
                 continue
                 
-            # Load ensemble information
-            ensemble_path = os.path.join(model_dir, 'ensemble_info.pkl')
-            if not os.path.exists(ensemble_path):
-                logging.warning(f"No ensemble info found for day {day}")
+            # Load model
+            model_path = os.path.join(model_dir, 'gbm_model.pkl')
+            if not os.path.exists(model_path):
+                logging.warning(f"No model found for day {day}")
                 continue
                 
-            with open(ensemble_path, 'rb') as f:
-                ensemble_info = pickle.load(f)
-            
-            # Initialize model data structure
-            self.multi_day_models[day] = {
-                'model_name': 'ensemble',
-                'models': {},
-                'weights': ensemble_info['weights'],
-                'features_used': ensemble_info['features_used'],
-                'pred_std': ensemble_info['pred_std'],
-                'scaler': None
-            }
+            model = joblib.load(model_path)
             
             # Load scaler
             scaler_path = os.path.join(model_dir, 'scaler.pkl')
             if os.path.exists(scaler_path):
-                self.multi_day_models[day]['scaler'] = joblib.load(scaler_path)
+                scaler = joblib.load(scaler_path)
+            else:
+                scaler = StandardScaler()
             
-            # Load individual models
-            for model_name in ['gbm', 'rf', 'ridge']:
-                model_path = os.path.join(model_dir, f'{model_name}_model.pkl')
-                if os.path.exists(model_path):
-                    self.multi_day_models[day]['models'][model_name] = joblib.load(model_path)
+            # Load feature list
+            features_path = os.path.join(model_dir, 'features.pkl')
+            if os.path.exists(features_path):
+                with open(features_path, 'rb') as f:
+                    features_used = pickle.load(f)
+            else:
+                features_used = self.feature_columns
             
-            logging.info(f"Loaded ensemble model for {day}-day ahead prediction")
+            # Store model data
+            self.multi_day_models[day] = {
+                'model': model,
+                'scaler': scaler,
+                'features_used': features_used
+            }
+            
+            logging.info(f"Loaded GBM model for {day}-day ahead prediction")
             
         return len(self.multi_day_models) > 0
 
