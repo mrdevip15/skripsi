@@ -422,7 +422,7 @@ class GBMWeatherPredictor:
                 f.write(f"{key}: {value}\n")
     
     def prepare_multi_day_dataset(self, df):
-        """Prepare dataset for multi-day forecasting using past 5 days data"""
+        """Prepare dataset for multi-day forecasting"""
         multi_day_data = {}
         
         # Create a copy of the dataframe to avoid modifying the original
@@ -438,106 +438,42 @@ class GBMWeatherPredictor:
         
         # Log initial state
         logging.info(f"\nInitial data shape: {df_copy.shape}")
-        logging.info(f"Initial NaN counts:\n{df_copy.isna().sum()}")
         
-        # Create features from past 5 days for each feature
+        # Handle missing values in base features first
         for feature in self.feature_columns:
-            for i in range(1, 6):  # Past 5 days
-                df_copy[f'{feature}_past_{i}d'] = df_copy[feature].shift(i)
-        
-        # Create specialized weekly patterns
-        # Weekly rainfall patterns (same day of week)
-        for i in range(1, 5):  # Past 4 weeks of same day
-            df_copy[f'RR_SameDay_{i}wk'] = df_copy[self.target_column].shift(i*7)
-        
-        # Add rate of change features
-        df_copy['RR_1d_change'] = df_copy[self.target_column].diff()
-        df_copy['RR_3d_change'] = df_copy[self.target_column] - df_copy[self.target_column].shift(3)
-        df_copy['RR_7d_change'] = df_copy[self.target_column] - df_copy[self.target_column].shift(7)
-        
-        # Add volatility indicators
-        df_copy['RR_volatility_3d'] = df_copy[self.target_column].rolling(window=3).std()
-        df_copy['RR_volatility_7d'] = df_copy[self.target_column].rolling(window=7).std()
-        
-        # Add rainfall seasonality features
-        month_avg = df_copy.groupby(df_copy['Tanggal'].dt.month)[self.target_column].transform('mean')
-        df_copy['RR_vs_MonthAvg'] = df_copy[self.target_column] / month_avg
-        
-        # Add cumulative rain features
-        df_copy['RR_cum_3d'] = df_copy[self.target_column].rolling(window=3).sum()
-        df_copy['RR_cum_7d'] = df_copy[self.target_column].rolling(window=7).sum()
-        
-        # Weather pattern indicators
-        # Is it currently in a rainy pattern?
-        df_copy['RainPattern_3d'] = ((df_copy[self.target_column] > 0) & 
-                                   (df_copy[self.target_column].shift(1) > 0) & 
-                                   (df_copy[self.target_column].shift(2) > 0)).astype(int)
-        # Is it currently in a dry pattern?
-        df_copy['DryPattern_3d'] = ((df_copy[self.target_column] == 0) & 
-                                  (df_copy[self.target_column].shift(1) == 0) & 
-                                  (df_copy[self.target_column].shift(2) == 0)).astype(int)
-        
-        # Create more complex interaction features
-        df_copy['RH_Tavg_RR_Lag1'] = df_copy['RH_avg'] * df_copy['Tavg'] * df_copy[f'RR_Lag_1']
-        df_copy['Wind_RH_Lag1'] = df_copy['ff_avg'] * df_copy['RH_avg'] * df_copy[f'RR_Lag_1']
-        
-        # Log state after creating features
-        logging.info(f"\nAfter adding all features - shape: {df_copy.shape}")
-        logging.info(f"NaN counts after features:\n{df_copy.isna().sum()}")
-        
-        # Update feature columns to include all new features
-        historical_features = []
-        for feature in self.feature_columns:
-            historical_features.extend([f'{feature}_past_{i}d' for i in range(1, 6)])
-            
-        # Add new feature names
-        new_features = [
-            'RR_SameDay_1wk', 'RR_SameDay_2wk', 'RR_SameDay_3wk', 'RR_SameDay_4wk',
-            'RR_1d_change', 'RR_3d_change', 'RR_7d_change',
-            'RR_volatility_3d', 'RR_volatility_7d',
-            'RR_vs_MonthAvg', 'RR_cum_3d', 'RR_cum_7d',
-            'RainPattern_3d', 'DryPattern_3d',
-            'RH_Tavg_RR_Lag1', 'Wind_RH_Lag1'
-        ]
-        
-        # Combine current, historical, and new features
-        self.extended_features = self.feature_columns + historical_features + new_features
-        
-        # Handle missing values in all features
-        for feature in self.extended_features:
-            if feature in df_copy.columns:
-                # First try forward fill
+            if df_copy[feature].isna().any():
+                # Use forward fill first
                 df_copy[feature] = df_copy[feature].fillna(method='ffill')
-                # Then backward fill any remaining NaNs
+                # Then backward fill
                 df_copy[feature] = df_copy[feature].fillna(method='bfill')
-                # Finally, if any NaNs remain, fill with column median
-                if df_copy[feature].isna().any():
-                    df_copy[feature] = df_copy[feature].fillna(df_copy[feature].median())
+                # If any NaNs remain, use median
+                df_copy[feature] = df_copy[feature].fillna(df_copy[feature].median())
         
-        # Log state after handling missing values
-        logging.info(f"\nAfter handling missing values - shape: {df_copy.shape}")
-        logging.info(f"NaN counts after handling missing values:\n{df_copy.isna().sum()}")
-        
-        # First include today (day 0) - no need to shift the target
-        day_df = df_copy[['Tanggal'] + self.extended_features].copy()
+        # For day 0 (today)
+        day_df = df_copy[['Tanggal'] + self.feature_columns].copy()
         day_df[f'Future_RR_0d'] = df_copy[self.target_column]
         day_df = day_df.dropna()  # Remove any remaining NaN rows
         multi_day_data[0] = day_df.copy()
         
         # For each forecast day (1 to forecast_days)
         for day in range(1, self.forecast_days + 1):
+            logging.info(f"\nPreparing dataset for {day}-day ahead prediction")
+            
+            # Create dataset with base features
+            day_df = df_copy[['Tanggal'] + self.feature_columns].copy()
+            
             # Shift target variable to create future target
-            future_target = df_copy[self.target_column].shift(-day)
+            # Note: shift(-day) means we're looking 'day' days into the future
+            day_df[f'Future_RR_{day}d'] = df_copy[self.target_column].shift(-day)
             
-            # Create dataset with current features, historical features, date column, and future target
-            day_df = df_copy[['Tanggal'] + self.extended_features].copy()
-            day_df[f'Future_RR_{day}d'] = future_target
+            # Log NaN counts before dropping
+            nan_counts = day_df.isna().sum()
+            logging.info(f"NaN counts before dropping:\n{nan_counts}")
             
-            # Drop rows with NaN
-            day_df = day_df.dropna()
+            # Drop rows with NaN in target (these will be the last 'day' rows)
+            day_df = day_df.dropna(subset=[f'Future_RR_{day}d'])
             
             # Add seasonal stratification for better model training
-            # Create season indicator for model training
             day_df['Season_Indicator'] = day_df['Tanggal'].dt.month.apply(
                 lambda m: 1 if m in [12, 1, 2] else  # Winter
                          2 if m in [3, 4, 5] else    # Spring
@@ -545,14 +481,16 @@ class GBMWeatherPredictor:
                          4                           # Fall
             )
             
-            # Log info about the dataset for this day
-            logging.info(f"\nDay {day} dataset - shape: {len(day_df)}")
-            logging.info(f"Number of NaN values in day {day} dataset: {day_df.isna().sum().sum()}")
+            # Log dataset info
+            logging.info(f"Day {day} dataset shape after processing: {day_df.shape}")
+            logging.info(f"Date range: {day_df['Tanggal'].min()} to {day_df['Tanggal'].max()}")
+            
+            # Verify no NaN values remain
+            final_nan_counts = day_df.isna().sum()
+            if final_nan_counts.sum() > 0:
+                logging.warning(f"Warning: NaN values found in final dataset:\n{final_nan_counts}")
             
             multi_day_data[day] = day_df
-            
-            # Log final dataset size for this day
-            logging.info(f"Final size of day {day} dataset: {len(multi_day_data[day])}")
         
         return multi_day_data
 
@@ -588,12 +526,15 @@ class GBMWeatherPredictor:
         """Train separate advanced models for each forecast day using ensemble approach"""
         results = {}
         
+        # Define outlier threshold for rainfall
+        RAINFALL_OUTLIER_THRESHOLD = 100  # mm
+        
         # More lightweight and efficient model configurations
         base_models = {
             'gbm': GradientBoostingRegressor(
-                n_estimators=200,  # Reduced from 300
+                n_estimators=200,
                 learning_rate=0.05,
-                max_depth=5,  # Reduced from 6
+                max_depth=5,
                 min_samples_split=5,
                 min_samples_leaf=4,
                 subsample=0.8,
@@ -601,36 +542,34 @@ class GBMWeatherPredictor:
                 random_state=42
             ),
             'rf': RandomForestRegressor(
-                n_estimators=200,  # Reduced from 300
-                max_depth=10,  # Reduced from 12
+                n_estimators=200,
+                max_depth=10,
                 min_samples_split=4,
                 min_samples_leaf=2,
                 max_features='sqrt',
                 bootstrap=True,
                 random_state=42,
-                n_jobs=N_JOBS  # Controlled parallel processing
+                n_jobs=N_JOBS
             ),
             'ridge': Ridge(
                 alpha=1.0, 
                 solver='auto',
                 random_state=42
             )
-            # Removed MLP as it's slower and less stable
         }
         
         # Process each forecast day
         for day, day_df in multi_day_data.items():
             logging.info(f"\n--- Training models for {day}-day ahead prediction ---")
             
-            # Use fewer features for faster training
-            features_to_use = self._select_features_for_horizon(day, self.extended_features)
-            if len(features_to_use) > 100:  # If too many features, select subset
-                features_to_use = self._select_most_important_features(day_df, features_to_use, 
-                                                                     f'Future_RR_{day}d', 100)
-            
+            # Use base features for all predictions
+            features_to_use = self.feature_columns
             logging.info(f"Using {len(features_to_use)} features for day {day} prediction")
             
-            # Split data
+            # Sort by date to ensure proper temporal split
+            day_df = day_df.sort_values('Tanggal')
+            
+            # Split data while preserving temporal order
             train_size = int(0.8 * len(day_df))
             
             # Keep dates in a separate variable
@@ -643,13 +582,17 @@ class GBMWeatherPredictor:
             X_test = day_df.iloc[train_size:][features_to_use]
             y_test = day_df.iloc[train_size:][f'Future_RR_{day}d']
             
+            # Log data splits info
+            logging.info(f"\nTraining data: {len(X_train)} samples from {train_dates.min()} to {train_dates.max()}")
+            logging.info(f"Testing data: {len(X_test)} samples from {test_dates.min()} to {test_dates.max()}")
+            
             # Scale features
             scaler = StandardScaler()
             X_train_scaled = scaler.fit_transform(X_train)
             X_test_scaled = scaler.transform(X_test)
             
             # Use fewer CV folds for faster training
-            cv_folds = 3 if day == 0 else 2  # Reduced from 5
+            cv_folds = 3 if day == 0 else 2
             
             # Initialize cross-validation
             cv_scores = {model_name: [] for model_name in base_models.keys()}
@@ -659,15 +602,17 @@ class GBMWeatherPredictor:
             logging.info(f"Training models with {cv_folds}-fold CV...")
             model_names = list(base_models.keys())
             
-            # Train each model with timeout protection
+            # Train each model
             for model_name in model_names:
                 logging.info(f"Training {model_name} model...")
                 base_model = base_models[model_name]
-                kf = KFold(n_splits=cv_folds, shuffle=True, random_state=42)
+                
+                # Use TimeSeriesSplit for temporal cross-validation
+                tscv = KFold(n_splits=cv_folds, shuffle=False)  # No shuffle for time series
                 fold_predictions = []
                 
-                # Process each fold with progress tracking
-                for fold, (train_idx, val_idx) in enumerate(kf.split(X_train_scaled)):
+                # Process each fold
+                for fold, (train_idx, val_idx) in enumerate(tscv.split(X_train_scaled)):
                     logging.info(f"  Processing fold {fold+1}/{cv_folds}...")
                     start_time = time.time()
                     
@@ -678,7 +623,7 @@ class GBMWeatherPredictor:
                     y_fold_val = y_train.iloc[val_idx]
                     
                     try:
-                        # Clone and train model with timeout protection
+                        # Train model
                         model = clone(base_model)
                         model.fit(X_fold_train, y_fold_train)
                         
@@ -688,14 +633,24 @@ class GBMWeatherPredictor:
                         cv_scores[model_name].append(r2)
                         
                         # Predict on test set
-                        fold_predictions.append(model.predict(X_test_scaled))
+                        test_pred = model.predict(X_test_scaled)
+                        
+                        # Handle predictions
+                        # 1. Set negative values to 0
+                        test_pred = np.maximum(test_pred, 0)
+                        # 2. Set outlier predictions to 0
+                        outlier_mask = test_pred > RAINFALL_OUTLIER_THRESHOLD
+                        if np.any(outlier_mask):
+                            logging.warning(f"Found {np.sum(outlier_mask)} predictions > {RAINFALL_OUTLIER_THRESHOLD}mm in {model_name}, fold {fold+1}")
+                            test_pred[outlier_mask] = 0
+                        
+                        fold_predictions.append(test_pred)
                         
                         elapsed = time.time() - start_time
                         logging.info(f"    Fold R²: {r2:.4f} (took {elapsed:.1f}s)")
                         
                     except Exception as e:
                         logging.error(f"Error in fold {fold+1}: {str(e)}")
-                        # Use average of previous folds or 0 if no previous folds
                         if fold_predictions:
                             fold_predictions.append(np.mean(fold_predictions, axis=0))
                         else:
@@ -716,8 +671,21 @@ class GBMWeatherPredictor:
             # Create weighted ensemble prediction
             ensemble_pred = np.zeros(len(X_test))
             for model_name in base_models.keys():
-                if model_name in weights:  # Check if model has a weight
-                    ensemble_pred += weights[model_name] * cv_predictions[model_name]
+                if model_name in weights:
+                    model_pred = cv_predictions[model_name]
+                    # Handle predictions
+                    # 1. Set negative values to 0
+                    model_pred = np.maximum(model_pred, 0)
+                    # 2. Set outlier predictions to 0
+                    model_pred[model_pred > RAINFALL_OUTLIER_THRESHOLD] = 0
+                    ensemble_pred += weights[model_name] * model_pred
+            
+            # Final check on ensemble predictions
+            ensemble_pred = np.maximum(ensemble_pred, 0)  # Ensure no negative values
+            outlier_mask = ensemble_pred > RAINFALL_OUTLIER_THRESHOLD
+            if np.any(outlier_mask):
+                logging.warning(f"Found {np.sum(outlier_mask)} ensemble predictions > {RAINFALL_OUTLIER_THRESHOLD}mm")
+                ensemble_pred[outlier_mask] = 0
             
             # Calculate prediction standard deviation for uncertainty estimation
             pred_std = np.std([cv_predictions[model_name] for model_name in base_models.keys() 
@@ -763,30 +731,8 @@ class GBMWeatherPredictor:
 
     def _select_features_for_horizon(self, day, all_features):
         """Select appropriate features based on forecast horizon"""
-        if day == 0:  # Today's prediction
-            return all_features
-        
-        # Base features that are always included
-        base_features = [f for f in self.feature_columns]
-        
-        # Features specific to short-term prediction (1-2 days)
-        short_term_patterns = ['_past_1d', '_past_2d', 'Lag_1', 'Lag_2', 'Rolling_Mean_3d',
-                             'RainPattern', 'Temp_', 'RH_', 'Rain_Streak']
-        
-        # Features specific to medium-term prediction (3-5 days)
-        medium_term_patterns = ['Month', 'Season', 'DayOfYear', 'Rolling_Mean_7d',
-                              'Rolling_Mean_14d', 'SameDay', 'cum_7d']
-        
-        if day <= 2:
-            # Short-term prediction
-            specific_features = [f for f in all_features if 
-                               any(pattern in f for pattern in short_term_patterns)]
-        else:
-            # Medium-term prediction
-            specific_features = [f for f in all_features if 
-                               any(pattern in f for pattern in medium_term_patterns)]
-        
-        return list(set(base_features + specific_features))
+        # Use only base features for all predictions (0 to 5 days ahead)
+        return self.feature_columns
 
     def _calculate_ensemble_weights(self, cv_scores):
         """Calculate weights for ensemble based on cross-validation performance"""
