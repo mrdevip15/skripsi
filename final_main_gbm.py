@@ -50,19 +50,29 @@ class GBMWeatherPredictor:
     def __init__(self):
         self.model = None
         self.multi_day_models = {}  # For storing models for different forecast horizons
-        # Reduced set of most important features
+        self.multi_target_models = {}  # For storing models for different target variables
+        
+        # Define multiple target variables
+        self.target_columns = ['RR', 'ss', 'Tavg', 'ddd_car', 'ff_avg']
+        self.target_names = {
+            'RR': 'Rainfall (mm)',
+            'ss': 'Sunshine Duration (hours)',
+            'Tavg': 'Average Temperature (°C)',
+            'ddd_car': 'Wind Direction',
+            'ff_avg': 'Wind Speed (m/s)'
+        }
+        
+        # Reduced set of most important features (excluding target variables from features)
         self.feature_columns = [
-            # Basic weather measurements (most important direct measurements)
-            'Tavg',      # Average temperature
-            'RH_avg',    # Average relative humidity
-            'ff_avg',    # Average wind speed
+            # Basic weather measurements (excluding targets)
+            'Tn', 'Tx', 'RH_avg',    # Temperature min/max, humidity
             
             # Essential temporal features (to capture seasonality)
             'Month_sin', 'Month_cos',    # Cyclical month encoding
             
             # Key derived features
-            'Temp_Range',    # Temperature range (important for rainfall)
-            'Dew_Point',     # Dew point (crucial for precipitation)
+            'Temp_Range',    # Temperature range (important for weather prediction)
+            'Dew_Point',     # Dew point (crucial for various weather variables)
             
             # Recent history features (most recent are most important)
             'RR_Rolling_Mean_3d',    # 3-day rainfall moving average
@@ -78,8 +88,9 @@ class GBMWeatherPredictor:
             'Rain_Streak',    # Consecutive days with rain
             'Dry_Streak'      # Consecutive days without rain
         ]
-        self.target_column = 'RR'
+        
         self.scaler = StandardScaler()
+        self.target_scalers = {}  # Separate scalers for each target
         self.forecast_days = 5  # Number of days to forecast ahead
         self.cv_folds = 5  # Number of cross-validation folds
         
@@ -92,21 +103,30 @@ class GBMWeatherPredictor:
         self.run_dir = os.path.join(self.plots_dir, self.timestamp)
         os.makedirs(self.run_dir, exist_ok=True)
 
-    def plot_outliers(self, df, save_path, title="Rainfall Distribution"):
-        """Plot rainfall distribution to visualize outliers"""
-        plt.figure(figsize=(10, 6))
-        plt.hist(df[self.target_column].dropna(), bins=50)
-        plt.axvline(x=100, color='r', linestyle='--', label='Outlier Threshold')
-        plt.title(title)
-        plt.xlabel('Rainfall (mm)')
-        plt.ylabel('Frequency')
-        plt.legend()
+    def plot_target_distributions(self, df, save_path, title_prefix="Target Variable Distribution"):
+        """Plot distributions of all target variables"""
+        n_targets = len(self.target_columns)
+        n_cols = 3
+        n_rows = (n_targets + n_cols - 1) // n_cols
+        
+        plt.figure(figsize=(15, 4*n_rows))
+        for i, target in enumerate(self.target_columns, 1):
+            plt.subplot(n_rows, n_cols, i)
+            if target in df.columns:
+                plt.hist(df[target].dropna(), bins=50, alpha=0.7)
+                plt.title(f'{self.target_names[target]}')
+                plt.xlabel(target)
+                plt.ylabel('Frequency')
         plt.tight_layout()
-        plt.savefig(os.path.join(save_path, f"{title.lower().replace(' ', '_')}.png"))
+        plt.savefig(os.path.join(save_path, f"{title_prefix.lower().replace(' ', '_')}.png"))
         plt.close()
 
+    def plot_rainfall_distribution(self, df, save_path, title="Rainfall Distribution"):
+        """Plot rainfall distribution - updated to use new method"""
+        self.plot_target_distributions(df, save_path, title)
+
     def preprocess_data(self, df):
-        """Enhanced preprocessing with outlier removal and better error handling"""
+        """Enhanced preprocessing with interpolation for special values"""
         try:
             df = df.copy()
             
@@ -117,32 +137,74 @@ class GBMWeatherPredictor:
             # Convert date
             df['Tanggal'] = pd.to_datetime(df['Tanggal'], format='%d-%m-%Y')
             
-            # Replace 8888 with NaN in RR column
-            df['RR'] = df['RR'].replace(8888, np.nan)
+            # Handle special values (8888 and 9999) with enhanced interpolation
+            special_values = [8888, 9999]
+            
+            # Identify all columns with special values
+            columns_to_interpolate = []
+            for col in df.columns:
+                if df[col].dtype in [np.int64, np.float64]:
+                    if any(df[col].isin(special_values)):
+                        columns_to_interpolate.append(col)
+            
+            if columns_to_interpolate:
+                print(f"\nFound special values (8888, 9999) in columns: {', '.join(columns_to_interpolate)}")
+                
+                # Sort by date for proper interpolation
+                df = df.sort_values('Tanggal')
+                
+                # Process each column with special values using enhanced interpolation
+                for col in columns_to_interpolate:
+                    # Count special values before replacement
+                    special_count = sum(df[col].isin(special_values))
+                    
+                    if special_count > 0:
+                        print(f"Column '{col}': {special_count} special values found")
+                        
+                        # Create a mask for special values
+                        mask = df[col].isin(special_values)
+                        
+                        # Store original values for reference
+                        original_special_positions = df.index[mask].tolist()
+                        
+                        # Temporarily set special values to NaN for interpolation
+                        df.loc[mask, col] = np.nan
+                        
+                        # Step 1: Forward fill (propagate last valid observation forward)
+                        df[col] = df[col].fillna(method='ffill')
+                        filled_by_ffill = df.loc[original_special_positions, col].notna().sum()
+                        
+                        # Step 2: Backward fill (propagate next valid observation backward)
+                        df[col] = df[col].fillna(method='bfill')
+                        filled_by_bfill = df.loc[original_special_positions, col].notna().sum() - filled_by_ffill
+                        
+                        # Step 3: For any remaining NaN values, use 5-day rolling mean
+                        remaining_nan_mask = df[col].isna()
+                        if remaining_nan_mask.any():
+                            # Calculate 5-day rolling mean (centered window when possible)
+                            rolling_mean_5d = df[col].rolling(window=5, center=True, min_periods=1).mean()
+                            
+                            # Fill remaining NaN values with 5-day rolling mean
+                            df.loc[remaining_nan_mask, col] = rolling_mean_5d.loc[remaining_nan_mask]
+                            filled_by_rolling = remaining_nan_mask.sum()
+                        else:
+                            filled_by_rolling = 0
+                        
+                        # Final fallback: if any NaNs still remain, use column median
+                        final_nan_mask = df[col].isna()
+                        if final_nan_mask.any():
+                            column_median = df[col].median()
+                            df.loc[final_nan_mask, col] = column_median
+                            filled_by_median = final_nan_mask.sum()
+                            print(f"  - Used median ({column_median:.2f}) for {filled_by_median} remaining values")
+                        
+                        print(f"  - Forward fill: {filled_by_ffill} values")
+                        print(f"  - Backward fill: {filled_by_bfill} values") 
+                        print(f"  - 5-day rolling mean: {filled_by_rolling} values")
+                        print(f"  - Successfully interpolated all {special_count} special values in '{col}'")
             
             # Plot original distribution
-            self.plot_outliers(df, self.run_dir, "Original Rainfall Distribution")
-            
-            # Remove outliers (RR > 100)
-            outliers = df[df['RR'] > 100].copy()
-            df = df[df['RR'] <= 100].copy()
-            
-            # Print outlier information
-            if len(outliers) > 0:
-                print(f"\nOutliers removed: {len(outliers)} rows")
-                print(f"Dates with extreme rainfall (>100mm):")
-                for _, row in outliers.iterrows():
-                    print(f"Date: {row['Tanggal']}, Rainfall: {row['RR']}mm")
-            
-            # Plot distribution after outlier removal
-            self.plot_outliers(df, self.run_dir, "Rainfall Distribution After Outlier Removal")
-            
-            # Handle missing values
-            # For each column, impute missing values with the median of that column
-            for col in df.columns:
-                if df[col].dtype != 'datetime64[ns]' and df[col].isna().any():
-                    median_val = df[col].median()
-                    df[col] = df[col].fillna(median_val)
+            self.plot_target_distributions(df, self.run_dir, "Original Target Variables Distribution")
             
             # Convert wind direction to numeric
             wind_dir_map = {
@@ -152,14 +214,59 @@ class GBMWeatherPredictor:
                 'W': 270, 'WNW': 292.5, 'NW': 315, 'NNW': 337.5
             }
             
-            # Handle wind direction in ddd_car column
+            # Handle wind direction in ddd_car column - with better error handling
             if 'ddd_car' in df.columns:
-                df['ddd_car_deg'] = df['ddd_car'].apply(
-                    lambda x: wind_dir_map.get(x.strip(), np.nan) if isinstance(x, str) else np.nan
+                # First clean up the strings (remove trailing spaces)
+                if df['ddd_car'].dtype == object:  # Check if it's a string column
+                    df['ddd_car'] = df['ddd_car'].astype(str).str.strip()
+                    
+                # Convert to degrees using mapping, but keep original for prediction
+                df['ddd_car_numeric'] = df['ddd_car'].apply(
+                    lambda x: wind_dir_map.get(str(x).strip(), np.nan) if pd.notna(x) else np.nan
                 )
-                # Fill NaN values in ddd_x with values from ddd_car_deg
-                df['ddd_x'] = pd.to_numeric(df['ddd_x'], errors='coerce')
-                df.loc[df['ddd_x'].isna(), 'ddd_x'] = df.loc[df['ddd_x'].isna(), 'ddd_car_deg']
+                
+                # For prediction purposes, we'll use the numeric version
+                # But we need to handle the original ddd_car values properly
+                # Convert ddd_car to numeric if it contains degree values
+                df['ddd_car'] = pd.to_numeric(df['ddd_car'], errors='coerce')
+                # Fill NaN values with the mapped numeric values
+                df['ddd_car'] = df['ddd_car'].fillna(df['ddd_car_numeric'])
+                
+                # Handle ddd_x column - ensure it's numeric first
+                if 'ddd_x' in df.columns:
+                    # Try to convert to numeric, coercing errors to NaN
+                    df['ddd_x'] = pd.to_numeric(df['ddd_x'], errors='coerce')
+                    # Fill NaN values in ddd_x with values from ddd_car
+                    df.loc[df['ddd_x'].isna(), 'ddd_x'] = df.loc[df['ddd_x'].isna(), 'ddd_car']
+            
+            # Handle missing values in other columns (excluding special values already handled)
+            for col in df.columns:
+                if df[col].dtype != 'datetime64[ns]' and df[col].isna().any():
+                    # Handle numeric columns
+                    if pd.api.types.is_numeric_dtype(df[col]):
+                        # Use similar interpolation strategy as for special values
+                        print(f"Handling missing values in column '{col}': {df[col].isna().sum()} NaN values")
+                        
+                        # Forward fill
+                        df[col] = df[col].fillna(method='ffill')
+                        # Backward fill
+                        df[col] = df[col].fillna(method='bfill')
+                        
+                        # If any NaNs remain, use 5-day rolling mean
+                        if df[col].isna().any():
+                            rolling_mean_5d = df[col].rolling(window=5, center=True, min_periods=1).mean()
+                            df[col] = df[col].fillna(rolling_mean_5d)
+                        
+                        # Final fallback: use median
+                        if df[col].isna().any():
+                            median_val = df[col].median()
+                            df[col] = df[col].fillna(median_val)
+                            
+                    # Handle string/object columns
+                    elif df[col].dtype == object:
+                        # For string columns, use mode (most common value)
+                        mode_val = df[col].mode()[0] if not df[col].mode().empty else "Unknown"
+                        df[col] = df[col].fillna(mode_val)
             
             # Add basic features that won't introduce NaN values
             df['Month'] = df['Tanggal'].dt.month
@@ -167,6 +274,10 @@ class GBMWeatherPredictor:
             df['DayOfWeek'] = df['Tanggal'].dt.dayofweek
             df['DayOfYear'] = df['Tanggal'].dt.dayofyear
             df['Season'] = (df['Month'] % 12 + 3) // 3
+            
+            # Make sure Tx and Tn are numeric before calculating Temp_Range
+            df['Tx'] = pd.to_numeric(df['Tx'], errors='coerce')
+            df['Tn'] = pd.to_numeric(df['Tn'], errors='coerce')
             df['Temp_Range'] = df['Tx'] - df['Tn']
             
             # Add cyclical encoding of time features (better for capturing seasonality)
@@ -177,94 +288,162 @@ class GBMWeatherPredictor:
             df['DayOfYear_sin'] = np.sin(2 * np.pi * df['DayOfYear']/365.25)
             df['DayOfYear_cos'] = np.cos(2 * np.pi * df['DayOfYear']/365.25)
             
+            # Make sure all target variables are numeric before calculations
+            for target in self.target_columns:
+                if target in df.columns:
+                    df[target] = pd.to_numeric(df[target], errors='coerce')
+            
+            # Make sure other key variables are numeric
+            df['RH_avg'] = pd.to_numeric(df['RH_avg'], errors='coerce')
+            
             # Add interaction terms known to be important in meteorology
-            df['Temp_Humidity'] = df['Tavg'] * df['RH_avg']
+            # Use Tx and Tn instead of Tavg for interactions since Tavg is now a target
+            df['Temp_Humidity'] = ((df['Tx'] + df['Tn']) / 2) * df['RH_avg']  # Using average of Tx and Tn
             df['Temp_Range_RH'] = df['Temp_Range'] * df['RH_avg']
             
             # Adding weather physics-based features
-            # Simplified dew point calculation
-            df['Dew_Point'] = df['Tavg'] - ((100 - df['RH_avg']) / 5)
+            # Simplified dew point calculation using Tx and Tn average
+            temp_avg_calc = (df['Tx'] + df['Tn']) / 2
+            df['Dew_Point'] = temp_avg_calc - ((100 - df['RH_avg']) / 5)
             
             # Simplified heat index
-            df['Heat_Index'] = df['Tavg'] + 0.05 * df['RH_avg']
+            df['Heat_Index'] = temp_avg_calc + 0.05 * df['RH_avg']
             
-            # Add rolling features with careful handling of NaN values
+            # Add rolling features for all target variables with careful handling of NaN values
             windows = [3, 7, 14]  # Adding 2-week window
             for window in windows:
-                # Rolling mean with min_periods=1 to avoid NaN
-                df[f'RR_Rolling_Mean_{window}d'] = df[self.target_column].rolling(window=window, min_periods=1).mean()
-                df[f'RR_Rolling_Std_{window}d'] = df[self.target_column].rolling(window=window, min_periods=1).std()
-                df[f'Tavg_Rolling_Mean_{window}d'] = df['Tavg'].rolling(window=window, min_periods=1).mean()
+                for target in self.target_columns:
+                    if target in df.columns:
+                        # Rolling mean with min_periods=1 to avoid NaN
+                        df[f'{target}_Rolling_Mean_{window}d'] = df[target].rolling(window=window, min_periods=1).mean()
+                        df[f'{target}_Rolling_Std_{window}d'] = df[target].rolling(window=window, min_periods=1).std()
+                
+                # Also add rolling features for other important variables
                 df[f'RH_Rolling_Mean_{window}d'] = df['RH_avg'].rolling(window=window, min_periods=1).mean()
             
-            # Add lag features (more lags with increasing significance for rainfall prediction)
+            # Add lag features for all target variables (more lags with increasing significance)
             for lag in [1, 2, 3, 5, 7, 14]:
-                df[f'RR_Lag_{lag}'] = df[self.target_column].shift(lag)
-                df[f'Tavg_Lag_{lag}'] = df['Tavg'].shift(lag)
-                # Binary rain indicator (was it raining on that day?)
-                df[f'Rain_Binary_Lag_{lag}'] = (df[self.target_column].shift(lag) > 0).astype(int)
+                for target in self.target_columns:
+                    if target in df.columns:
+                        df[f'{target}_Lag_{lag}'] = df[target].shift(lag)
+                        # Binary indicator for certain variables
+                        if target == 'RR':
+                            df[f'Rain_Binary_Lag_{lag}'] = (df[target].shift(lag) > 0).astype(int)
+                        elif target == 'ss':
+                            df[f'Sunny_Binary_Lag_{lag}'] = (df[target].shift(lag) > 5).astype(int)  # Sunny if >5 hours
             
             # Add rainfall streak features (consecutive days with/without rain)
-            df['RainToday'] = (df[self.target_column] > 0).astype(int)
-            # Initialize streak counters
-            df['Rain_Streak'] = 0
-            df['Dry_Streak'] = 0
-            
-            # Calculate rain and dry streaks
-            streak = 0
-            for i in range(len(df)):
-                if i == 0:
-                    if df.iloc[i]['RainToday'] == 1:
-                        streak = 1
-                        df.loc[df.index[i], 'Rain_Streak'] = streak
-                    else:
-                        streak = 1
-                        df.loc[df.index[i], 'Dry_Streak'] = streak
-                else:
-                    if df.iloc[i]['RainToday'] == 1:
-                        if df.iloc[i-1]['RainToday'] == 1:
-                            streak += 1
+            if 'RR' in df.columns:
+                df['RainToday'] = (df['RR'] > 0).astype(int)
+                # Initialize streak counters
+                df['Rain_Streak'] = 0
+                df['Dry_Streak'] = 0
+                
+                # Calculate rain and dry streaks
+                streak = 0
+                for i in range(len(df)):
+                    if i == 0:
+                        if df.iloc[i]['RainToday'] == 1:
+                            streak = 1
+                            df.loc[df.index[i], 'Rain_Streak'] = streak
                         else:
                             streak = 1
-                        df.loc[df.index[i], 'Rain_Streak'] = streak
+                            df.loc[df.index[i], 'Dry_Streak'] = streak
                     else:
-                        if df.iloc[i-1]['RainToday'] == 0:
-                            streak += 1
+                        if df.iloc[i]['RainToday'] == 1:
+                            if df.iloc[i-1]['RainToday'] == 1:
+                                streak += 1
+                            else:
+                                streak = 1
+                            df.loc[df.index[i], 'Rain_Streak'] = streak
                         else:
-                            streak = 1
-                        df.loc[df.index[i], 'Dry_Streak'] = streak
+                            if df.iloc[i-1]['RainToday'] == 0:
+                                streak += 1
+                            else:
+                                streak = 1
+                            df.loc[df.index[i], 'Dry_Streak'] = streak
             
-            # Drop rows with NaN values that couldn't be imputed
+            # Handle any remaining NaN values in derived features using the same strategy
+            derived_features = ['Temp_Range', 'Temp_Humidity', 'Temp_Range_RH', 'Dew_Point', 'Heat_Index']
+            for feature in derived_features:
+                if feature in df.columns and df[feature].isna().any():
+                    print(f"Handling NaN values in derived feature '{feature}': {df[feature].isna().sum()} values")
+                    # Forward fill, backward fill, then 5-day rolling mean, then median
+                    df[feature] = df[feature].fillna(method='ffill')
+                    df[feature] = df[feature].fillna(method='bfill')
+                    
+                    if df[feature].isna().any():
+                        rolling_mean_5d = df[feature].rolling(window=5, center=True, min_periods=1).mean()
+                        df[feature] = df[feature].fillna(rolling_mean_5d)
+                    
+                    if df[feature].isna().any():
+                        df[feature] = df[feature].fillna(df[feature].median())
+            
+            # Handle NaN values in lag and rolling features
+            lag_rolling_features = [col for col in df.columns if any(col.startswith(prefix) for prefix in 
+                                   [f'{target}_Lag_' for target in self.target_columns] + 
+                                   [f'{target}_Rolling_' for target in self.target_columns] + 
+                                   ['Rain_Binary_Lag_', 'Sunny_Binary_Lag_', 'RH_Rolling_'])]
+            for feature in lag_rolling_features:
+                if df[feature].isna().any():
+                    # For lag features, we can only use forward fill and median (backward fill would introduce future data)
+                    if 'Lag_' in feature:
+                        df[feature] = df[feature].fillna(method='ffill')
+                        if df[feature].isna().any():
+                            df[feature] = df[feature].fillna(df[feature].median())
+                    # For rolling features, use the same comprehensive strategy
+                    else:
+                        df[feature] = df[feature].fillna(method='ffill')
+                        df[feature] = df[feature].fillna(method='bfill')
+                        if df[feature].isna().any():
+                            rolling_mean_5d = df[feature].rolling(window=5, center=True, min_periods=1).mean()
+                            df[feature] = df[feature].fillna(rolling_mean_5d)
+                        if df[feature].isna().any():
+                            df[feature] = df[feature].fillna(df[feature].median())
+            
+            # Final check: drop any rows that still have NaN values (should be very few if any)
             df_before_drop = df.copy()
             df = df.dropna()
             
             # Print any rows that were dropped due to NaN values
             if len(df_before_drop) > len(df):
-                print(f"\nRows dropped due to NaN values: {len(df_before_drop) - len(df)}")
+                print(f"\nRows dropped due to remaining NaN values: {len(df_before_drop) - len(df)}")
+                print("Note: These should be minimal after comprehensive interpolation")
             
             # Update feature columns with new features that were successfully created
-            self.feature_columns = [
-                'Tn', 'Tx', 'Tavg', 'RH_avg', 'ss', 'ff_x', 'ff_avg', 'ddd_x',
+            # Exclude target variables from features
+            base_features = [
+                'Tn', 'Tx', 'RH_avg', 'ss', 'ff_x', 'ddd_x',  # Basic measurements (excluding targets)
                 'Month', 'Day', 'DayOfWeek', 'Season', 'Temp_Range',
                 'Month_sin', 'Month_cos', 'Day_sin', 'Day_cos', 'DayOfYear_sin', 'DayOfYear_cos',
                 'Temp_Humidity', 'Temp_Range_RH', 'Dew_Point', 'Heat_Index',
                 'Rain_Streak', 'Dry_Streak'
             ]
             
+            # Filter out target variables from base features
+            self.feature_columns = [f for f in base_features if f not in self.target_columns and f in df.columns]
+            
             # Add rolling and lag features if they exist and don't have NaN values
             for col in df.columns:
-                if (col.startswith(('RR_Rolling', 'Tavg_Rolling', 'RH_Rolling', 'RR_Lag', 'Tavg_Lag', 'Rain_Binary_Lag')) 
-                    and not df[col].isna().any()):
+                if (any(col.startswith(prefix) for prefix in 
+                       [f'{target}_Rolling_' for target in self.target_columns] + 
+                       [f'{target}_Lag_' for target in self.target_columns] + 
+                       ['Rain_Binary_Lag_', 'Sunny_Binary_Lag_', 'RH_Rolling_']) 
+                    and not df[col].isna().any() and col not in self.target_columns):
                     self.feature_columns.append(col)
             
-            # Print final stats
+            # Print final stats for all target variables
             print(f"\nFinal dataset size: {len(df)}")
             print(f"Total rows removed: {initial_size - len(df)}")
-            print("\nRainfall Statistics After Processing:")
-            print(f"Mean: {df[self.target_column].mean():.2f}mm")
-            print(f"Median: {df[self.target_column].median():.2f}mm")
-            print(f"Std Dev: {df[self.target_column].std():.2f}mm")
-            print(f"Max: {df[self.target_column].max():.2f}mm")
+            print("\nTarget Variables Statistics After Processing:")
+            for target in self.target_columns:
+                if target in df.columns:
+                    print(f"\n{self.target_names[target]} ({target}):")
+                    print(f"  Mean: {df[target].mean():.2f}")
+                    print(f"  Median: {df[target].median():.2f}")
+                    print(f"  Std Dev: {df[target].std():.2f}")
+                    print(f"  Min: {df[target].min():.2f}")
+                    print(f"  Max: {df[target].max():.2f}")
             
             # Check no NaN values remain
             nan_counts = df.isna().sum()
@@ -272,7 +451,7 @@ class GBMWeatherPredictor:
                 print("\nWARNING: NaN values still exist in the dataset:")
                 print(nan_counts[nan_counts > 0])
             else:
-                print("\nNo NaN values remain in the dataset.")
+                print("\nNo NaN values remain in the dataset - interpolation successful!")
             
             # Final feature list
             print(f"\nFinal feature list ({len(self.feature_columns)} features):")
@@ -285,118 +464,186 @@ class GBMWeatherPredictor:
             raise
 
     def plot_feature_correlations(self, df):
-        """Plot correlation matrix of features"""
+        """Plot correlation matrix of features with all target variables"""
         # Use only a subset of features if there are too many
-        if len(self.feature_columns) > 15:
-            # Calculate correlation with target
-            correlations = {}
+        if len(self.feature_columns) > 12:  # Reduced to make room for multiple targets
+            # Calculate correlation with all targets
+            feature_importance = {}
             for feature in self.feature_columns:
-                correlations[feature] = abs(np.corrcoef(df[feature], df[self.target_column])[0, 1])
+                # Calculate average absolute correlation with all targets
+                correlations = []
+                for target in self.target_columns:
+                    if target in df.columns:
+                        corr = abs(np.corrcoef(df[feature], df[target])[0, 1])
+                        if not np.isnan(corr):
+                            correlations.append(corr)
+                feature_importance[feature] = np.mean(correlations) if correlations else 0
             
-            # Get the top 15 most correlated features
-            top_features = sorted(correlations.items(), key=lambda x: x[1], reverse=True)[:15]
+            # Get the top 12 most correlated features
+            top_features = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)[:12]
             selected_features = [f[0] for f in top_features]
-            features_to_plot = selected_features + [self.target_column]
-            print(f"\nPlotting correlations for top 15 features: {', '.join(selected_features)}")
+            features_to_plot = selected_features + self.target_columns
+            print(f"\nPlotting correlations for top 12 features: {', '.join(selected_features)}")
         else:
-            features_to_plot = self.feature_columns + [self.target_column]
+            features_to_plot = self.feature_columns + self.target_columns
+        
+        # Filter features that exist in the dataframe
+        features_to_plot = [f for f in features_to_plot if f in df.columns]
         
         # Create correlation matrix
         corr = df[features_to_plot].corr()
         
-        plt.figure(figsize=(12, 10))
-        sns.heatmap(corr, annot=True, cmap='coolwarm', center=0, fmt='.2f')
-        plt.title('Feature Correlations')
+        plt.figure(figsize=(14, 12))
+        sns.heatmap(corr, annot=True, cmap='coolwarm', center=0, fmt='.2f', 
+                   square=True, cbar_kws={"shrink": .8})
+        plt.title('Feature Correlations with Target Variables')
         plt.tight_layout()
         plt.savefig(os.path.join(self.run_dir, 'feature_correlations.png'))
         plt.close()
 
     def plot_feature_distributions(self, df):
-        """Plot distribution of top features"""
-        # Select top features by correlation with target
-        correlations = {}
+        """Plot distribution of top features and all target variables"""
+        # Select top features by average correlation with all targets
+        feature_importance = {}
         for feature in self.feature_columns:
-            correlations[feature] = abs(np.corrcoef(df[feature], df[self.target_column])[0, 1])
+            correlations = []
+            for target in self.target_columns:
+                if target in df.columns:
+                    corr = abs(np.corrcoef(df[feature], df[target])[0, 1])
+                    if not np.isnan(corr):
+                        correlations.append(corr)
+            feature_importance[feature] = np.mean(correlations) if correlations else 0
         
-        top_features = sorted(correlations.items(), key=lambda x: x[1], reverse=True)[:9]
-        selected_features = [f[0] for f in top_features] + [self.target_column]
+        top_features = sorted(feature_importance.items(), key=lambda x: x[1], reverse=True)[:6]
+        selected_features = [f[0] for f in top_features]
+        
+        # Combine top features with all target variables
+        features_to_plot = selected_features + [t for t in self.target_columns if t in df.columns]
         
         # Plot
-        n_features = len(selected_features)
+        n_features = len(features_to_plot)
         n_cols = 3
         n_rows = (n_features + n_cols - 1) // n_cols
         
         plt.figure(figsize=(15, 4*n_rows))
-        for i, feature in enumerate(selected_features, 1):
+        for i, feature in enumerate(features_to_plot, 1):
             plt.subplot(n_rows, n_cols, i)
             sns.histplot(df[feature], kde=True)
-            plt.title(f'{feature} Distribution (corr: {correlations.get(feature, 0):.2f})')
+            
+            # Add correlation info for features, target name for targets
+            if feature in self.target_columns:
+                plt.title(f'{self.target_names.get(feature, feature)} (Target)')
+            else:
+                avg_corr = feature_importance.get(feature, 0)
+                plt.title(f'{feature} (avg corr: {avg_corr:.2f})')
         plt.tight_layout()
         plt.savefig(os.path.join(self.run_dir, 'feature_distributions.png'))
         plt.close()
 
     def plot_seasonal_patterns(self, df):
-        """Plot seasonal patterns of rainfall"""
-        plt.figure(figsize=(12, 6))
-        monthly_avg = df.groupby('Month')[self.target_column].mean()
-        monthly_avg.plot(kind='bar')
-        plt.title('Average Rainfall by Month')
-        plt.xlabel('Month')
-        plt.ylabel('Average Rainfall (mm)')
-        plt.xticks(range(12), ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+        """Plot seasonal patterns of all target variables"""
+        n_targets = len([t for t in self.target_columns if t in df.columns])
+        n_cols = 2
+        n_rows = (n_targets + n_cols - 1) // n_cols
+        
+        plt.figure(figsize=(15, 4*n_rows))
+        plot_idx = 1
+        
+        for target in self.target_columns:
+            if target in df.columns:
+                plt.subplot(n_rows, n_cols, plot_idx)
+                monthly_avg = df.groupby('Month')[target].mean()
+                monthly_avg.plot(kind='bar')
+                plt.title(f'Average {self.target_names[target]} by Month')
+                plt.xlabel('Month')
+                plt.ylabel(self.target_names[target])
+                plt.xticks(range(12), ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], rotation=45)
+                plot_idx += 1
+                
         plt.tight_layout()
         plt.savefig(os.path.join(self.run_dir, 'seasonal_patterns.png'))
         plt.close()
 
-    def plot_predictions(self, dates, actual, predicted):
-        """Plot actual vs predicted rainfall"""
+    def plot_predictions(self, dates, actual, predicted, target_name='Target'):
+        """Plot actual vs predicted values for a specific target"""
         plt.figure(figsize=(15, 6))
         plt.plot(dates, actual, marker='o', linestyle='-', label='Actual', alpha=0.7)
         plt.plot(dates, predicted, marker='x', linestyle='-', label='Predicted', alpha=0.7)
-        plt.title('Actual vs Predicted Rainfall')
+        plt.title(f'Actual vs Predicted {target_name}')
         plt.xlabel('Date')
-        plt.ylabel('Rainfall (mm)')
+        plt.ylabel(target_name)
         plt.legend()
         plt.grid(True, alpha=0.3)
         # Rotate date labels for better readability
         plt.xticks(rotation=45)
         plt.tight_layout()
-        plt.savefig(os.path.join(self.run_dir, 'predictions.png'))
+        
+        # Improved filename sanitization - remove all problematic characters
+        target_safe_name = (target_name.replace(' ', '_')
+                           .replace('(', '')
+                           .replace(')', '')
+                           .replace('/', '_')
+                           .replace('\\', '_')
+                           .replace(':', '_')
+                           .replace('*', '_')
+                           .replace('?', '_')
+                           .replace('"', '_')
+                           .replace('<', '_')
+                           .replace('>', '_')
+                           .replace('|', '_')
+                           .lower())
+        
+        plt.savefig(os.path.join(self.run_dir, f'predictions_{target_safe_name}.png'))
+        plt.close()
+
+    def plot_multi_target_feature_importance(self, target_models):
+        """Plot feature importance for all target variables"""
+        n_targets = len(target_models)
+        n_cols = 2
+        n_rows = (n_targets + n_cols - 1) // n_cols
+        
+        plt.figure(figsize=(15, 5*n_rows))
+        
+        for i, (target, model_data) in enumerate(target_models.items(), 1):
+            plt.subplot(n_rows, n_cols, i)
+            
+            # Get feature importance
+            feature_importance = model_data['model'].feature_importances_
+            
+            # Sort features by importance (show top 10)
+            indices = np.argsort(feature_importance)[::-1][:10]
+            sorted_feature_names = [self.feature_columns[idx] for idx in indices]
+            sorted_importance = feature_importance[indices]
+            
+            # Plot horizontal bar chart
+            plt.barh(range(len(sorted_importance)), sorted_importance)
+            plt.yticks(range(len(sorted_importance)), sorted_feature_names)
+            plt.xlabel('Importance')
+            plt.title(f'Top 10 Features - {self.target_names[target]}')
+            plt.gca().invert_yaxis()  # Highest importance at top
+            
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.run_dir, 'multi_target_feature_importance.png'))
         plt.close()
 
     def plot_feature_importance(self):
-        """Plot feature importance from the trained model"""
-        if self.model is None:
-            print("Model not trained yet, cannot plot feature importance.")
+        """Plot feature importance from the trained model - updated for multi-target"""
+        if not self.multi_target_models:
+            print("Models not trained yet, cannot plot feature importance.")
             return
             
-        # Get feature importance
-        feature_importance = self.model.feature_importances_
-        
-        # Sort features by importance
-        indices = np.argsort(feature_importance)[::-1]
-        sorted_feature_names = [self.feature_columns[i] for i in indices]
-        sorted_importance = feature_importance[indices]
-        
-        # Plot
-        plt.figure(figsize=(12, 8))
-        plt.barh(range(len(self.feature_columns)), sorted_importance)
-        plt.yticks(range(len(self.feature_columns)), sorted_feature_names)
-        plt.xlabel('Importance')
-        plt.ylabel('Feature')
-        plt.title('Feature Importance')
-        plt.tight_layout()
-        plt.savefig(os.path.join(self.run_dir, 'feature_importance.png'))
-        plt.close()
+        self.plot_multi_target_feature_importance(self.multi_target_models)
 
-    def save_metrics(self, metrics):
+    def save_metrics(self, metrics, target_name=''):
         """Save evaluation metrics to a file"""
-        with open(os.path.join(self.run_dir, 'metrics.txt'), 'w') as f:
+        filename = f'metrics_{target_name}.txt' if target_name else 'metrics.txt'
+        with open(os.path.join(self.run_dir, filename), 'w') as f:
             for key, value in metrics.items():
                 f.write(f"{key}: {value}\n")
     
     def prepare_multi_day_dataset(self, df):
-        """Prepare dataset for multi-day forecasting"""
+        """Prepare dataset for multi-day forecasting - updated for multiple targets"""
         multi_day_data = {}
         
         # Create a copy of the dataframe to avoid modifying the original
@@ -423,53 +670,50 @@ class GBMWeatherPredictor:
                 # If any NaNs remain, use median
                 df_copy[feature] = df_copy[feature].fillna(df_copy[feature].median())
         
-        # For day 0 (today)
-        day_df = df_copy[['Tanggal'] + self.feature_columns].copy()
-        day_df[f'Future_RR_0d'] = df_copy[self.target_column]
-        day_df = day_df.dropna()  # Remove any remaining NaN rows
-        multi_day_data[0] = day_df.copy()
-        
-        # For each forecast day (1 to forecast_days)
-        for day in range(1, self.forecast_days + 1):
-            print(f"\nPreparing dataset for {day}-day ahead prediction")
+        # For each target variable, create datasets for each forecast day
+        for target in self.target_columns:
+            if target not in df_copy.columns:
+                continue
+                
+            multi_day_data[target] = {}
             
-            # Create dataset with base features
+            # For day 0 (today) - current day prediction
             day_df = df_copy[['Tanggal'] + self.feature_columns].copy()
+            day_df[f'Future_{target}_0d'] = df_copy[target]
+            day_df = day_df.dropna()  # Remove any remaining NaN rows
+            multi_day_data[target][0] = day_df.copy()
             
-            # Shift target variable to create future target
-            # Note: shift(-day) means we're looking 'day' days into the future
-            day_df[f'Future_RR_{day}d'] = df_copy[self.target_column].shift(-day)
-            
-            # Log NaN counts before dropping
-            nan_counts = day_df.isna().sum()
-            print(f"NaN counts before dropping:\n{nan_counts}")
-            
-            # Drop rows with NaN in target (these will be the last 'day' rows)
-            day_df = day_df.dropna(subset=[f'Future_RR_{day}d'])
-            
-            # Add seasonal stratification for better model training
-            day_df['Season_Indicator'] = day_df['Tanggal'].dt.month.apply(
-                lambda m: 1 if m in [12, 1, 2] else  # Winter
-                         2 if m in [3, 4, 5] else    # Spring
-                         3 if m in [6, 7, 8] else    # Summer
-                         4                           # Fall
-            )
-            
-            # Log dataset info
-            print(f"Day {day} dataset shape after processing: {day_df.shape}")
-            print(f"Date range: {day_df['Tanggal'].min()} to {day_df['Tanggal'].max()}")
-            
-            # Verify no NaN values remain
-            final_nan_counts = day_df.isna().sum()
-            if final_nan_counts.sum() > 0:
-                print(f"Warning: NaN values found in final dataset:\n{final_nan_counts}")
-            
-            multi_day_data[day] = day_df
+            # For each forecast day (1 to forecast_days)
+            for day in range(1, self.forecast_days + 1):
+                print(f"\nPreparing {target} dataset for {day}-day ahead prediction")
+                
+                # Create dataset with base features
+                day_df = df_copy[['Tanggal'] + self.feature_columns].copy()
+                
+                # Shift target variable to create future target
+                day_df[f'Future_{target}_{day}d'] = df_copy[target].shift(-day)
+                
+                # Drop rows with NaN in target (these will be the last 'day' rows)
+                day_df = day_df.dropna(subset=[f'Future_{target}_{day}d'])
+                
+                # Add seasonal stratification for better model training
+                day_df['Season_Indicator'] = day_df['Tanggal'].dt.month.apply(
+                    lambda m: 1 if m in [12, 1, 2] else  # Winter
+                             2 if m in [3, 4, 5] else    # Spring
+                             3 if m in [6, 7, 8] else    # Summer
+                             4                           # Fall
+                )
+                
+                # Log dataset info
+                print(f"  {target} Day {day} dataset shape: {day_df.shape}")
+                print(f"  Date range: {day_df['Tanggal'].min()} to {day_df['Tanggal'].max()}")
+                
+                multi_day_data[target][day] = day_df
         
         return multi_day_data
 
-    def plot_predictions_for_day(self, dates, actual, predicted, day, metrics):
-        """Plot predictions for a specific forecast day"""
+    def plot_predictions_for_day(self, dates, actual, predicted, day, metrics, title_suffix=""):
+        """Plot predictions for a specific forecast day and target"""
         plt.figure(figsize=(15, 6))
         
         # Plot actual and predicted values
@@ -487,9 +731,13 @@ class GBMWeatherPredictor:
         
         # Customize plot
         day_label = "Today" if day == 0 else f"{day}-Day Ahead"
-        plt.title(f'{day_label} Rainfall Prediction')
+        full_title = f'{day_label} Prediction'
+        if title_suffix:
+            full_title = f'{title_suffix}'
+            
+        plt.title(full_title)
         plt.xlabel('Date')
-        plt.ylabel('Rainfall (mm)')
+        plt.ylabel('Value')
         plt.legend(loc='upper right')
         plt.grid(True, alpha=0.3)
         
@@ -498,353 +746,582 @@ class GBMWeatherPredictor:
         
         # Adjust layout and save
         plt.tight_layout()
-        plt.savefig(os.path.join(self.run_dir, f'prediction_day_{day}.png'))
+        
+        # Improved filename sanitization - remove all problematic characters
+        safe_title = (title_suffix.replace(' ', '_')
+                     .replace('(', '')
+                     .replace(')', '')
+                     .replace('/', '_')
+                     .replace('\\', '_')
+                     .replace(':', '_')
+                     .replace('*', '_')
+                     .replace('?', '_')
+                     .replace('"', '_')
+                     .replace('<', '_')
+                     .replace('>', '_')
+                     .replace('|', '_')
+                     .lower())
+        
+        plt.savefig(os.path.join(self.run_dir, f'prediction_{safe_title}_day_{day}.png'))
         plt.close()
 
     def train_multi_day_models(self, multi_day_data):
-        """Train separate GBM models for each forecast day"""
+        """Train separate GBM models for each target and forecast day"""
         results = {}
         
-        # Define outlier threshold for rainfall
-        RAINFALL_OUTLIER_THRESHOLD = 100  # mm
+        # Define base model configurations for different targets
+        model_configs = {
+            'RR': GradientBoostingRegressor(
+                n_estimators=200, learning_rate=0.05, max_depth=5,
+                min_samples_split=5, min_samples_leaf=4, subsample=0.8,
+                max_features='sqrt', random_state=42
+            ),
+            'ss': GradientBoostingRegressor(
+                n_estimators=180, learning_rate=0.06, max_depth=4,
+                min_samples_split=6, min_samples_leaf=5, subsample=0.8,
+                max_features='sqrt', random_state=42
+            ),
+            'Tavg': GradientBoostingRegressor(
+                n_estimators=150, learning_rate=0.08, max_depth=4,
+                min_samples_split=8, min_samples_leaf=6, subsample=0.8,
+                max_features='sqrt', random_state=42
+            ),
+            'ddd_car': GradientBoostingRegressor(
+                n_estimators=150, learning_rate=0.08, max_depth=4,
+                min_samples_split=8, min_samples_leaf=6, subsample=0.8,
+                max_features='sqrt', random_state=42
+            ),
+            'ff_avg': GradientBoostingRegressor(
+                n_estimators=160, learning_rate=0.07, max_depth=4,
+                min_samples_split=7, min_samples_leaf=5, subsample=0.8,
+                max_features='sqrt', random_state=42
+            )
+        }
         
-        # Define GBM model configuration
-        base_model = GradientBoostingRegressor(
-            n_estimators=200,
-            learning_rate=0.05,
-            max_depth=5,
-            min_samples_split=5,
-            min_samples_leaf=4,
-            subsample=0.8,
-            max_features='sqrt',
-            random_state=42
-        )
-        
-        # Process each forecast day
-        for day, day_df in multi_day_data.items():
-            print(f"\n--- Training models for {day}-day ahead prediction ---")
-            
-            # Use base features for all predictions
-            features_to_use = self.feature_columns
-            print(f"Using {len(features_to_use)} features for day {day} prediction")
-            
-            # Sort by date to ensure proper temporal split
-            day_df = day_df.sort_values('Tanggal')
-            
-            # Split data while preserving temporal order
-            train_size = int(0.8 * len(day_df))
-            
-            # Keep dates in a separate variable
-            train_dates = day_df.iloc[:train_size]['Tanggal']
-            test_dates = day_df.iloc[train_size:]['Tanggal']
-            
-            # Extract features and target
-            X_train = day_df.iloc[:train_size][features_to_use]
-            y_train = day_df.iloc[:train_size][f'Future_RR_{day}d']
-            X_test = day_df.iloc[train_size:][features_to_use]
-            y_test = day_df.iloc[train_size:][f'Future_RR_{day}d']
-            
-            # Log data splits info
-            print(f"\nTraining data: {len(X_train)} samples from {train_dates.min()} to {train_dates.max()}")
-            print(f"Testing data: {len(X_test)} samples from {test_dates.min()} to {test_dates.max()}")
-            
-            # Scale features
-            scaler = StandardScaler()
-            X_train_scaled = scaler.fit_transform(X_train)
-            X_test_scaled = scaler.transform(X_test)
-            
-            # Use fewer CV folds for faster training
-            cv_folds = 3 if day == 0 else 2
-            
-            # Initialize cross-validation
-            cv_predictions = np.zeros(len(X_test))
-            cv_scores = []
-            
-            # Show progress during training
-            print(f"Training GBM model with {cv_folds}-fold CV...")
-            
-            # Train model with cross-validation
-            tscv = KFold(n_splits=cv_folds, shuffle=False)  # No shuffle for time series
-            fold_predictions = []
-            
-            # Process each fold
-            for fold, (train_idx, val_idx) in enumerate(tscv.split(X_train_scaled)):
-                print(f"  Processing fold {fold+1}/{cv_folds}...")
-                start_time = time.time()
+        # Process each target variable
+        for target in self.target_columns:
+            if target not in multi_day_data:
+                print(f"Skipping {target} - no multi-day data available")
+                continue
                 
-                # Split data for this fold
-                X_fold_train = X_train_scaled[train_idx]
-                y_fold_train = y_train.iloc[train_idx]
-                X_fold_val = X_train_scaled[val_idx]
-                y_fold_val = y_train.iloc[val_idx]
+            print(f"\n=== Training Multi-Day Models for {self.target_names[target]} ===")
+            results[target] = {}
+            
+            # Process each forecast day for this target
+            for day, day_df in multi_day_data[target].items():
+                print(f"\n--- {target}: {day}-day ahead prediction ---")
                 
-                try:
-                    # Train model
-                    model = clone(base_model)
-                    model.fit(X_fold_train, y_fold_train)
+                # Use base features for all predictions
+                features_to_use = self.feature_columns
+                print(f"Using {len(features_to_use)} features for {target} day {day} prediction")
+                
+                # Sort by date to ensure proper temporal split
+                day_df = day_df.sort_values('Tanggal')
+                
+                # Split data while preserving temporal order
+                train_size = int(0.8 * len(day_df))
+                
+                # Keep dates in a separate variable
+                train_dates = day_df.iloc[:train_size]['Tanggal']
+                test_dates = day_df.iloc[train_size:]['Tanggal']
+                
+                # Extract features and target
+                X_train = day_df.iloc[:train_size][features_to_use]
+                y_train = day_df.iloc[:train_size][f'Future_{target}_{day}d']
+                X_test = day_df.iloc[train_size:][features_to_use]
+                y_test = day_df.iloc[train_size:][f'Future_{target}_{day}d']
+                
+                # Log data splits info
+                print(f"Training data: {len(X_train)} samples from {train_dates.min()} to {train_dates.max()}")
+                print(f"Testing data: {len(X_test)} samples from {test_dates.min()} to {test_dates.max()}")
+                
+                # Scale features
+                scaler = StandardScaler()
+                X_train_scaled = scaler.fit_transform(X_train)
+                X_test_scaled = scaler.transform(X_test)
+                
+                # Use fewer CV folds for faster training
+                cv_folds = 3 if day == 0 else 2
+                
+                # Initialize cross-validation
+                cv_scores = []
+                
+                # Show progress during training
+                print(f"Training {target} GBM model with {cv_folds}-fold CV...")
+                
+                # Train model with cross-validation
+                tscv = KFold(n_splits=cv_folds, shuffle=False)  # No shuffle for time series
+                fold_predictions = []
+                
+                # Get base model for this target
+                base_model = model_configs.get(target, model_configs['RR'])  # Default to RR config
+                
+                # Process each fold
+                for fold, (train_idx, val_idx) in enumerate(tscv.split(X_train_scaled)):
+                    print(f"  Processing fold {fold+1}/{cv_folds}...")
+                    start_time = time.time()
                     
-                    # Validate
-                    val_pred = model.predict(X_fold_val)
-                    r2 = r2_score(y_fold_val, val_pred)
-                    cv_scores.append(r2)
+                    # Split data for this fold
+                    X_fold_train = X_train_scaled[train_idx]
+                    y_fold_train = y_train.iloc[train_idx]
+                    X_fold_val = X_train_scaled[val_idx]
+                    y_fold_val = y_train.iloc[val_idx]
                     
-                    # Predict on test set
-                    test_pred = model.predict(X_test_scaled)
+                    try:
+                        # Train model
+                        model = clone(base_model)
+                        model.fit(X_fold_train, y_fold_train)
+                        
+                        # Validate
+                        val_pred = model.predict(X_fold_val)
+                        r2 = r2_score(y_fold_val, val_pred)
+                        cv_scores.append(r2)
+                        
+                        # Predict on test set
+                        test_pred = model.predict(X_test_scaled)
+                        
+                        # Apply target-specific constraints
+                        if target == 'RR':
+                            test_pred = np.maximum(test_pred, 0)
+                        elif target == 'ss':
+                            test_pred = np.clip(test_pred, 0, 24)
+                        elif target == 'ff_avg':
+                            test_pred = np.maximum(test_pred, 0)
+                        elif target == 'ddd_car':
+                            test_pred = np.clip(test_pred % 360, 0, 360)
+                        
+                        fold_predictions.append(test_pred)
+                        
+                        elapsed = time.time() - start_time
+                        print(f"    Fold R²: {r2:.4f} (took {elapsed:.1f}s)")
+                        
+                    except Exception as e:
+                        print(f"Error in fold {fold+1}: {str(e)}")
+                        if fold_predictions:
+                            fold_predictions.append(np.mean(fold_predictions, axis=0))
+                        else:
+                            fold_predictions.append(np.zeros(len(X_test_scaled)))
+                        cv_scores.append(0.0)
+                
+                # Average predictions across folds
+                if fold_predictions:
+                    final_predictions = np.mean(fold_predictions, axis=0)
+                    print(f"{target} GBM CV R² scores: {np.mean(cv_scores):.4f} ± {np.std(cv_scores):.4f}")
+                else:
+                    print(f"No valid predictions for {target}, using zeros")
+                    final_predictions = np.zeros(len(X_test))
+                
+                # Apply final constraints
+                if target == 'RR':
+                    final_predictions = np.maximum(final_predictions, 0)
+                elif target == 'ss':
+                    final_predictions = np.clip(final_predictions, 0, 24)
+                elif target == 'ff_avg':
+                    final_predictions = np.maximum(final_predictions, 0)
+                elif target == 'ddd_car':
+                    final_predictions = np.clip(final_predictions % 360, 0, 360)
+                
+                # Calculate prediction standard deviation for uncertainty estimation
+                pred_std = np.std(fold_predictions, axis=0) if len(fold_predictions) > 1 else np.zeros_like(final_predictions)
+                
+                # Calculate final metrics
+                final_metrics = {
+                    'mse': mean_squared_error(y_test, final_predictions),
+                    'rmse': np.sqrt(mean_squared_error(y_test, final_predictions)),
+                    'mae': mean_absolute_error(y_test, final_predictions),
+                    'r2': r2_score(y_test, final_predictions)
+                }
+                
+                print(f"Final {target} metrics - R²: {final_metrics['r2']:.4f}, RMSE: {final_metrics['rmse']:.4f}")
+                
+                # Store results
+                results[target][day] = {
+                    'test_dates': test_dates,
+                    'y_test': y_test,
+                    'y_pred': final_predictions,
+                    'pred_std': pred_std,
+                    'metrics': final_metrics,
+                    'features_used': features_to_use
+                }
+                
+                # Store model data
+                if target not in self.multi_day_models:
+                    self.multi_day_models[target] = {}
                     
-                    # Handle predictions
-                    # 1. Set negative values to 0
-                    test_pred = np.maximum(test_pred, 0)
-                    # 2. Set outlier predictions to 0
-                    outlier_mask = test_pred > RAINFALL_OUTLIER_THRESHOLD
-                    if np.any(outlier_mask):
-                        print(f"Found {np.sum(outlier_mask)} predictions > {RAINFALL_OUTLIER_THRESHOLD}mm in fold {fold+1}")
-                        test_pred[outlier_mask] = 0
-                    
-                    fold_predictions.append(test_pred)
-                    
-                    elapsed = time.time() - start_time
-                    print(f"    Fold R²: {r2:.4f} (took {elapsed:.1f}s)")
-                    
-                except Exception as e:
-                    print(f"Error in fold {fold+1}: {str(e)}")
-                    if fold_predictions:
-                        fold_predictions.append(np.mean(fold_predictions, axis=0))
-                    else:
-                        fold_predictions.append(np.zeros(len(X_test_scaled)))
-                    cv_scores.append(0.0)
-            
-            # Average predictions across folds
-            if fold_predictions:
-                final_predictions = np.mean(fold_predictions, axis=0)
-                print(f"GBM CV R² scores: {np.mean(cv_scores):.4f} ± {np.std(cv_scores):.4f}")
-            else:
-                print(f"No valid predictions, using zeros")
-                final_predictions = np.zeros(len(X_test))
-            
-            # Final check on predictions
-            final_predictions = np.maximum(final_predictions, 0)  # Ensure no negative values
-            outlier_mask = final_predictions > RAINFALL_OUTLIER_THRESHOLD
-            if np.any(outlier_mask):
-                print(f"Found {np.sum(outlier_mask)} final predictions > {RAINFALL_OUTLIER_THRESHOLD}mm")
-                final_predictions[outlier_mask] = 0
-            
-            # Calculate prediction standard deviation for uncertainty estimation
-            pred_std = np.std(fold_predictions, axis=0)
-            
-            # Calculate final metrics
-            final_metrics = {
-                'mse': mean_squared_error(y_test, final_predictions),
-                'rmse': np.sqrt(mean_squared_error(y_test, final_predictions)),
-                'mae': mean_absolute_error(y_test, final_predictions),
-                'r2': r2_score(y_test, final_predictions)
-            }
-            
-            print(f"Final metrics - R²: {final_metrics['r2']:.4f}, RMSE: {final_metrics['rmse']:.4f}")
-            
-            # Store results
-            results[day] = {
-                'test_dates': test_dates,
-                'y_test': y_test,
-                'y_pred': final_predictions,
-                'pred_std': pred_std,
-                'metrics': final_metrics,
-                'features_used': features_to_use
-            }
-            
-            # Save model data
-            self.multi_day_models[day] = {
-                'model': base_model,
-                'scaler': scaler,
-                'features_used': features_to_use,
-                'pred_std': pred_std
-            }
-            
-            # Plot results for this day
-            self.plot_predictions_for_day(test_dates, y_test, final_predictions, day, final_metrics)
-            
+                self.multi_day_models[target][day] = {
+                    'model': base_model,
+                    'scaler': scaler,
+                    'features_used': features_to_use,
+                    'pred_std': pred_std
+                }
+                
+                # Plot results for this target and day
+                day_label = "Today" if day == 0 else f"{day}-Day Ahead"
+                target_name = self.target_names[target]
+                self.plot_predictions_for_day(test_dates, y_test, final_predictions, day, final_metrics, f"{target_name} {day_label}")
+                
         return results
 
     def plot_multi_day_predictions(self, results):
-        """Plot predictions for multiple forecast horizons with metrics"""
-        # +1 is for including day 0 (today)
-        plt.figure(figsize=(15, (self.forecast_days + 1) * 2))
+        """Plot predictions for multiple forecast horizons and targets with metrics"""
         
-        # First plot day 0 (today's) prediction
-        for day in range(0, self.forecast_days + 1):
-            if day not in results:
+        # Create separate plots for each target variable
+        for target in self.target_columns:
+            if target not in results:
                 continue
                 
-            plt.subplot(self.forecast_days + 1, 1, day + 1)
+            target_results = results[target]
+            n_days = len(target_results)
             
-            dates = results[day]['test_dates']
-            actual = results[day]['y_test']
-            predicted = results[day]['y_pred']
-            metrics = results[day]['metrics']
-            
-            plt.plot(dates, actual, marker='o', markersize=4, linestyle='-', label='Actual', alpha=0.7)
-            plt.plot(dates, predicted, marker='x', markersize=4, linestyle='-', label='Predicted', alpha=0.7)
-            
-            # Format and add metrics to the plot
-            metrics_text = f"RMSE: {metrics['rmse']:.2f}, MAE: {metrics['mae']:.2f}, R²: {metrics['r2']:.2f}"
-            
-            # Special title for day 0
-            if day == 0:
-                plt.title(f'Today\'s Prediction - {metrics_text}')
-            else:
-                plt.title(f'{day}-Day Ahead Prediction - {metrics_text}')
+            if n_days == 0:
+                continue
                 
-            plt.ylabel('Rainfall (mm)')
-            plt.legend()
-            plt.grid(True, alpha=0.3)
+            plt.figure(figsize=(15, n_days * 2))
             
-            if day == self.forecast_days:  # Only show dates on bottom subplot
-                plt.xlabel('Date')
-                plt.xticks(rotation=45)
-            else:
-                plt.xticks([])  # Hide x ticks for non-bottom subplots
+            # Plot each forecast day for this target
+            for i, day in enumerate(sorted(target_results.keys())):
+                plt.subplot(n_days, 1, i + 1)
+                
+                dates = target_results[day]['test_dates']
+                actual = target_results[day]['y_test']
+                predicted = target_results[day]['y_pred']
+                metrics = target_results[day]['metrics']
+                
+                plt.plot(dates, actual, marker='o', markersize=4, linestyle='-', label='Actual', alpha=0.7)
+                plt.plot(dates, predicted, marker='x', markersize=4, linestyle='-', label='Predicted', alpha=0.7)
+                
+                # Format and add metrics to the plot
+                metrics_text = f"RMSE: {metrics['rmse']:.2f}, MAE: {metrics['mae']:.2f}, R²: {metrics['r2']:.2f}"
+                
+                # Special title for day 0
+                if day == 0:
+                    plt.title(f'{self.target_names[target]} - Today\'s Prediction - {metrics_text}')
+                else:
+                    plt.title(f'{self.target_names[target]} - {day}-Day Ahead Prediction - {metrics_text}')
+                    
+                plt.ylabel(self.target_names[target])
+                plt.legend()
+                plt.grid(True, alpha=0.3)
+                
+                if i == n_days - 1:  # Only show dates on bottom subplot
+                    plt.xlabel('Date')
+                    plt.xticks(rotation=45)
+                else:
+                    plt.xticks([])  # Hide x ticks for non-bottom subplots
+            
+            plt.tight_layout()
+            target_name_safe = target.replace(' ', '_').lower()
+            plt.savefig(os.path.join(self.run_dir, f'multi_day_predictions_{target_name_safe}.png'))
+            plt.close()
         
+        # Create a summary plot showing R² scores for all targets and days
+        self.plot_multi_day_summary(results)
+
+    def plot_multi_day_summary(self, results):
+        """Plot summary of R² scores for all targets and forecast days"""
+        # Prepare data for summary plot
+        targets = []
+        days = []
+        r2_scores = []
+        
+        for target, target_results in results.items():
+            for day, day_results in target_results.items():
+                targets.append(self.target_names[target])
+                days.append(f"Day {day}" if day > 0 else "Today")
+                r2_scores.append(day_results['metrics']['r2'])
+        
+        if not targets:
+            return
+            
+        # Create a pivot table-like structure for heatmap
+        import pandas as pd
+        summary_df = pd.DataFrame({
+            'Target': targets,
+            'Forecast_Day': days,
+            'R2_Score': r2_scores
+        })
+        
+        # Pivot for heatmap
+        pivot_df = summary_df.pivot(index='Target', columns='Forecast_Day', values='R2_Score')
+        
+        # Plot heatmap
+        plt.figure(figsize=(12, 8))
+        sns.heatmap(pivot_df, annot=True, cmap='RdYlBu_r', center=0.5, fmt='.3f',
+                   cbar_kws={'label': 'R² Score'})
+        plt.title('Multi-Target Multi-Day Prediction Performance (R² Scores)')
+        plt.xlabel('Forecast Horizon')
+        plt.ylabel('Target Variable')
         plt.tight_layout()
-        plt.savefig(os.path.join(self.run_dir, 'multi_day_predictions.png'))
+        plt.savefig(os.path.join(self.run_dir, 'multi_day_summary_heatmap.png'))
+        plt.close()
+        
+        # Also create a line plot showing performance degradation over forecast days
+        plt.figure(figsize=(12, 6))
+        
+        unique_targets = list(set(targets))
+        unique_days = sorted(list(set([int(d.split()[1]) if d != "Today" else 0 for d in days])))
+        
+        for target_name in unique_targets:
+            target_key = None
+            for key, name in self.target_names.items():
+                if name == target_name:
+                    target_key = key
+                    break
+            
+            if target_key and target_key in results:
+                target_r2_scores = []
+                target_days = []
+                
+                for day in unique_days:
+                    if day in results[target_key]:
+                        target_r2_scores.append(results[target_key][day]['metrics']['r2'])
+                        target_days.append(day)
+                
+                plt.plot(target_days, target_r2_scores, marker='o', label=target_name, linewidth=2)
+        
+        plt.xlabel('Forecast Day')
+        plt.ylabel('R² Score')
+        plt.title('Prediction Performance vs Forecast Horizon')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.run_dir, 'performance_vs_forecast_horizon.png'))
         plt.close()
 
-    def save_multi_day_models(self):
-        """Save multi-day models to disk"""
-        for day, model_data in self.multi_day_models.items():
-            model_dir = os.path.join(self.models_dir, f'day_{day}')
-            os.makedirs(model_dir, exist_ok=True)
+    def save_multi_target_models(self):
+        """Save all multi-target models to disk"""
+        # Save main models
+        for target, model_data in self.multi_target_models.items():
+            target_dir = os.path.join(self.models_dir, f'target_{target}')
+            os.makedirs(target_dir, exist_ok=True)
             
             # Save model
-            model_path = os.path.join(model_dir, 'gbm_model.pkl')
+            model_path = os.path.join(target_dir, 'gbm_model.pkl')
             joblib.dump(model_data['model'], model_path)
             
-            # Save scaler
-            scaler_path = os.path.join(model_dir, 'scaler.pkl')
-            joblib.dump(model_data['scaler'], scaler_path)
+            # Save scaler if exists
+            if model_data['scaler'] is not None:
+                scaler_path = os.path.join(target_dir, 'target_scaler.pkl')
+                joblib.dump(model_data['scaler'], scaler_path)
             
-            # Save feature list
-            features_path = os.path.join(model_dir, 'features.pkl')
-            with open(features_path, 'wb') as f:
-                pickle.dump(model_data['features_used'], f)
+            print(f"Saved {self.target_names[target]} model in {target_dir}")
+        
+        # Save multi-day models
+        for target, target_models in self.multi_day_models.items():
+            for day, model_data in target_models.items():
+                model_dir = os.path.join(self.models_dir, f'target_{target}', f'day_{day}')
+                os.makedirs(model_dir, exist_ok=True)
+                
+                # Save model
+                model_path = os.path.join(model_dir, 'gbm_model.pkl')
+                joblib.dump(model_data['model'], model_path)
+                
+                # Save scaler
+                scaler_path = os.path.join(model_dir, 'scaler.pkl')
+                joblib.dump(model_data['scaler'], scaler_path)
+                
+                # Save feature list
+                features_path = os.path.join(model_dir, 'features.pkl')
+                with open(features_path, 'wb') as f:
+                    pickle.dump(model_data['features_used'], f)
+        
+        # Save main feature scaler and feature list
+        main_scaler_path = os.path.join(self.models_dir, 'feature_scaler.pkl')
+        joblib.dump(self.scaler, main_scaler_path)
+        
+        features_path = os.path.join(self.models_dir, 'feature_columns.pkl')
+        with open(features_path, 'wb') as f:
+            pickle.dump(self.feature_columns, f)
             
-            print(f"Saved GBM model for {day}-day ahead prediction in {model_dir}")
+        print(f"\nSaved feature scaler and feature list in {self.models_dir}")
+        print(f"Saved multi-day models for {len(self.multi_day_models)} targets, {self.forecast_days + 1} days each")
 
     def train_and_evaluate(self, df):
-        """Train and evaluate the GBM model on the processed dataset"""
+        """Train and evaluate GBM models for all target variables"""
         try:
-            # Prepare feature matrix and target vector
+            print(f"\n=== Training Multi-Target Weather Prediction Models ===")
+            print(f"Target variables: {', '.join([self.target_names[t] for t in self.target_columns])}")
+            
+            # Prepare feature matrix
             X = df[self.feature_columns]
-            y = df[self.target_column]
-            
-            # Print shape of the feature matrix
             print(f"\nFeature matrix shape: {X.shape}")
+            print(f"Using {len(self.feature_columns)} features")
             
-            # Split into training and testing sets
+            # Split into training and testing sets (temporal split)
             train_size = int(0.8 * len(df))
             X_train = X.iloc[:train_size]
-            y_train = y.iloc[:train_size]
             X_test = X.iloc[train_size:]
-            y_test = y.iloc[train_size:]
             
-            # Save for later use in permutation importance
-            self.X_train = X_train
-            self.y_train = y_train
-            
-            # Scale features
-            self.X_train_scaled = self.scaler.fit_transform(X_train)
+            # Scale features once
+            X_train_scaled = self.scaler.fit_transform(X_train)
             X_test_scaled = self.scaler.transform(X_test)
             
-            # Train the model
-            print("\nTraining Gradient Boosting model...")
+            # Store for later use
+            self.X_train = X_train
+            self.X_train_scaled = X_train_scaled
             
-            self.model = GradientBoostingRegressor(
-                n_estimators=200,
-                learning_rate=0.1,
-                max_depth=5,
-                min_samples_split=5,
-                min_samples_leaf=4,
-                subsample=0.8,
-                random_state=42
-            )
+            # Train separate models for each target variable
+            all_metrics = {}
             
-            self.model.fit(self.X_train_scaled, y_train)
+            for target in self.target_columns:
+                if target not in df.columns:
+                    print(f"\nSkipping {target} - not found in dataset")
+                    continue
+                    
+                print(f"\n--- Training model for {self.target_names[target]} ({target}) ---")
+                
+                # Prepare target variable
+                y = df[target]
+                y_train = y.iloc[:train_size]
+                y_test = y.iloc[train_size:]
+                
+                # Scale target if needed (for regression targets)
+                target_scaler = StandardScaler()
+                if target in ['RR', 'ss', 'ff_avg']:  # These benefit from scaling
+                    y_train_scaled = target_scaler.fit_transform(y_train.values.reshape(-1, 1)).ravel()
+                    self.target_scalers[target] = target_scaler
+                else:
+                    y_train_scaled = y_train.values
+                    self.target_scalers[target] = None
+                
+                # Define model for this target
+                if target == 'ddd_car':  # Wind direction - circular regression
+                    model = GradientBoostingRegressor(
+                        n_estimators=150,
+                        learning_rate=0.08,
+                        max_depth=4,
+                        min_samples_split=8,
+                        min_samples_leaf=6,
+                        subsample=0.8,
+                        random_state=42
+                    )
+                elif target in ['RR', 'ss']:  # Rainfall and sunshine - can be zero-inflated
+                    model = GradientBoostingRegressor(
+                        n_estimators=200,
+                        learning_rate=0.05,
+                        max_depth=5,
+                        min_samples_split=5,
+                        min_samples_leaf=4,
+                        subsample=0.8,
+                        random_state=42
+                    )
+                else:  # Temperature and wind speed - more continuous
+                    model = GradientBoostingRegressor(
+                        n_estimators=180,
+                        learning_rate=0.06,
+                        max_depth=4,
+                        min_samples_split=6,
+                        min_samples_leaf=5,
+                        subsample=0.8,
+                        random_state=42
+                    )
+                
+                # Train the model
+                print(f"Training {target} model...")
+                model.fit(X_train_scaled, y_train_scaled)
+                
+                # Make predictions
+                y_pred_scaled = model.predict(X_test_scaled)
+                
+                # Inverse transform if scaling was applied
+                if self.target_scalers[target] is not None:
+                    y_pred = self.target_scalers[target].inverse_transform(y_pred_scaled.reshape(-1, 1)).ravel()
+                else:
+                    y_pred = y_pred_scaled
+                
+                # Apply constraints based on target type
+                if target == 'RR':  # Rainfall cannot be negative
+                    y_pred = np.maximum(y_pred, 0)
+                elif target == 'ss':  # Sunshine hours: 0-24 hours
+                    y_pred = np.clip(y_pred, 0, 24)
+                elif target == 'ff_avg':  # Wind speed cannot be negative
+                    y_pred = np.maximum(y_pred, 0)
+                elif target == 'ddd_car':  # Wind direction: 0-360 degrees
+                    y_pred = np.clip(y_pred % 360, 0, 360)
+                
+                # Calculate metrics
+                mse = mean_squared_error(y_test, y_pred)
+                rmse = np.sqrt(mse)
+                mae = mean_absolute_error(y_test, y_pred)
+                r2 = r2_score(y_test, y_pred)
+                
+                # Calculate additional metrics specific to target
+                if target == 'RR':
+                    # Rain-specific metrics
+                    rain_days_actual = (y_test > 0).sum()
+                    rain_days_predicted = (y_pred > 0).sum()
+                    rain_detection_accuracy = np.mean((y_test > 0) == (y_pred > 0))
+                    
+                    print(f"Rain Detection Accuracy: {rain_detection_accuracy:.4f}")
+                    print(f"Actual rain days: {rain_days_actual}, Predicted: {rain_days_predicted}")
+                
+                # Print metrics
+                print(f"\n{self.target_names[target]} Model Evaluation:")
+                print(f"  RMSE: {rmse:.4f}")
+                print(f"  MAE: {mae:.4f}")
+                print(f"  R²: {r2:.4f}")
+                
+                # Store model and results
+                self.multi_target_models[target] = {
+                    'model': model,
+                    'scaler': self.target_scalers[target],
+                    'metrics': {
+                        'MSE': mse,
+                        'RMSE': rmse,
+                        'MAE': mae,
+                        'R2': r2
+                    }
+                }
+                
+                # Save metrics for this target
+                self.save_metrics(self.multi_target_models[target]['metrics'], target)
+                
+                # Plot predictions for this target
+                test_dates = df.iloc[train_size:]['Tanggal'] if 'Tanggal' in df.columns else range(len(y_test))
+                self.plot_predictions(test_dates, y_test, y_pred, self.target_names[target])
+                
+                # Store for summary
+                all_metrics[target] = self.multi_target_models[target]['metrics']
             
-            # Make predictions on the test set
-            print("Making predictions...")
-            y_pred = self.model.predict(X_test_scaled)
+            # Print summary of all models
+            print(f"\n=== Multi-Target Model Summary ===")
+            for target, metrics in all_metrics.items():
+                print(f"{self.target_names[target]:25} - R²: {metrics['R2']:.4f}, RMSE: {metrics['RMSE']:.4f}")
             
-            # Evaluate model
-            mse = mean_squared_error(y_test, y_pred)
-            rmse = np.sqrt(mse)
-            mae = mean_absolute_error(y_test, y_pred)
-            r2 = r2_score(y_test, y_pred)
-            
-            # Print metrics
-            print("\nModel evaluation metrics:")
-            print(f"Mean Squared Error (MSE): {mse:.4f}")
-            print(f"Root Mean Squared Error (RMSE): {rmse:.4f}")
-            print(f"Mean Absolute Error (MAE): {mae:.4f}")
-            print(f"R-squared (R²): {r2:.4f}")
-            
-            # Save metrics
-            metrics = {
-                'MSE': mse,
-                'RMSE': rmse,
-                'MAE': mae,
-                'R2': r2
-            }
-            self.save_metrics(metrics)
-            
-            # Plot essential visualizations
+            # Plot comprehensive visualizations
+            print(f"\nGenerating visualization plots...")
             self.plot_feature_importance()
             self.plot_feature_correlations(df)
             self.plot_feature_distributions(df)
             self.plot_seasonal_patterns(df)
             
-            # Multi-day forecasting
-            print("\nPreparing multi-day forecasting dataset...")
+            # Multi-day forecasting for all targets
+            print(f"\n=== Multi-Day Forecasting ===")
+            print("Preparing multi-day forecasting dataset...")
             multi_day_data = self.prepare_multi_day_dataset(df)
             
-            print("\nTraining multi-day forecasting models...")
+            print("Training multi-day forecasting models...")
             multi_day_results = self.train_multi_day_models(multi_day_data)
             
             # Plot multi-day prediction results
             self.plot_multi_day_predictions(multi_day_results)
             
-            # Save the multi-day models
-            self.save_multi_day_models()
+            # Save all models
+            self.save_multi_target_models()
             
-            # Save the trained model
-            self.save_model()
-            
-            return metrics
+            return all_metrics
             
         except Exception as e:
             print(f"Error in model training and evaluation: {str(e)}")
             raise
 
     def save_model(self):
-        """Save the trained model, scaler, and feature list to disk"""
-        if self.model is None:
-            print("Model not trained yet, nothing to save.")
+        """Save the trained models - updated for multi-target"""
+        if not self.multi_target_models:
+            print("Models not trained yet, nothing to save.")
             return
             
-        model_path = os.path.join(self.models_dir, 'gbm_model.pkl')
-        scaler_path = os.path.join(self.models_dir, 'scaler.pkl')
-        features_path = os.path.join(self.models_dir, 'feature_columns.pkl')
-        
-        # Save model, scaler, and feature list
-        with open(model_path, 'wb') as f:
-            pickle.dump(self.model, f)
-            
-        with open(scaler_path, 'wb') as f:
-            pickle.dump(self.scaler, f)
-            
-        with open(features_path, 'wb') as f:
-            pickle.dump(self.feature_columns, f)
-            
-        print(f"\nModel saved to {model_path}")
-        print(f"Scaler saved to {scaler_path}")
-        print(f"Feature list saved to {features_path}")
+        self.save_multi_target_models()
 
 def main():
     try:
