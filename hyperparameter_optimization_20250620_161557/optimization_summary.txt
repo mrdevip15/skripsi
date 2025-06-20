@@ -1,0 +1,47 @@
+Hyperparameter Optimization Summary
+==================================================
+
+Date: 2025-06-20 16:25:48
+Total configurations tested: 500
+Targets optimized: 5
+
+Rainfall (mm):
+  Best R² Score: 0.9203
+  N Estimators: 400
+  Learning Rate: 0.15
+  Max Depth: 3
+  RMSE: 0.8119
+  Training Time: 0.28s
+
+Sunshine Duration (hours):
+  Best R² Score: 0.2173
+  N Estimators: 300
+  Learning Rate: 0.01
+  Max Depth: 8
+  RMSE: 2.2073
+  Training Time: 0.42s
+
+Average Temperature (°C):
+  Best R² Score: 0.9909
+  N Estimators: 300
+  Learning Rate: 0.1
+  Max Depth: 3
+  RMSE: 0.8985
+  Training Time: 0.21s
+
+Wind Direction (degrees):
+  Best R² Score: 0.0004
+  N Estimators: 50
+  Learning Rate: 0.01
+  Max Depth: 5
+  RMSE: 103.6908
+  Training Time: 0.05s
+
+Wind Speed (m/s):
+  Best R² Score: -0.0053
+  N Estimators: 50
+  Learning Rate: 0.01
+  Max Depth: 5
+  RMSE: 2.8363
+  Training Time: 0.05s
+
