@@ -611,8 +611,8 @@ class GBMWeatherPredictor:
             # Get feature importance
             feature_importance = model_data['model'].feature_importances_
             
-            # Sort features by importance (show top 10)
-            indices = np.argsort(feature_importance)[::-1][:10]
+            # Sort features by importance (show top 5)
+            indices = np.argsort(feature_importance)[::-1][:5]
             sorted_feature_names = [self.feature_columns[idx] for idx in indices]
             sorted_importance = feature_importance[indices]
             
@@ -620,7 +620,7 @@ class GBMWeatherPredictor:
             plt.barh(range(len(sorted_importance)), sorted_importance)
             plt.yticks(range(len(sorted_importance)), sorted_feature_names)
             plt.xlabel('Importance')
-            plt.title(f'Top 10 Features - {self.target_names[target]}')
+            plt.title(f'Top 5 Features - {self.target_names[target]}')
             plt.gca().invert_yaxis()  # Highest importance at top
             
         plt.tight_layout()
