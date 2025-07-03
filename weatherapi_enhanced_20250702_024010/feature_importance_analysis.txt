@@ -1,0 +1,75 @@
+WEATHERAPI ENHANCED FEATURE IMPORTANCE ANALYSIS
+==================================================
+
+
+Rainfall (mm):
+------------------------------
+ 1. RH_avg                         0.1940
+ 2. RH_avg_Lag_1                   0.1498
+ 3. Tx                             0.1364
+ 4. Tx_Lag_1                       0.1138
+ 5. Temp_Range                     0.0929
+ 6. Tn                             0.0659
+ 7. DayOfYear_cos                  0.0583
+ 8. Temp_Humidity                  0.0387
+ 9. Dew_Point                      0.0345
+10. ff_x                           0.0258
+11. Month_cos                      0.0217
+12. ddd_x                          0.0157
+13. Season                         0.0156
+14. DayOfYear_sin                  0.0125
+15. Month_sin                      0.0110
+
+Sunshine Duration (hours):
+------------------------------
+ 1. Tx_Lag_1                       0.2058
+ 2. RH_avg_Lag_1                   0.1781
+ 3. RH_avg                         0.1249
+ 4. Tx                             0.1072
+ 5. Temp_Range                     0.0885
+ 6. ff_x                           0.0510
+ 7. Tn                             0.0426
+ 8. Temp_Humidity                  0.0401
+ 9. Month_sin                      0.0385
+10. DayOfYear_cos                  0.0356
+11. Dew_Point                      0.0318
+12. Season                         0.0164
+13. DayOfYear_sin                  0.0134
+14. Month_cos                      0.0099
+15. Tn_Lag_1                       0.0084
+
+Average Temperature (°C):
+------------------------------
+ 1. RH_avg                         0.2478
+ 2. Tx                             0.2025
+ 3. Tn                             0.1588
+ 4. Temp_Range                     0.0955
+ 5. Tx_Lag_1                       0.0673
+ 6. Tn_Lag_1                       0.0492
+ 7. RH_avg_Lag_1                   0.0469
+ 8. Temp_Humidity                  0.0323
+ 9. DayOfYear_cos                  0.0217
+10. Dew_Point                      0.0176
+11. Month_cos                      0.0160
+12. DayOfYear_sin                  0.0143
+13. Season                         0.0120
+14. Month_sin                      0.0068
+15. ff_x                           0.0045
+
+Wind Speed (m/s):
+------------------------------
+ 1. ff_x                           0.5007
+ 2. DayOfYear_cos                  0.0732
+ 3. Season                         0.0639
+ 4. Temp_Range                     0.0525
+ 5. Month_cos                      0.0494
+ 6. Tn                             0.0451
+ 7. ddd_x                          0.0415
+ 8. Tx                             0.0291
+ 9. Tx_Lag_1                       0.0269
+10. Dew_Point                      0.0230
+11. Temp_Humidity                  0.0183
+12. DayOfYear_sin                  0.0173
+13. RH_avg_Lag_1                   0.0146
+14. Tn_Lag_1                       0.0137
+15. RH_avg                         0.0125

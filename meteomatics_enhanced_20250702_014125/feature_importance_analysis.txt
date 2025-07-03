@@ -1,0 +1,55 @@
+METEOMATICS ENHANCED FEATURE IMPORTANCE ANALYSIS
+==================================================
+
+
+Rainfall (mm):
+------------------------------
+ 1. RH_avg                         0.1387
+ 2. Tx_Rolling_Mean_3d             0.1235
+ 3. RH_avg_Rolling_Mean_3d         0.0974
+ 4. Tx                             0.0895
+ 5. Tx_Lag_1                       0.0690
+ 6. RH_avg_Lag_1                   0.0680
+ 7. Tn                             0.0471
+ 8. Temp_Range                     0.0429
+ 9. Dew_Point                      0.0313
+10. DayOfYear_cos                  0.0306
+
+Sunshine Duration (hours):
+------------------------------
+ 1. Tx_Rolling_Mean_3d             0.1576
+ 2. Tx_Lag_1                       0.1343
+ 3. RH_avg_Lag_1                   0.1148
+ 4. Tx                             0.1019
+ 5. RH_avg                         0.0933
+ 6. RH_avg_Rolling_Mean_3d         0.0919
+ 7. ff_x                           0.0521
+ 8. Temp_Humidity                  0.0387
+ 9. Temp_Range                     0.0338
+10. Dew_Point                      0.0287
+
+Average Temperature (°C):
+------------------------------
+ 1. RH_avg                         0.2348
+ 2. Tx_Rolling_Mean_3d             0.1582
+ 3. Tx                             0.1526
+ 4. Tn                             0.1142
+ 5. Tn_Rolling_Mean_3d             0.0744
+ 6. RH_avg_Rolling_Mean_3d         0.0508
+ 7. Temp_Range                     0.0350
+ 8. Tx_Lag_1                       0.0218
+ 9. Temp_Humidity                  0.0216
+10. Tn_Lag_1                       0.0194
+
+Wind Speed (m/s):
+------------------------------
+ 1. ff_x                           0.4072
+ 2. DayOfYear_cos                  0.0685
+ 3. Temp_Range                     0.0380
+ 4. Tx_Rolling_Mean_3d             0.0378
+ 5. Temp_Humidity                  0.0372
+ 6. Tn                             0.0364
+ 7. Month_cos                      0.0342
+ 8. RH_avg_Rolling_Mean_3d         0.0336
+ 9. Tx                             0.0326
+10. ddd_x                          0.0324
