@@ -19,6 +19,7 @@ from sklearn.base import clone
 import warnings
 from tqdm import tqdm  # For progress bars
 import time
+from typing import cast
 
 # Configure parallel processing
 import multiprocessing
@@ -770,33 +771,45 @@ class GBMWeatherPredictor:
         results = {}
         
         # Define base model configurations for different targets
-        model_configs = {
-            'RR': GradientBoostingRegressor(
-                n_estimators=200, learning_rate=0.05, max_depth=5,
-                min_samples_split=5, min_samples_leaf=4, subsample=0.8,
-                max_features='sqrt', random_state=42
-            ),
-            'ss': GradientBoostingRegressor(
-                n_estimators=180, learning_rate=0.06, max_depth=4,
-                min_samples_split=6, min_samples_leaf=5, subsample=0.8,
-                max_features='sqrt', random_state=42
-            ),
-            'Tavg': GradientBoostingRegressor(
-                n_estimators=150, learning_rate=0.08, max_depth=4,
-                min_samples_split=8, min_samples_leaf=6, subsample=0.8,
-                max_features='sqrt', random_state=42
-            ),
-            'ddd_car': GradientBoostingRegressor(
-                n_estimators=150, learning_rate=0.08, max_depth=4,
-                min_samples_split=8, min_samples_leaf=6, subsample=0.8,
-                max_features='sqrt', random_state=42
-            ),
-            'ff_avg': GradientBoostingRegressor(
-                n_estimators=160, learning_rate=0.07, max_depth=4,
-                min_samples_split=7, min_samples_leaf=5, subsample=0.8,
-                max_features='sqrt', random_state=42
-            )
-        }
+        def get_model_config(target_name: str) -> GradientBoostingRegressor:
+            """Get model configuration for a specific target"""
+            if target_name == 'RR':
+                return GradientBoostingRegressor(
+                    n_estimators=200, learning_rate=0.05, max_depth=5,
+                    min_samples_split=5, min_samples_leaf=4, subsample=0.8,
+                    max_features='sqrt', random_state=42
+                )
+            elif target_name == 'ss':
+                return GradientBoostingRegressor(
+                    n_estimators=180, learning_rate=0.06, max_depth=4,
+                    min_samples_split=6, min_samples_leaf=5, subsample=0.8,
+                    max_features='sqrt', random_state=42
+                )
+            elif target_name == 'Tavg':
+                return GradientBoostingRegressor(
+                    n_estimators=150, learning_rate=0.08, max_depth=4,
+                    min_samples_split=8, min_samples_leaf=6, subsample=0.8,
+                    max_features='sqrt', random_state=42
+                )
+            elif target_name == 'ddd_car':
+                return GradientBoostingRegressor(
+                    n_estimators=150, learning_rate=0.08, max_depth=4,
+                    min_samples_split=8, min_samples_leaf=6, subsample=0.8,
+                    max_features='sqrt', random_state=42
+                )
+            elif target_name == 'ff_avg':
+                return GradientBoostingRegressor(
+                    n_estimators=160, learning_rate=0.07, max_depth=4,
+                    min_samples_split=7, min_samples_leaf=5, subsample=0.8,
+                    max_features='sqrt', random_state=42
+                )
+            else:
+                # Default to RR config
+                return GradientBoostingRegressor(
+                    n_estimators=200, learning_rate=0.05, max_depth=5,
+                    min_samples_split=5, min_samples_leaf=4, subsample=0.8,
+                    max_features='sqrt', random_state=42
+                )
         
         # Process each target variable
         for target in self.target_columns:
@@ -854,7 +867,7 @@ class GBMWeatherPredictor:
                 fold_predictions = []
                 
                 # Get base model for this target
-                base_model = model_configs.get(target, model_configs['RR'])  # Default to RR config
+                base_model = get_model_config(target)
                 
                 # Process each fold
                 for fold, (train_idx, val_idx) in enumerate(tscv.split(X_train_scaled)):
@@ -869,7 +882,7 @@ class GBMWeatherPredictor:
                     
                     try:
                         # Train model
-                        model = clone(base_model)
+                        model = cast(GradientBoostingRegressor, clone(base_model))
                         model.fit(X_fold_train, y_fold_train)
                         
                         # Validate
