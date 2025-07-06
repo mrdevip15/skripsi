@@ -19,6 +19,8 @@ from sklearn.base import clone
 import warnings
 from tqdm import tqdm  # For progress bars
 import time
+import shap  # For SHAP analysis
+from matplotlib.patches import Rectangle
 
 # Configure parallel processing
 import multiprocessing
@@ -313,9 +315,12 @@ class IMakasWeatherPredictor:
         plt.savefig(os.path.join(self.run_dir, 'temporal_patterns.png'))
         plt.close()
 
-    def plot_predictions(self, dates, actual, predicted, target_name='Target'):
-        """Plot actual vs predicted values for a specific target"""
-        plt.figure(figsize=(15, 6))
+    def plot_predictions(self, dates, actual, predicted, target_name='Target', metrics=None):
+        """Plot actual vs predicted values for a specific target with metrics"""
+        plt.figure(figsize=(15, 8))
+        
+        # Main prediction plot
+        plt.subplot(2, 1, 1)
         plt.plot(dates, actual, marker='o', linestyle='-', label='Aktual', alpha=0.7, markersize=2)
         plt.plot(dates, predicted, marker='x', linestyle='-', label='Prediksi', alpha=0.7, markersize=2)
         plt.title(f'Aktual vs Prediksi {target_name}')
@@ -324,6 +329,31 @@ class IMakasWeatherPredictor:
         plt.legend()
         plt.grid(True, alpha=0.3)
         plt.xticks(rotation=45)
+        
+        # Add metrics text box if provided
+        if metrics:
+            metrics_text = (f"R² = {metrics.get('r2', metrics.get('R2', 0)):.4f}\n"
+                           f"RMSE = {metrics.get('rmse', metrics.get('RMSE', 0)):.4f}\n"
+                           f"MAE = {metrics.get('mae', metrics.get('MAE', 0)):.4f}")
+            plt.text(0.02, 0.98, metrics_text, transform=plt.gca().transAxes,
+                    fontsize=12, verticalalignment='top',
+                    bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+        
+        # Scatter plot for correlation visualization
+        plt.subplot(2, 1, 2)
+        plt.scatter(actual, predicted, alpha=0.5, s=1)
+        
+        # Perfect prediction line
+        min_val = min(min(actual), min(predicted))
+        max_val = max(max(actual), max(predicted))
+        plt.plot([min_val, max_val], [min_val, max_val], 'r--', label='Prediksi Sempurna')
+        
+        plt.xlabel(f'Aktual {target_name}')
+        plt.ylabel(f'Prediksi {target_name}')
+        plt.title(f'Korelasi Aktual vs Prediksi {target_name}')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        
         plt.tight_layout()
         
         # Improved filename sanitization
@@ -372,6 +402,199 @@ class IMakasWeatherPredictor:
             
         plt.tight_layout()
         plt.savefig(os.path.join(self.run_dir, 'multi_target_feature_importance.png'))
+        plt.close()
+
+    def plot_multi_target_accuracy_vs_horizon(self, multi_hour_results):
+        """Plot accuracy (R²) vs forecast horizon for all targets"""
+        plt.figure(figsize=(12, 8))
+        
+        # Prepare data
+        targets = []
+        horizons = []
+        r2_scores = []
+        rmse_scores = []
+        
+        for target, target_results in multi_hour_results.items():
+            for hour, results in target_results.items():
+                targets.append(self.target_names[target])
+                horizons.append(hour)
+                r2_scores.append(results['metrics']['r2'])
+                rmse_scores.append(results['metrics']['rmse'])
+        
+        # Create DataFrame for easier plotting
+        df_results = pd.DataFrame({
+            'Target': targets,
+            'Horizon': horizons,
+            'R2': r2_scores,
+            'RMSE': rmse_scores
+        })
+        
+        # Plot R² vs Horizon
+        plt.subplot(2, 1, 1)
+        for target_name in df_results['Target'].unique():
+            target_data = df_results[df_results['Target'] == target_name]
+            plt.plot(target_data['Horizon'], target_data['R2'], 
+                    marker='o', linewidth=2, markersize=6, label=target_name)
+            
+            # Add R² values as text
+            for _, row in target_data.iterrows():
+                plt.annotate(f'{row["R2"]:.3f}', 
+                           (row['Horizon'], row['R2']),
+                           textcoords="offset points", 
+                           xytext=(0,10), ha='center', fontsize=8)
+        
+        plt.xlabel('Horison Prediksi (Jam)')
+        plt.ylabel('Akurasi (R²)')
+        plt.title('Akurasi Prediksi vs Horison Waktu untuk Semua Target')
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.grid(True, alpha=0.3)
+        plt.ylim(0, 1)
+        
+        # Plot RMSE vs Horizon (normalized for comparison)
+        plt.subplot(2, 1, 2)
+        for target_name in df_results['Target'].unique():
+            target_data = df_results[df_results['Target'] == target_name]
+            # Normalize RMSE by the maximum value for each target for comparison
+            max_rmse = target_data['RMSE'].max()
+            normalized_rmse = target_data['RMSE'] / max_rmse
+            plt.plot(target_data['Horizon'], normalized_rmse, 
+                    marker='s', linewidth=2, markersize=6, label=target_name, linestyle='--')
+        
+        plt.xlabel('Horison Prediksi (Jam)')
+        plt.ylabel('RMSE Ternormalisasi')
+        plt.title('RMSE Ternormalisasi vs Horison Waktu')
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.grid(True, alpha=0.3)
+        plt.ylim(0, 1.1)
+        
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.run_dir, 'multi_target_accuracy_vs_horizon.png'), 
+                   bbox_inches='tight', dpi=300)
+        plt.close()
+        
+        # Create summary table
+        summary_table = df_results.pivot(index='Target', columns='Horizon', values='R2')
+        
+        # Plot heatmap of R² scores
+        plt.figure(figsize=(10, 6))
+        sns.heatmap(summary_table, annot=True, cmap='RdYlBu_r', center=0.5, fmt='.3f',
+                   cbar_kws={'label': 'Skor R²'}, square=True)
+        plt.title('Heatmap Akurasi (R²) untuk Semua Target dan Horison Prediksi')
+        plt.xlabel('Horison Prediksi (Jam)')
+        plt.ylabel('Variabel Target')
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.run_dir, 'accuracy_heatmap.png'), 
+                   bbox_inches='tight', dpi=300)
+        plt.close()
+
+    def perform_shap_analysis(self, target_models, sample_data, max_samples=1000):
+        """Perform SHAP analysis for feature importance and interpretability"""
+        print("\n=== Performing SHAP Analysis ===")
+        
+        # Sample data for SHAP analysis (to reduce computation time)
+        if len(sample_data) > max_samples:
+            sample_indices = np.random.choice(len(sample_data), max_samples, replace=False)
+            sample_X = sample_data.iloc[sample_indices][self.feature_columns]
+        else:
+            sample_X = sample_data[self.feature_columns]
+        
+        # Scale the sample data
+        sample_X_scaled = self.scaler.transform(sample_X)
+        
+        shap_results = {}
+        
+        for target, model_data in target_models.items():
+            print(f"\nAnalyzing SHAP for {self.target_names[target]}...")
+            
+            try:
+                # Create SHAP explainer
+                explainer = shap.TreeExplainer(model_data['model'])
+                shap_values = explainer.shap_values(sample_X_scaled)
+                
+                # Store results
+                shap_results[target] = {
+                    'explainer': explainer,
+                    'shap_values': shap_values,
+                    'sample_data': sample_X_scaled,
+                    'feature_names': self.feature_columns
+                }
+                
+                # Plot SHAP summary
+                plt.figure(figsize=(10, 8))
+                shap.summary_plot(shap_values, sample_X_scaled, 
+                                feature_names=self.feature_columns,
+                                show=False, max_display=15)
+                plt.title(f'SHAP Summary Plot - {self.target_names[target]}')
+                plt.tight_layout()
+                
+                # Safe filename for target
+                safe_target = target.replace('/', '_').replace('%', 'pct').replace(' ', '_')
+                plt.savefig(os.path.join(self.run_dir, f'shap_summary_{safe_target}.png'), 
+                           bbox_inches='tight', dpi=300)
+                plt.close()
+                
+                # Plot SHAP feature importance
+                plt.figure(figsize=(10, 6))
+                shap.summary_plot(shap_values, sample_X_scaled,
+                                feature_names=self.feature_columns,
+                                plot_type="bar", show=False, max_display=15)
+                plt.title(f'SHAP Feature Importance - {self.target_names[target]}')
+                plt.tight_layout()
+                plt.savefig(os.path.join(self.run_dir, f'shap_importance_{safe_target}.png'), 
+                           bbox_inches='tight', dpi=300)
+                plt.close()
+                
+                print(f"  ✓ SHAP analysis completed for {self.target_names[target]}")
+                
+            except Exception as e:
+                print(f"  ✗ SHAP analysis failed for {target}: {str(e)}")
+                continue
+        
+        # Create combined SHAP importance plot
+        if shap_results:
+            self.plot_combined_shap_importance(shap_results)
+        
+        return shap_results
+
+    def plot_combined_shap_importance(self, shap_results):
+        """Plot combined SHAP importance for all targets"""
+        plt.figure(figsize=(15, 10))
+        
+        n_targets = len(shap_results)
+        n_cols = 2
+        n_rows = (n_targets + n_cols - 1) // n_cols
+        
+        for i, (target, shap_data) in enumerate(shap_results.items(), 1):
+            plt.subplot(n_rows, n_cols, i)
+            
+            # Calculate mean absolute SHAP values for feature importance
+            shap_values = shap_data['shap_values']
+            feature_names = shap_data['feature_names']
+            
+            mean_shap_values = np.mean(np.abs(shap_values), axis=0)
+            
+            # Sort features by importance
+            sorted_indices = np.argsort(mean_shap_values)[::-1][:10]  # Top 10
+            sorted_features = [feature_names[idx] for idx in sorted_indices]
+            sorted_importance = mean_shap_values[sorted_indices]
+            
+            # Plot horizontal bar chart
+            y_pos = np.arange(len(sorted_features))
+            plt.barh(y_pos, sorted_importance)
+            plt.yticks(y_pos, sorted_features)
+            plt.xlabel('Mean |SHAP Value|')
+            plt.title(f'{self.target_names[target]}')
+            plt.gca().invert_yaxis()
+            
+            # Add values as text
+            for j, v in enumerate(sorted_importance):
+                plt.text(v + max(sorted_importance) * 0.01, j, f'{v:.3f}', 
+                        va='center', fontsize=8)
+        
+        plt.suptitle('SHAP Feature Importance untuk Semua Target', fontsize=16)
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.run_dir, 'combined_shap_importance.png'), 
+                   bbox_inches='tight', dpi=300)
         plt.close()
 
     def plot_feature_importance(self):
@@ -621,7 +844,8 @@ class IMakasWeatherPredictor:
                 # Plot results for this target and hour
                 hour_label = f"{hours} Jam Ke Depan"
                 target_name = self.target_names[target]
-                self.plot_predictions(test_dates, y_test, final_predictions, f"{target_name} - {hour_label}")
+                self.plot_predictions(test_dates, y_test, final_predictions, 
+                                    f"{target_name} - {hour_label}", final_metrics)
                 
         return results
 
@@ -745,7 +969,8 @@ class IMakasWeatherPredictor:
                 
                 # Plot predictions for this target
                 test_dates = df.iloc[train_size:]['DateTime'] if 'DateTime' in df.columns else range(len(y_test))
-                self.plot_predictions(test_dates, y_test, y_pred, self.target_names[target])
+                self.plot_predictions(test_dates, y_test, y_pred, self.target_names[target], 
+                                    self.multi_target_models[target]['metrics'])
                 
                 # Store for summary
                 all_metrics[target] = self.multi_target_models[target]['metrics']
@@ -768,6 +993,21 @@ class IMakasWeatherPredictor:
             
             print("Training multi-hour forecasting models...")
             multi_hour_results = self.train_multi_hour_models(multi_hour_data)
+            
+            # Plot multi-target accuracy vs forecast horizon
+            print(f"\nGenerating multi-target accuracy analysis...")
+            self.plot_multi_target_accuracy_vs_horizon(multi_hour_results)
+            
+            # Perform SHAP analysis
+            print(f"\nPerforming SHAP analysis...")
+            try:
+                # Use a sample of the training data for SHAP analysis
+                train_sample = df.iloc[:train_size].sample(n=min(1000, train_size), random_state=42)
+                shap_results = self.perform_shap_analysis(self.multi_target_models, train_sample)
+                print("SHAP analysis completed successfully!")
+            except Exception as e:
+                print(f"SHAP analysis failed: {str(e)}")
+                print("Continuing without SHAP analysis...")
             
             return all_metrics
             
