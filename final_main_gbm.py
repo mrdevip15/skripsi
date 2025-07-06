@@ -55,11 +55,11 @@ class GBMWeatherPredictor:
         # Define multiple target variables
         self.target_columns = ['RR', 'ss', 'Tavg', 'ddd_car', 'ff_avg']
         self.target_names = {
-            'RR': 'Rainfall (mm)',
-            'ss': 'Sunshine Duration (hours)',
-            'Tavg': 'Average Temperature (°C)',
-            'ddd_car': 'Wind Direction',
-            'ff_avg': 'Wind Speed (m/s)'
+            'RR': 'Curah Hujan (mm)',
+            'ss': 'Lama Penyinaran Matahari (jam)',
+            'Tavg': 'Suhu Rata-rata (°C)',
+            'ddd_car': 'Arah Angin',
+            'ff_avg': 'Kecepatan Angin (m/s)'
         }
         
         # Reduced set of most important features (excluding target variables from features)
@@ -103,7 +103,7 @@ class GBMWeatherPredictor:
         self.run_dir = os.path.join(self.plots_dir, self.timestamp)
         os.makedirs(self.run_dir, exist_ok=True)
 
-    def plot_target_distributions(self, df, save_path, title_prefix="Target Variable Distribution"):
+    def plot_target_distributions(self, df, save_path, title_prefix="Distribusi Variabel Target"):
         """Plot distributions of all target variables"""
         n_targets = len(self.target_columns)
         n_cols = 3
@@ -116,12 +116,12 @@ class GBMWeatherPredictor:
                 plt.hist(df[target].dropna(), bins=50, alpha=0.7)
                 plt.title(f'{self.target_names[target]}')
                 plt.xlabel(target)
-                plt.ylabel('Frequency')
+                plt.ylabel('Frekuensi')
         plt.tight_layout()
         plt.savefig(os.path.join(save_path, f"{title_prefix.lower().replace(' ', '_')}.png"))
         plt.close()
 
-    def plot_rainfall_distribution(self, df, save_path, title="Rainfall Distribution"):
+    def plot_rainfall_distribution(self, df, save_path, title="Distribusi Curah Hujan"):
         """Plot rainfall distribution - updated to use new method"""
         self.plot_target_distributions(df, save_path, title)
 
@@ -204,7 +204,7 @@ class GBMWeatherPredictor:
                         print(f"  - Successfully interpolated all {special_count} special values in '{col}'")
             
             # Plot original distribution
-            self.plot_target_distributions(df, self.run_dir, "Original Target Variables Distribution")
+            self.plot_target_distributions(df, self.run_dir, "Distribusi Awal Variabel Target")
             
             # Convert wind direction to numeric
             wind_dir_map = {
@@ -496,7 +496,7 @@ class GBMWeatherPredictor:
         plt.figure(figsize=(14, 12))
         sns.heatmap(corr, annot=True, cmap='coolwarm', center=0, fmt='.2f', 
                    square=True, cbar_kws={"shrink": .8})
-        plt.title('Feature Correlations with Target Variables')
+        plt.title('Korelasi Fitur dengan Variabel Target')
         plt.tight_layout()
         plt.savefig(os.path.join(self.run_dir, 'feature_correlations.png'))
         plt.close()
@@ -535,7 +535,7 @@ class GBMWeatherPredictor:
                 plt.title(f'{self.target_names.get(feature, feature)} (Target)')
             else:
                 avg_corr = feature_importance.get(feature, 0)
-                plt.title(f'{feature} (avg corr: {avg_corr:.2f})')
+                plt.title(f'{feature} (korelasi rata-rata: {avg_corr:.2f})')
         plt.tight_layout()
         plt.savefig(os.path.join(self.run_dir, 'feature_distributions.png'))
         plt.close()
@@ -554,11 +554,11 @@ class GBMWeatherPredictor:
                 plt.subplot(n_rows, n_cols, plot_idx)
                 monthly_avg = df.groupby('Month')[target].mean()
                 monthly_avg.plot(kind='bar')
-                plt.title(f'Average {self.target_names[target]} by Month')
-                plt.xlabel('Month')
+                plt.title(f'Rata-rata {self.target_names[target]} per Bulan')
+                plt.xlabel('Bulan')
                 plt.ylabel(self.target_names[target])
-                plt.xticks(range(12), ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], rotation=45)
+                plt.xticks(range(12), ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 
+                                     'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'], rotation=45)
                 plot_idx += 1
                 
         plt.tight_layout()
@@ -568,10 +568,10 @@ class GBMWeatherPredictor:
     def plot_predictions(self, dates, actual, predicted, target_name='Target'):
         """Plot actual vs predicted values for a specific target"""
         plt.figure(figsize=(15, 6))
-        plt.plot(dates, actual, marker='o', linestyle='-', label='Actual', alpha=0.7)
-        plt.plot(dates, predicted, marker='x', linestyle='-', label='Predicted', alpha=0.7)
-        plt.title(f'Actual vs Predicted {target_name}')
-        plt.xlabel('Date')
+        plt.plot(dates, actual, marker='o', linestyle='-', label='Aktual', alpha=0.7)
+        plt.plot(dates, predicted, marker='x', linestyle='-', label='Prediksi', alpha=0.7)
+        plt.title(f'Aktual vs Prediksi {target_name}')
+        plt.xlabel('Tanggal')
         plt.ylabel(target_name)
         plt.legend()
         plt.grid(True, alpha=0.3)
@@ -619,8 +619,8 @@ class GBMWeatherPredictor:
             # Plot horizontal bar chart
             plt.barh(range(len(sorted_importance)), sorted_importance)
             plt.yticks(range(len(sorted_importance)), sorted_feature_names)
-            plt.xlabel('Importance')
-            plt.title(f'Top 5 Features - {self.target_names[target]}')
+            plt.xlabel('Kepentingan')
+            plt.title(f'5 Fitur Teratas - {self.target_names[target]}')
             plt.gca().invert_yaxis()  # Highest importance at top
             
         plt.tight_layout()
@@ -677,7 +677,7 @@ class GBMWeatherPredictor:
                 
             multi_day_data[target] = {}
             
-            # For day 0 (today) - current day prediction
+            # For day 0 (hari ini) - current day prediction
             day_df = df_copy[['Tanggal'] + self.feature_columns].copy()
             day_df[f'Future_{target}_0d'] = df_copy[target]
             day_df = day_df.dropna()  # Remove any remaining NaN rows
@@ -717,8 +717,8 @@ class GBMWeatherPredictor:
         plt.figure(figsize=(15, 6))
         
         # Plot actual and predicted values
-        plt.plot(dates, actual, 'o-', label='Actual', alpha=0.7, markersize=4)
-        plt.plot(dates, predicted, 'x-', label='Predicted', alpha=0.7, markersize=4)
+        plt.plot(dates, actual, 'o-', label='Aktual', alpha=0.7, markersize=4)
+        plt.plot(dates, predicted, 'x-', label='Prediksi', alpha=0.7, markersize=4)
         
         # Add metrics as text
         metrics_text = (f"RMSE: {metrics['rmse']:.2f}\n"
@@ -730,14 +730,14 @@ class GBMWeatherPredictor:
                     verticalalignment='top')
         
         # Customize plot
-        day_label = "Today" if day == 0 else f"{day}-Day Ahead"
-        full_title = f'{day_label} Prediction'
+        day_label = "Hari Ini" if day == 0 else f"{day} Hari Ke Depan"
+        full_title = f'Prediksi {day_label}'
         if title_suffix:
             full_title = f'{title_suffix}'
             
         plt.title(full_title)
-        plt.xlabel('Date')
-        plt.ylabel('Value')
+        plt.xlabel('Tanggal')
+        plt.ylabel('Nilai')
         plt.legend(loc='upper right')
         plt.grid(True, alpha=0.3)
         
@@ -987,24 +987,24 @@ class GBMWeatherPredictor:
                 predicted = target_results[day]['y_pred']
                 metrics = target_results[day]['metrics']
                 
-                plt.plot(dates, actual, marker='o', markersize=4, linestyle='-', label='Actual', alpha=0.7)
-                plt.plot(dates, predicted, marker='x', markersize=4, linestyle='-', label='Predicted', alpha=0.7)
+                plt.plot(dates, actual, marker='o', markersize=4, linestyle='-', label='Aktual', alpha=0.7)
+                plt.plot(dates, predicted, marker='x', markersize=4, linestyle='-', label='Prediksi', alpha=0.7)
                 
                 # Format and add metrics to the plot
                 metrics_text = f"RMSE: {metrics['rmse']:.2f}, MAE: {metrics['mae']:.2f}, R²: {metrics['r2']:.2f}"
                 
                 # Special title for day 0
                 if day == 0:
-                    plt.title(f'{self.target_names[target]} - Today\'s Prediction - {metrics_text}')
+                    plt.title(f'{self.target_names[target]} - Prediksi Hari Ini - {metrics_text}')
                 else:
-                    plt.title(f'{self.target_names[target]} - {day}-Day Ahead Prediction - {metrics_text}')
+                    plt.title(f'{self.target_names[target]} - Prediksi {day} Hari Ke Depan - {metrics_text}')
                     
                 plt.ylabel(self.target_names[target])
                 plt.legend()
                 plt.grid(True, alpha=0.3)
                 
                 if i == n_days - 1:  # Only show dates on bottom subplot
-                    plt.xlabel('Date')
+                    plt.xlabel('Tanggal')
                     plt.xticks(rotation=45)
                 else:
                     plt.xticks([])  # Hide x ticks for non-bottom subplots
@@ -1027,7 +1027,7 @@ class GBMWeatherPredictor:
         for target, target_results in results.items():
             for day, day_results in target_results.items():
                 targets.append(self.target_names[target])
-                days.append(f"Day {day}" if day > 0 else "Today")
+                days.append(f"Hari {day}" if day > 0 else "Hari Ini")
                 r2_scores.append(day_results['metrics']['r2'])
         
         if not targets:
@@ -1047,10 +1047,10 @@ class GBMWeatherPredictor:
         # Plot heatmap
         plt.figure(figsize=(12, 8))
         sns.heatmap(pivot_df, annot=True, cmap='RdYlBu_r', center=0.5, fmt='.3f',
-                   cbar_kws={'label': 'R² Score'})
-        plt.title('Multi-Target Multi-Day Prediction Performance (R² Scores)')
-        plt.xlabel('Forecast Horizon')
-        plt.ylabel('Target Variable')
+                   cbar_kws={'label': 'Skor R²'})
+        plt.title('Performa Prediksi Multi-Target Multi-Hari (Skor R²)')
+        plt.xlabel('Horison Prediksi')
+        plt.ylabel('Variabel Target')
         plt.tight_layout()
         plt.savefig(os.path.join(self.run_dir, 'multi_day_summary_heatmap.png'))
         plt.close()
@@ -1059,7 +1059,7 @@ class GBMWeatherPredictor:
         plt.figure(figsize=(12, 6))
         
         unique_targets = list(set(targets))
-        unique_days = sorted(list(set([int(d.split()[1]) if d != "Today" else 0 for d in days])))
+        unique_days = sorted(list(set([int(d.split()[1]) if d != "Hari Ini" else 0 for d in days])))
         
         for target_name in unique_targets:
             target_key = None
@@ -1079,9 +1079,9 @@ class GBMWeatherPredictor:
                 
                 plt.plot(target_days, target_r2_scores, marker='o', label=target_name, linewidth=2)
         
-        plt.xlabel('Forecast Day')
-        plt.ylabel('R² Score')
-        plt.title('Prediction Performance vs Forecast Horizon')
+        plt.xlabel('Hari Prediksi')
+        plt.ylabel('Skor R²')
+        plt.title('Performa Prediksi vs Horison Prediksi')
         plt.legend()
         plt.grid(True, alpha=0.3)
         plt.tight_layout()
