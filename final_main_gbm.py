@@ -413,7 +413,7 @@ class GBMWeatherPredictor:
             # Update feature columns with new features that were successfully created
             # Exclude target variables from features
             base_features = [
-                'Tn', 'Tx', 'RH_avg', 'ss', 'ff_x', 'ddd_x',  # Basic measurements (excluding targets)
+                'Tn', 'Tx', 'RH_avg', 'ff_x', 'ddd_x',  # Basic measurements (excluding targets)
                 'Month', 'Day', 'DayOfWeek', 'Season', 'Temp_Range',
                 'Month_sin', 'Month_cos', 'Day_sin', 'Day_cos', 'DayOfYear_sin', 'DayOfYear_cos',
                 'Temp_Humidity', 'Temp_Range_RH', 'Dew_Point', 'Heat_Index',
@@ -424,13 +424,44 @@ class GBMWeatherPredictor:
             self.feature_columns = [f for f in base_features if f not in self.target_columns and f in df.columns]
             
             # Add rolling and lag features if they exist and don't have NaN values
+            rolling_lag_features_added = []
             for col in df.columns:
                 if (any(col.startswith(prefix) for prefix in 
                        [f'{target}_Rolling_' for target in self.target_columns] + 
                        [f'{target}_Lag_' for target in self.target_columns] + 
                        ['Rain_Binary_Lag_', 'Sunny_Binary_Lag_', 'RH_Rolling_']) 
                     and not df[col].isna().any() and col not in self.target_columns):
-                    self.feature_columns.append(col)
+                    # Exclude ALL rolling and lag features to see impact of engineered features
+                    # if not col.endswith('Rolling_Mean_3d'):
+                    #     self.feature_columns.append(col)
+                    #     rolling_lag_features_added.append(col)
+                    pass  # Skip all rolling and lag features
+            
+            print(f"\nRolling and lag features excluded: All rolling and lag features removed")
+            print(f"Only using basic features and engineered features")
+            
+            # Add engineered features that might have been missed
+            engineered_features = [
+                'Temp_Range', 'Temp_Humidity', 'Temp_Range_RH', 'Dew_Point', 'Heat_Index',
+                'Rain_Streak', 'Dry_Streak', 'Month_sin', 'Month_cos', 'Day_sin', 'Day_cos',
+                'DayOfYear_sin', 'DayOfYear_cos'
+            ]
+
+            engineered_features_available = [f for f in engineered_features if f in df.columns]
+            engineered_features_added = []
+
+            for feature in engineered_features:
+                if feature in df.columns and feature not in self.feature_columns and feature not in self.target_columns:
+                    if not df[feature].isna().any():
+                        self.feature_columns.append(feature)
+                        engineered_features_added.append(feature)
+                        print(f"Added engineered feature: {feature}")
+
+            print(f"\nEngineered features summary:")
+            print(f"Available in dataset: {len(engineered_features_available)}/{len(engineered_features)}")
+            print(f"Added to model: {len(engineered_features_added)}")
+            print(f"Available features: {', '.join(engineered_features_available)}")
+            print(f"Added features: {', '.join(engineered_features_added)}")
             
             # Print final stats for all target variables
             print(f"\nFinal dataset size: {len(df)}")
@@ -453,9 +484,12 @@ class GBMWeatherPredictor:
             else:
                 print("\nNo NaN values remain in the dataset - interpolation successful!")
             
-            # Final feature list
-            print(f"\nFinal feature list ({len(self.feature_columns)} features):")
-            print(', '.join(self.feature_columns))
+            # Print feature importance debugging info
+            print(f"\nFeature engineering summary:")
+            print(f"Total features available: {len(df.columns)}")
+            print(f"Target variables: {self.target_columns}")
+            print(f"Features used in model: {len(self.feature_columns)}")
+            print(f"Engineered features included: {[f for f in self.feature_columns if f in engineered_features]}")
             
             return df
             
@@ -704,8 +738,8 @@ class GBMWeatherPredictor:
             # Get feature importance
             feature_importance = model_data['model'].feature_importances_
             
-            # Sort features by importance (show top 5)
-            indices = np.argsort(feature_importance)[::-1][:5]
+            # Sort features by importance (show top 10 instead of 5)
+            indices = np.argsort(feature_importance)[::-1][:10]
             sorted_feature_names = [self.feature_columns[idx] for idx in indices]
             sorted_importance = feature_importance[indices]
             
@@ -713,12 +747,74 @@ class GBMWeatherPredictor:
             plt.barh(range(len(sorted_importance)), sorted_importance)
             plt.yticks(range(len(sorted_importance)), sorted_feature_names)
             plt.xlabel('Importance')
-            plt.title(f'Top 5 Features - {self.target_names[target]}')
+            plt.title(f'Top 10 Features - {self.target_names[target]}')
             plt.gca().invert_yaxis()  # Highest importance at top
             
+            # Add debugging info
+            print(f"\nFeature importance for {self.target_names[target]}:")
+            for j, (name, importance) in enumerate(zip(sorted_feature_names, sorted_importance)):
+                print(f"  {j+1:2d}. {name:25s}: {importance:.4f}")
+        
         plt.tight_layout()
         plt.savefig(os.path.join(self.run_dir, 'multi_target_feature_importance.png'))
         plt.close()
+        
+        # Also create a comprehensive feature importance analysis
+        self.plot_comprehensive_feature_importance(target_models)
+
+    def plot_comprehensive_feature_importance(self, target_models):
+        """Create a comprehensive feature importance analysis"""
+        # Calculate average importance across all targets
+        all_importances = {}
+        for target, model_data in target_models.items():
+            feature_importance = model_data['model'].feature_importances_
+            for i, feature in enumerate(self.feature_columns):
+                if feature not in all_importances:
+                    all_importances[feature] = []
+                all_importances[feature].append(feature_importance[i])
+        
+        # Calculate average importance for each feature
+        avg_importance = {}
+        for feature, importances in all_importances.items():
+            avg_importance[feature] = np.mean(importances)
+        
+        # Sort by average importance
+        sorted_features = sorted(avg_importance.items(), key=lambda x: x[1], reverse=True)
+        
+        # Plot comprehensive feature importance
+        plt.figure(figsize=(12, 8))
+        features, importances = zip(*sorted_features[:15])  # Top 15 features
+        
+        plt.barh(range(len(features)), importances)
+        plt.yticks(range(len(features)), features)
+        plt.xlabel('Average Importance Across All Targets')
+        plt.title('Comprehensive Feature Importance Analysis')
+        plt.gca().invert_yaxis()
+        
+        # Add color coding for engineered features
+        engineered_features = [
+            'Temp_Range', 'Temp_Humidity', 'Temp_Range_RH', 'Dew_Point', 'Heat_Index',
+            'Rain_Streak', 'Dry_Streak', 'Month_sin', 'Month_cos', 'Day_sin', 'Day_cos',
+            'DayOfYear_sin', 'DayOfYear_cos'
+        ]
+        
+        colors = ['red' if f in engineered_features else 'blue' for f in features]
+        for i, (bar, color) in enumerate(zip(plt.gca().patches, colors)):
+            bar.set_color(color)
+            bar.set_alpha(0.7)
+        
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.run_dir, 'comprehensive_feature_importance.png'))
+        plt.close()
+        
+        # Print comprehensive analysis
+        print(f"\n=== Comprehensive Feature Importance Analysis ===")
+        print(f"Total features analyzed: {len(sorted_features)}")
+        print(f"Engineered features in top 15: {[f for f, _ in sorted_features[:15] if f in engineered_features]}")
+        
+        for i, (feature, importance) in enumerate(sorted_features[:15], 1):
+            feature_type = "ENGINEERED" if feature in engineered_features else "ORIGINAL"
+            print(f"{i:2d}. {feature:25s}: {importance:.4f} ({feature_type})")
 
     def plot_feature_importance(self):
         """Plot feature importance from the trained model - updated for multi-target"""
