@@ -14,7 +14,7 @@ from sklearn.inspection import permutation_importance
 import joblib
 from sklearn.linear_model import Lasso, Ridge
 from sklearn.neural_network import MLPRegressor
-from sklearn.model_selection import GridSearchCV, KFold
+from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
 from sklearn.base import clone
 import warnings
 from tqdm import tqdm  # For progress bars
@@ -92,7 +92,7 @@ class GBMWeatherPredictor:
         self.scaler = StandardScaler()
         self.target_scalers = {}  # Separate scalers for each target
         self.forecast_days = 5  # Number of days to forecast ahead
-        self.cv_folds = 5  # Number of cross-validation folds
+        self.cv_folds = 5  # Number of time series splits
         
         # Save paths
         self.models_dir = MODELS_DIR
@@ -565,6 +565,99 @@ class GBMWeatherPredictor:
         plt.savefig(os.path.join(self.run_dir, 'seasonal_patterns.png'))
         plt.close()
 
+    def plot_data_splits(self, df):
+        """Plot data splits for each target parameter in separate figures with splits arranged vertically"""
+        # Prepare data
+        df_sorted = df.sort_values('Tanggal')
+        dates = df_sorted['Tanggal']
+        total_samples = len(df_sorted)
+        
+        # Create time series split
+        tscv = TimeSeriesSplit(n_splits=self.cv_folds)
+        
+        # Colors for train and validation data
+        train_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']  # Blue, Orange, Green, Red, Purple
+        val_colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57']    # Light Red, Teal, Light Blue, Light Green, Yellow
+        
+        # Create separate figure for each target parameter
+        for target in self.target_columns:
+            if target not in df_sorted.columns:
+                continue
+                
+            # Create figure with subplots for each split with proper spacing
+            fig, axes = plt.subplots(self.cv_folds, 1, figsize=(15, 5*self.cv_folds), 
+                                   gridspec_kw={'hspace': 0.3})
+            if self.cv_folds == 1:
+                axes = [axes]
+            
+            target_data = df_sorted[target]
+            
+            # Plot each split in separate subplot
+            for split_idx, (train_idx, val_idx) in enumerate(tscv.split(df_sorted)):
+                if split_idx < len(train_colors):
+                    train_color = train_colors[split_idx]
+                    val_color = val_colors[split_idx]
+                    ax = axes[split_idx]
+                    
+                    # Plot all data points in background
+                    ax.plot(dates, target_data, 'k-', alpha=0.2, linewidth=0.5, label='All Data')
+                    
+                    # Plot training data for this split
+                    train_dates = dates.iloc[train_idx]
+                    train_data = target_data.iloc[train_idx]
+                    ax.plot(train_dates, train_data, color=train_color, linewidth=2.5, 
+                           label=f'Split {split_idx+1} Train', alpha=0.9)
+                    
+                    # Plot validation data for this split
+                    val_dates = dates.iloc[val_idx]
+                    val_data = target_data.iloc[val_idx]
+                    ax.plot(val_dates, val_data, color=val_color, linewidth=2.5, 
+                           label=f'Split {split_idx+1} Val', alpha=0.9)
+                    
+                    # Customize subplot with proper spacing
+                    ax.set_title(f'{self.target_names[target]} - Split {split_idx+1}', 
+                               fontsize=12, fontweight='bold', pad=20)
+                    ax.set_ylabel(self.target_names[target], fontsize=10)
+                    ax.grid(True, alpha=0.3)
+                    ax.legend(loc='upper right', fontsize=9, bbox_to_anchor=(0.98, 0.98))
+                    
+                    # Format x-axis
+                    ax.tick_params(axis='x', rotation=45)
+                    
+                    # Add split statistics with better positioning
+                    train_size = len(train_idx)
+                    val_size = len(val_idx)
+                    split_info = f"Train: {train_size} samples\nVal: {val_size} samples\n"
+                    split_info += f"Train period: {train_dates.min().strftime('%Y-%m-%d')} to {train_dates.max().strftime('%Y-%m-%d')}\n"
+                    split_info += f"Val period: {val_dates.min().strftime('%Y-%m-%d')} to {val_dates.max().strftime('%Y-%m-%d')}"
+                    
+                    ax.text(0.02, 0.95, split_info, transform=ax.transAxes, 
+                           verticalalignment='top', bbox=dict(boxstyle="round,pad=0.5", 
+                           facecolor='white', alpha=0.9), fontsize=8)
+            
+            # No overall title - removed as requested
+            
+            # Adjust layout without suptitle
+            plt.tight_layout()
+            
+            # Save individual figure for this target
+            target_safe_name = target.replace(' ', '_').lower()
+            plt.savefig(os.path.join(self.run_dir, f'data_splits_{target_safe_name}.png'), 
+                       bbox_inches='tight', dpi=300)
+            plt.close()
+            
+            print(f"Data splits visualization for {self.target_names[target]} saved")
+        
+        # Print split statistics
+        print(f"\nTime Series Split Statistics:")
+        print(f"Total samples: {total_samples}")
+        print(f"Number of splits: {self.cv_folds}")
+        
+        for split_idx, (train_idx, val_idx) in enumerate(tscv.split(df_sorted)):
+            train_size = len(train_idx)
+            val_size = len(val_idx)
+            print(f"Split {split_idx+1}: Train={train_size} samples, Val={val_size} samples")
+
     def plot_predictions(self, dates, actual, predicted, target_name='Target'):
         """Plot actual vs predicted values for a specific target"""
         plt.figure(figsize=(15, 6))
@@ -847,21 +940,21 @@ class GBMWeatherPredictor:
                 cv_scores = []
                 
                 # Show progress during training
-                print(f"Training {target} GBM model with {cv_folds}-fold CV...")
+                print(f"Training {target} GBM model with {cv_folds} time series splits...")
                 
-                # Train model with cross-validation
-                tscv = KFold(n_splits=cv_folds, shuffle=False)  # No shuffle for time series
+                # Train model with time series cross-validation
+                tscv = TimeSeriesSplit(n_splits=cv_folds)
                 fold_predictions = []
                 
                 # Get base model for this target
                 base_model = model_configs.get(target, model_configs['RR'])  # Default to RR config
                 
-                # Process each fold
-                for fold, (train_idx, val_idx) in enumerate(tscv.split(X_train_scaled)):
-                    print(f"  Processing fold {fold+1}/{cv_folds}...")
+                # Process each split
+                for split_idx, (train_idx, val_idx) in enumerate(tscv.split(X_train_scaled)):
+                    print(f"  Processing split {split_idx+1}/{cv_folds}...")
                     start_time = time.time()
                     
-                    # Split data for this fold
+                    # Split data for this split
                     X_fold_train = X_train_scaled[train_idx]
                     y_fold_train = y_train.iloc[train_idx]
                     X_fold_val = X_train_scaled[val_idx]
@@ -893,20 +986,20 @@ class GBMWeatherPredictor:
                         fold_predictions.append(test_pred)
                         
                         elapsed = time.time() - start_time
-                        print(f"    Fold R²: {r2:.4f} (took {elapsed:.1f}s)")
+                        print(f"    Split R²: {r2:.4f} (took {elapsed:.1f}s)")
                         
                     except Exception as e:
-                        print(f"Error in fold {fold+1}: {str(e)}")
+                        print(f"Error in split {split_idx+1}: {str(e)}")
                         if fold_predictions:
                             fold_predictions.append(np.mean(fold_predictions, axis=0))
                         else:
                             fold_predictions.append(np.zeros(len(X_test_scaled)))
                         cv_scores.append(0.0)
                 
-                # Average predictions across folds
+                # Average predictions across splits
                 if fold_predictions:
                     final_predictions = np.mean(fold_predictions, axis=0)
-                    print(f"{target} GBM CV R² scores: {np.mean(cv_scores):.4f} ± {np.std(cv_scores):.4f}")
+                    print(f"{target} GBM Time Series CV R² scores: {np.mean(cv_scores):.4f} ± {np.std(cv_scores):.4f}")
                 else:
                     print(f"No valid predictions for {target}, using zeros")
                     final_predictions = np.zeros(len(X_test))
@@ -1294,6 +1387,7 @@ class GBMWeatherPredictor:
             self.plot_feature_correlations(df)
             self.plot_feature_distributions(df)
             self.plot_seasonal_patterns(df)
+            self.plot_data_splits(df)  # Add data splits visualization
             
             # Multi-day forecasting for all targets
             print(f"\n=== Multi-Day Forecasting ===")
