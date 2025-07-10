@@ -1,0 +1,2 @@
+Target_Variable,Target_Name,Model_Type,Forecast_Horizon,Forecast_Label,MSE,RMSE,MAE,R2_Score,Model_Algorithm,Target_Unit,Target_Range
+RR,Rainfall (mm),Single_Day,0,Today,155.506056,12.4702,10.5389,0.557,GradientBoostingRegressor,mm,"[0, ∞)"

@@ -1,0 +1,2 @@
+Target_Variable,Target_Name,Number_of_Models,Best_R2_Score,Worst_R2_Score,Average_R2_Score,Best_RMSE,Worst_RMSE,Average_RMSE
+RR,Rainfall (mm),1,0.557,0.557,0.557,12.4702,12.4702,12.4702

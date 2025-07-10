@@ -1,0 +1,9 @@
+Metrics for RR
+==============================
+MSE: 4.692221
+RMSE: 2.166154
+MAE: 1.755257
+R2: 0.400635
+Rain_Detection_Accuracy: 1.000000
+Actual_Rain_Days: 19.000000
+Predicted_Rain_Days: 19.000000

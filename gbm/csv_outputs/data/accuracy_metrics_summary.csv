@@ -1,0 +1,6 @@
+Target_Variable,Target_Name,Number_of_Models,Best_R2_Score,Worst_R2_Score,Average_R2_Score,Best_RMSE,Worst_RMSE,Average_RMSE
+RR,Rainfall (mm),7,0.9042,0.0402,0.3095,6.6877,21.1669,17.1746
+ss,Sunshine Duration (hours),7,0.9824,0.2092,0.4334,0.4391,2.9449,2.3411
+Tavg,Average Temperature (°C),7,0.9232,0.256,0.4714,0.3159,0.9835,0.7874
+ddd_car,Wind Direction,7,0.9778,-0.0224,0.2388,13.2916,90.1586,72.5896
+ff_avg,Wind Speed (m/s),7,0.9461,-0.0966,0.2028,0.1517,0.6844,0.5512

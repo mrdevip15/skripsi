@@ -431,14 +431,14 @@ class GBMWeatherPredictor:
                        [f'{target}_Lag_' for target in self.target_columns] + 
                        ['Rain_Binary_Lag_', 'Sunny_Binary_Lag_', 'RH_Rolling_']) 
                     and not df[col].isna().any() and col not in self.target_columns):
-                    # Exclude ALL rolling and lag features to see impact of engineered features
-                    # if not col.endswith('Rolling_Mean_3d'):
-                    #     self.feature_columns.append(col)
-                    #     rolling_lag_features_added.append(col)
-                    pass  # Skip all rolling and lag features
+                    # Include rolling and lag features for better temporal modeling
+                    self.feature_columns.append(col)
+                    rolling_lag_features_added.append(col)
             
-            print(f"\nRolling and lag features excluded: All rolling and lag features removed")
-            print(f"Only using basic features and engineered features")
+            print(f"\nRolling and lag features included: {len(rolling_lag_features_added)} features added")
+            if rolling_lag_features_added:
+                print(f"Added features: {', '.join(rolling_lag_features_added[:10])}{'...' if len(rolling_lag_features_added) > 10 else ''}")
+            print(f"Using basic features, engineered features, and temporal features")
             
             # Add engineered features that might have been missed
             engineered_features = [
@@ -457,11 +457,15 @@ class GBMWeatherPredictor:
                         engineered_features_added.append(feature)
                         print(f"Added engineered feature: {feature}")
 
-            print(f"\nEngineered features summary:")
-            print(f"Available in dataset: {len(engineered_features_available)}/{len(engineered_features)}")
-            print(f"Added to model: {len(engineered_features_added)}")
-            print(f"Available features: {', '.join(engineered_features_available)}")
-            print(f"Added features: {', '.join(engineered_features_added)}")
+            print(f"\nFeature engineering summary:")
+            print(f"Engineered features available: {len(engineered_features_available)}/{len(engineered_features)}")
+            print(f"Engineered features added: {len(engineered_features_added)}")
+            print(f"Temporal features added: {len(rolling_lag_features_added)}")
+            print(f"Total features in model: {len(self.feature_columns)}")
+            if engineered_features_added:
+                print(f"Engineered features: {', '.join(engineered_features_added)}")
+            if rolling_lag_features_added:
+                print(f"Sample temporal features: {', '.join(rolling_lag_features_added[:5])}{'...' if len(rolling_lag_features_added) > 5 else ''}")
             
             # Print final stats for all target variables
             print(f"\nFinal dataset size: {len(df)}")
@@ -484,12 +488,29 @@ class GBMWeatherPredictor:
             else:
                 print("\nNo NaN values remain in the dataset - interpolation successful!")
             
-            # Print feature importance debugging info
-            print(f"\nFeature engineering summary:")
-            print(f"Total features available: {len(df.columns)}")
+            # Print comprehensive feature summary
+            print(f"\nFinal feature summary:")
+            print(f"Total features available in dataset: {len(df.columns)}")
             print(f"Target variables: {self.target_columns}")
-            print(f"Features used in model: {len(self.feature_columns)}")
-            print(f"Engineered features included: {[f for f in self.feature_columns if f in engineered_features]}")
+            print(f"Features selected for model: {len(self.feature_columns)}")
+            
+            # Count feature types
+            basic_features = [f for f in self.feature_columns if f not in engineered_features and not any(keyword in f for keyword in ['Rolling', 'Lag', 'Binary'])]
+            engineered_in_model = [f for f in self.feature_columns if f in engineered_features]
+            temporal_in_model = [f for f in self.feature_columns if any(keyword in f for keyword in ['Rolling', 'Lag', 'Binary'])]
+            
+            print(f"  - Basic features: {len(basic_features)}")
+            print(f"  - Engineered features: {len(engineered_in_model)}")
+            print(f"  - Temporal features (lag/rolling): {len(temporal_in_model)}")
+            
+            if temporal_in_model:
+                print(f"Temporal features breakdown:")
+                rolling_features = [f for f in temporal_in_model if 'Rolling' in f]
+                lag_features = [f for f in temporal_in_model if 'Lag' in f and 'Binary' not in f]
+                binary_features = [f for f in temporal_in_model if 'Binary' in f]
+                print(f"  - Rolling features: {len(rolling_features)}")
+                print(f"  - Lag features: {len(lag_features)}")
+                print(f"  - Binary lag features: {len(binary_features)}")
             
             return df
             
@@ -1325,6 +1346,335 @@ class GBMWeatherPredictor:
         print(f"\nSaved feature scaler and feature list in {self.models_dir}")
         print(f"Saved multi-day models for {len(self.multi_day_models)} targets, {self.forecast_days + 1} days each")
 
+    def generate_csv_outputs(self, df, multi_day_results=None):
+        """Generate CSV outputs for feature importance, predictions, and metrics"""
+        print("\n=== Generating CSV Output Files ===")
+        
+        # Create CSV outputs directory
+        csv_output_dir = os.path.join(GBM_DIR, 'csv_outputs', self.timestamp)
+        os.makedirs(csv_output_dir, exist_ok=True)
+        
+        # 1. Generate comprehensive feature importance CSV
+        self.generate_feature_importance_csv(csv_output_dir)
+        
+        # 2. Generate prediction samples CSV (first 10 samples)
+        self.generate_prediction_samples_csv(df, csv_output_dir)
+        
+        # 3. Generate accuracy metrics CSV
+        self.generate_accuracy_metrics_csv(multi_day_results, csv_output_dir)
+        
+        print(f"CSV outputs saved to: {csv_output_dir}")
+        return csv_output_dir
+
+    def generate_feature_importance_csv(self, output_dir):
+        """Generate comprehensive feature importance CSV for all targets"""
+        print("Generating feature importance CSV...")
+        
+        if not self.multi_target_models:
+            print("No trained models found for feature importance analysis")
+            return
+        
+        # Collect feature importance data
+        importance_data = []
+        
+        # Calculate average importance across all targets
+        all_importances = {}
+        for target, model_data in self.multi_target_models.items():
+            feature_importance = model_data['model'].feature_importances_
+            for i, feature in enumerate(self.feature_columns):
+                if feature not in all_importances:
+                    all_importances[feature] = []
+                all_importances[feature].append(feature_importance[i])
+        
+        # Create comprehensive feature importance table
+        for feature in self.feature_columns:
+            row_data = {'Feature_Name': feature}
+            
+            # Individual target importances
+            for target in self.target_columns:
+                if target in self.multi_target_models:
+                    feature_idx = self.feature_columns.index(feature)
+                    importance = self.multi_target_models[target]['model'].feature_importances_[feature_idx]
+                    row_data[f'{target}_Importance'] = round(importance, 6)
+            
+            # Average importance across all targets
+            if feature in all_importances:
+                avg_importance = np.mean(all_importances[feature])
+                std_importance = np.std(all_importances[feature])
+                row_data['Average_Importance'] = round(avg_importance, 6)
+                row_data['Std_Importance'] = round(std_importance, 6)
+            
+            # Add feature type classification
+            engineered_features = [
+                'Temp_Range', 'Temp_Humidity', 'Temp_Range_RH', 'Dew_Point', 'Heat_Index',
+                'Rain_Streak', 'Dry_Streak', 'Month_sin', 'Month_cos', 'Day_sin', 'Day_cos',
+                'DayOfYear_sin', 'DayOfYear_cos'
+            ]
+            row_data['Feature_Type'] = 'Engineered' if feature in engineered_features else 'Original'
+            
+            importance_data.append(row_data)
+        
+        # Create DataFrame and sort by average importance
+        importance_df = pd.DataFrame(importance_data)
+        importance_df = importance_df.sort_values('Average_Importance', ascending=False)
+        
+        # Add ranking
+        importance_df['Rank'] = range(1, len(importance_df) + 1)
+        
+        # Reorder columns
+        cols = ['Rank', 'Feature_Name', 'Feature_Type', 'Average_Importance', 'Std_Importance']
+        for target in self.target_columns:
+            if f'{target}_Importance' in importance_df.columns:
+                cols.append(f'{target}_Importance')
+        importance_df = importance_df[cols]
+        
+        # Save to CSV
+        importance_file = os.path.join(output_dir, 'feature_importance_all_targets.csv')
+        importance_df.to_csv(importance_file, index=False)
+        print(f"Feature importance saved to: {importance_file}")
+        
+        # Print summary
+        print(f"Top 10 most important features:")
+        for i in range(min(10, len(importance_df))):
+            row = importance_df.iloc[i]
+            print(f"  {i+1:2d}. {row['Feature_Name']:20s} ({row['Feature_Type']:10s}) - {row['Average_Importance']:.4f}")
+
+    def generate_prediction_samples_csv(self, df, output_dir, n_samples=10):
+        """Generate CSV with prediction results for first n samples"""
+        print(f"Generating prediction samples CSV for first {n_samples} samples...")
+        
+        if not self.multi_target_models:
+            print("No trained models found for prediction samples")
+            return
+        
+        # Use temporal split to get test data
+        train_size = int(0.8 * len(df))
+        test_df = df.iloc[train_size:train_size + n_samples].copy()
+        
+        if len(test_df) == 0:
+            print("No test data available for prediction samples")
+            return
+        
+        # Prepare features
+        X_test = test_df[self.feature_columns]
+        X_test_scaled = self.scaler.transform(X_test)
+        
+        # Create prediction results
+        prediction_data = []
+        
+        for idx, row in test_df.iterrows():
+            sample_data = {
+                'Sample_ID': idx,
+                'Date': row['Tanggal'].strftime('%Y-%m-%d') if 'Tanggal' in row else f"Sample_{idx}",
+                'Day_of_Week': row['Tanggal'].strftime('%A') if 'Tanggal' in row else "Unknown",
+                'Month': row['Tanggal'].strftime('%B') if 'Tanggal' in row else "Unknown"
+            }
+            
+            # Get sample index relative to test set
+            sample_idx = list(test_df.index).index(idx)
+            
+            # Add actual and predicted values for each target
+            for target in self.target_columns:
+                if target in self.multi_target_models and target in test_df.columns:
+                    # Actual value
+                    actual_value = test_df.iloc[sample_idx][target]
+                    sample_data[f'{target}_Actual'] = round(actual_value, 4)
+                    
+                    # Predicted value
+                    model = self.multi_target_models[target]['model']
+                    sample_features = X_test_scaled[sample_idx:sample_idx+1]
+                    
+                    # Make prediction
+                    pred_scaled = model.predict(sample_features)[0]
+                    
+                    # Inverse transform if scaling was applied
+                    target_scaler = self.multi_target_models[target].get('scaler', None)
+                    if target_scaler is not None:
+                        pred_value = target_scaler.inverse_transform([[pred_scaled]])[0][0]
+                    else:
+                        pred_value = pred_scaled
+                    
+                    # Apply constraints
+                    if target == 'RR':
+                        pred_value = max(pred_value, 0)
+                    elif target == 'ss':
+                        pred_value = max(0, min(pred_value, 24))
+                    elif target == 'ff_avg':
+                        pred_value = max(pred_value, 0)
+                    elif target == 'ddd_car':
+                        pred_value = pred_value % 360
+                    
+                    sample_data[f'{target}_Predicted'] = round(pred_value, 4)
+                    
+                    # Calculate error
+                    error = abs(actual_value - pred_value)
+                    sample_data[f'{target}_Absolute_Error'] = round(error, 4)
+                    
+                    # Calculate percentage error (avoid division by zero)
+                    if actual_value != 0:
+                        percentage_error = (error / abs(actual_value)) * 100
+                        sample_data[f'{target}_Percentage_Error'] = round(percentage_error, 2)
+                    else:
+                        sample_data[f'{target}_Percentage_Error'] = 0.0 if error == 0 else 100.0
+            
+            prediction_data.append(sample_data)
+        
+        # Create DataFrame
+        predictions_df = pd.DataFrame(prediction_data)
+        
+        # Save to CSV
+        predictions_file = os.path.join(output_dir, f'prediction_samples_{n_samples}.csv')
+        predictions_df.to_csv(predictions_file, index=False)
+        print(f"Prediction samples saved to: {predictions_file}")
+        
+        # Print summary
+        print(f"Prediction samples summary:")
+        for target in self.target_columns:
+            if f'{target}_Actual' in predictions_df.columns:
+                actual_col = f'{target}_Actual'
+                pred_col = f'{target}_Predicted'
+                error_col = f'{target}_Absolute_Error'
+                
+                avg_actual = predictions_df[actual_col].mean()
+                avg_pred = predictions_df[pred_col].mean()
+                avg_error = predictions_df[error_col].mean()
+                
+                print(f"  {self.target_names[target]:25s} - Avg Actual: {avg_actual:8.2f}, Avg Predicted: {avg_pred:8.2f}, Avg Error: {avg_error:6.2f}")
+
+    def generate_accuracy_metrics_csv(self, multi_day_results=None, output_dir=None):
+        """Generate comprehensive accuracy metrics CSV for all models"""
+        print("Generating accuracy metrics CSV...")
+        
+        if not self.multi_target_models:
+            print("No trained models found for metrics generation")
+            return
+        
+        metrics_data = []
+        
+        # Single-day model metrics
+        for target in self.target_columns:
+            if target in self.multi_target_models:
+                metrics = self.multi_target_models[target]['metrics']
+                
+                row_data = {
+                    'Target_Variable': target,
+                    'Target_Name': self.target_names[target],
+                    'Model_Type': 'Single_Day',
+                    'Forecast_Horizon': 0,
+                    'Forecast_Label': 'Today',
+                    'MSE': round(metrics['MSE'], 6),
+                    'RMSE': round(metrics['RMSE'], 4),
+                    'MAE': round(metrics['MAE'], 4),
+                    'R2_Score': round(metrics['R2'], 4),
+                    'Model_Algorithm': 'GradientBoostingRegressor'
+                }
+                
+                # Add target-specific metrics
+                if target == 'RR':
+                    row_data['Target_Unit'] = 'mm'
+                    row_data['Target_Range'] = '[0, ∞)'
+                elif target == 'ss':
+                    row_data['Target_Unit'] = 'hours'
+                    row_data['Target_Range'] = '[0, 24]'
+                elif target == 'Tavg':
+                    row_data['Target_Unit'] = '°C'
+                    row_data['Target_Range'] = '(-∞, ∞)'
+                elif target == 'ddd_car':
+                    row_data['Target_Unit'] = 'degrees'
+                    row_data['Target_Range'] = '[0, 360)'
+                elif target == 'ff_avg':
+                    row_data['Target_Unit'] = 'm/s'
+                    row_data['Target_Range'] = '[0, ∞)'
+                
+                metrics_data.append(row_data)
+        
+        # Multi-day model metrics
+        if multi_day_results:
+            for target, target_results in multi_day_results.items():
+                for day, day_results in target_results.items():
+                    if 'metrics' in day_results:
+                        metrics = day_results['metrics']
+                        
+                        forecast_label = 'Today' if day == 0 else f'{day}_Day_Ahead'
+                        
+                        row_data = {
+                            'Target_Variable': target,
+                            'Target_Name': self.target_names[target],
+                            'Model_Type': 'Multi_Day',
+                            'Forecast_Horizon': day,
+                            'Forecast_Label': forecast_label,
+                            'MSE': round(metrics['mse'], 6),
+                            'RMSE': round(metrics['rmse'], 4),
+                            'MAE': round(metrics['mae'], 4),
+                            'R2_Score': round(metrics['r2'], 4),
+                            'Model_Algorithm': 'GradientBoostingRegressor'
+                        }
+                        
+                        # Add target-specific info
+                        if target == 'RR':
+                            row_data['Target_Unit'] = 'mm'
+                            row_data['Target_Range'] = '[0, ∞)'
+                        elif target == 'ss':
+                            row_data['Target_Unit'] = 'hours'
+                            row_data['Target_Range'] = '[0, 24]'
+                        elif target == 'Tavg':
+                            row_data['Target_Unit'] = '°C'
+                            row_data['Target_Range'] = '(-∞, ∞)'
+                        elif target == 'ddd_car':
+                            row_data['Target_Unit'] = 'degrees'
+                            row_data['Target_Range'] = '[0, 360)'
+                        elif target == 'ff_avg':
+                            row_data['Target_Unit'] = 'm/s'
+                            row_data['Target_Range'] = '[0, ∞)'
+                        
+                        metrics_data.append(row_data)
+        
+        # Create DataFrame
+        metrics_df = pd.DataFrame(metrics_data)
+        
+        # Sort by target and forecast horizon
+        metrics_df = metrics_df.sort_values(['Target_Variable', 'Forecast_Horizon'])
+        
+        # Save to CSV
+        if output_dir is None:
+            output_dir = self.run_dir
+        metrics_file = os.path.join(output_dir, 'accuracy_metrics_all_models.csv')
+        metrics_df.to_csv(metrics_file, index=False)
+        print(f"Accuracy metrics saved to: {metrics_file}")
+        
+        # Generate summary statistics
+        summary_data = []
+        
+        # Summary by target
+        for target in self.target_columns:
+            target_data = metrics_df[metrics_df['Target_Variable'] == target]
+            if len(target_data) > 0:
+                summary_row = {
+                    'Target_Variable': target,
+                    'Target_Name': self.target_names[target],
+                    'Number_of_Models': len(target_data),
+                    'Best_R2_Score': round(target_data['R2_Score'].max(), 4),
+                    'Worst_R2_Score': round(target_data['R2_Score'].min(), 4),
+                    'Average_R2_Score': round(target_data['R2_Score'].mean(), 4),
+                    'Best_RMSE': round(target_data['RMSE'].min(), 4),
+                    'Worst_RMSE': round(target_data['RMSE'].max(), 4),
+                    'Average_RMSE': round(target_data['RMSE'].mean(), 4)
+                }
+                summary_data.append(summary_row)
+        
+        # Save summary
+        summary_df = pd.DataFrame(summary_data)
+        summary_file = os.path.join(output_dir, 'accuracy_metrics_summary.csv')
+        summary_df.to_csv(summary_file, index=False)
+        print(f"Accuracy metrics summary saved to: {summary_file}")
+        
+        # Print performance summary
+        print(f"\nModel Performance Summary:")
+        print(f"{'Target Variable':20s} {'Best R²':>8s} {'Avg R²':>8s} {'Best RMSE':>10s} {'Avg RMSE':>10s}")
+        print(f"{'-'*60}")
+        for _, row in summary_df.iterrows():
+            print(f"{row['Target_Name']:20s} {row['Best_R2_Score']:8.4f} {row['Average_R2_Score']:8.4f} {row['Best_RMSE']:10.4f} {row['Average_RMSE']:10.4f}")
+
     def train_and_evaluate(self, df):
         """Train and evaluate GBM models for all target variables"""
         try:
@@ -1498,6 +1848,10 @@ class GBMWeatherPredictor:
             
             # Save all models
             self.save_multi_target_models()
+            
+            # Generate CSV outputs
+            print(f"\n=== Generating CSV Output Files ===")
+            csv_output_dir = self.generate_csv_outputs(df, multi_day_results)
             
             return all_metrics
             

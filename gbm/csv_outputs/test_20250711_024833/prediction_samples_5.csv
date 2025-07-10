@@ -1,0 +1,6 @@
+Sample_ID,Date,Day_of_Week,Month,RR_Actual,RR_Predicted,RR_Absolute_Error,RR_Percentage_Error
+80,2010-03-22,Monday,March,35.0,31.0785,3.9215,11.2
+81,2010-03-23,Tuesday,March,35.0,34.0051,0.9949,2.84
+82,2010-03-24,Wednesday,March,35.0,36.3054,1.3054,3.73
+83,2010-03-25,Thursday,March,1.0,17.3731,16.3731,1637.31
+84,2010-03-26,Friday,March,1.0,15.0362,14.0362,1403.62
